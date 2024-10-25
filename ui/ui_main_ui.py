@@ -261,6 +261,17 @@ class Ui_MainWindow(object):
         self.horizontalLayout_38.setSpacing(5)
         self.horizontalLayout_38.setObjectName(u"horizontalLayout_38")
         self.horizontalLayout_38.setContentsMargins(0, 0, 0, 0)
+        self.frame_14 = QFrame(self.frame_menu)
+        self.frame_14.setObjectName(u"frame_14")
+        self.frame_14.setFrameShape(QFrame.StyledPanel)
+        self.frame_14.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_21 = QHBoxLayout(self.frame_14)
+        self.horizontalLayout_21.setSpacing(0)
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.horizontalLayout_21.setContentsMargins(0, 0, 0, 0)
+
+        self.horizontalLayout_38.addWidget(self.frame_14)
+
 
         self.verticalLayout_2.addWidget(self.frame_menu)
 
@@ -460,15 +471,17 @@ class Ui_MainWindow(object):
         self.page_sub.setObjectName(u"page_sub")
         self.page_sub.setStyleSheet(u"background:rgb(91,90,90);")
         self.horizontalLayout_16 = QHBoxLayout(self.page_sub)
-        self.horizontalLayout_16.setSpacing(5)
+        self.horizontalLayout_16.setSpacing(0)
         self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
-        self.horizontalLayout_16.setContentsMargins(5, 5, 5, 5)
+        self.horizontalLayout_16.setContentsMargins(0, 0, 0, 0)
         self.frame_left = QFrame(self.page_sub)
         self.frame_left.setObjectName(u"frame_left")
         self.frame_left.setFrameShape(QFrame.StyledPanel)
         self.frame_left.setFrameShadow(QFrame.Raised)
         self.verticalLayout_3 = QVBoxLayout(self.frame_left)
+        self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.frame_2 = QFrame(self.frame_left)
         self.frame_2.setObjectName(u"frame_2")
         sizePolicy10 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
@@ -502,31 +515,86 @@ class Ui_MainWindow(object):
         self.frame_right.setFrameShape(QFrame.StyledPanel)
         self.frame_right.setFrameShadow(QFrame.Raised)
         self.verticalLayout_4 = QVBoxLayout(self.frame_right)
+        self.verticalLayout_4.setSpacing(0)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.frame_6 = QFrame(self.frame_right)
         self.frame_6.setObjectName(u"frame_6")
-        sizePolicy11 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy11.setHorizontalStretch(0)
-        sizePolicy11.setVerticalStretch(5)
-        sizePolicy11.setHeightForWidth(self.frame_6.sizePolicy().hasHeightForWidth())
-        self.frame_6.setSizePolicy(sizePolicy11)
+        sizePolicy10.setHeightForWidth(self.frame_6.sizePolicy().hasHeightForWidth())
+        self.frame_6.setSizePolicy(sizePolicy10)
         self.frame_6.setFrameShape(QFrame.StyledPanel)
         self.frame_6.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_17 = QHBoxLayout(self.frame_6)
+        self.verticalLayout_7 = QVBoxLayout(self.frame_6)
+        self.verticalLayout_7.setSpacing(0)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.frame_15 = QFrame(self.frame_6)
+        self.frame_15.setObjectName(u"frame_15")
+        sizePolicy7.setHeightForWidth(self.frame_15.sizePolicy().hasHeightForWidth())
+        self.frame_15.setSizePolicy(sizePolicy7)
+        self.frame_15.setFrameShape(QFrame.StyledPanel)
+        self.frame_15.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_17 = QHBoxLayout(self.frame_15)
+        self.horizontalLayout_17.setSpacing(0)
         self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-
-        self.verticalLayout_4.addWidget(self.frame_6)
-
-        self.frame_8 = QFrame(self.frame_right)
+        self.horizontalLayout_17.setContentsMargins(0, 0, 0, 0)
+        self.frame_8 = QFrame(self.frame_15)
         self.frame_8.setObjectName(u"frame_8")
-        sizePolicy7.setHeightForWidth(self.frame_8.sizePolicy().hasHeightForWidth())
-        self.frame_8.setSizePolicy(sizePolicy7)
+        sizePolicy.setHeightForWidth(self.frame_8.sizePolicy().hasHeightForWidth())
+        self.frame_8.setSizePolicy(sizePolicy)
         self.frame_8.setFrameShape(QFrame.StyledPanel)
         self.frame_8.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_18 = QHBoxLayout(self.frame_8)
-        self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
 
-        self.verticalLayout_4.addWidget(self.frame_8)
+        self.horizontalLayout_17.addWidget(self.frame_8)
+
+        self.pushButton = QPushButton(self.frame_15)
+        self.pushButton.setObjectName(u"pushButton")
+        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
+        self.pushButton.setSizePolicy(sizePolicy)
+        self.pushButton.setMaximumSize(QSize(60, 16777215))
+        self.pushButton.setStyleSheet(u"QPushButton {\n"
+"	font: 10pt \"Adobe \u9ed1\u4f53 Std R\";\n"
+"	border: 2px solid rgb(51,51,51);\n"
+"	border-radius: 5px;	\n"
+"	color:rgb(255,255,255);\n"
+"	background-color: rgb(51,51,51);\n"
+"}\n"
+"QPushButton:hover {\n"
+"	border: 2px solid rgb(0,143,150);\n"
+"	background-color: rgb(0,143,150);\n"
+"}\n"
+"QPushButton:pressed {	\n"
+"	border: 2px solid rgb(0,143,150);\n"
+"	background-color: rgb(51,51,51);\n"
+"}\n"
+"\n"
+"QPushButton:disabled {	\n"
+"	border-radius: 5px;	\n"
+"	border: 2px solid rgb(112,112,112);\n"
+"	background-color: rgb(112,112,112);\n"
+"}")
+
+        self.horizontalLayout_17.addWidget(self.pushButton)
+
+
+        self.verticalLayout_7.addWidget(self.frame_15)
+
+        self.frame_16 = QFrame(self.frame_6)
+        self.frame_16.setObjectName(u"frame_16")
+        sizePolicy11 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy11.setHorizontalStretch(0)
+        sizePolicy11.setVerticalStretch(15)
+        sizePolicy11.setHeightForWidth(self.frame_16.sizePolicy().hasHeightForWidth())
+        self.frame_16.setSizePolicy(sizePolicy11)
+        self.frame_16.setFrameShape(QFrame.StyledPanel)
+        self.frame_16.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_8 = QVBoxLayout(self.frame_16)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+
+        self.verticalLayout_7.addWidget(self.frame_16)
+
+
+        self.verticalLayout_4.addWidget(self.frame_6)
 
         self.frame_9 = QFrame(self.frame_right)
         self.frame_9.setObjectName(u"frame_9")
@@ -771,7 +839,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -795,6 +863,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.bn_close.setText("")
         self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"\u53d1\u9001", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Back", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.comboBox_4.setCurrentText("")
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"\u8fde\u63a5", None))

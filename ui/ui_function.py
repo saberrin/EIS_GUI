@@ -10,9 +10,7 @@ init = False # NECRESSERY FOR INITITTION OF THE WINDOW.
 
 # THIS CLASS HOUSES ALL FUNCTION NECESSERY FOR OUR PROGRAMME TO RUN.
 class UIFunction(MainWindow):
-
-
-
+   
     #------> SETING THE APPLICATION NAME IN OUR CUSTOME MADE TAB, WHERE LABEL NAMED: lab_appname()
     def labelTitle(self, appName):
         self.ui.lab_appname.setText(appName)
@@ -71,13 +69,7 @@ class UIFunction(MainWindow):
             self.ui.frame_min.hide()
             self.ui.frame_drag.hide()
 
-        #-----> RESIZE USING DRAG                                       THIS CODE TO DRAG AND RESIZE IS IN PROTOPYPE.
-        #self.sizegrip = QSizeGrip(self.ui.frame_drag)
-        #self.sizegrip.setStyleSheet("width: 20px; height: 20px; margin 0px; padding: 0px;")
-
-        #SINCE THERE IS NO WINDOWS TOPBAR, THE CLOSE MIN, MAX BUTTON ARE ABSENT AND SO THERE IS A NEED FOR THE ALTERNATIVE BUTTONS IN OUR
-        #DIALOG BOX, WHICH IS CARRIED OUT BY THE BELOW CODE
-        #-----> MINIMIZE BUTTON FUNCTION 
+        
         self.ui.bn_min.clicked.connect(lambda: self.showMinimized())
 
         #-----> MAXIMIZE/RESTORE BUTTON FUNCTION
