@@ -51,8 +51,9 @@ class MainWindow(QMainWindow):
         print(f"clicked by{index}")
         self.ui.stackedWidget.setCurrentIndex(index)
     
-
+from database.db_init import init_database
 if __name__ == "__main__":
+    init_database()
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
