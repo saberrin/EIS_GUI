@@ -54,3 +54,4 @@ def init_database():
     finally:
         if connection:
             connection.close()
+

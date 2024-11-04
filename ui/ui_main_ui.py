@@ -657,6 +657,12 @@ class Ui_MainWindow(object):
         sizePolicy13.setVerticalStretch(0)
         sizePolicy13.setHeightForWidth(self.label_14.sizePolicy().hasHeightForWidth())
         self.label_14.setSizePolicy(sizePolicy13)
+        self.label_14.setStyleSheet(u"QLabel {\n"
+"    color: white;        \n"
+"    font: 16pt \"Adobe \u9ed1\u4f53 Std R\";\n"
+"}")
+        self.label_14.setTextFormat(Qt.AutoText)
+        self.label_14.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_13.addWidget(self.label_14)
 
@@ -839,7 +845,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -864,7 +870,7 @@ class Ui_MainWindow(object):
         self.bn_close.setText("")
         self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"\u53d1\u9001", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Back", None))
-        self.label_14.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.label_14.setText("")
         self.comboBox_4.setCurrentText("")
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"\u8fde\u63a5", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"\u65ad\u5f00", None))
