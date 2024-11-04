@@ -24,8 +24,23 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
+        # Initialize and retain the database connection
+        self.conn, self.cursor = init_database()
+        
+        # Example usage of the cursor to fetch data
+        if self.cursor:
+            self.cursor.execute("SELECT * FROM eis_measurement")
+            data = self.cursor.fetchall()
+            print(data)  # For testing purposes; you can integrate this with your UI
+
+    def closeEvent(self, event):
+        # Close the database connection on exit
+        if self.conn:
+            self.conn.close()
+            print("Database connection closed.")
+        event.accept()
         # self.ui = uic.loadUi("./ui/ui_main.ui", self)
-        init_database()
+        
         UIFunction.constantFunction(self) 
         UIFunction.maximize_restore(self)
         
@@ -61,10 +76,12 @@ class MainWindow(QMainWindow):
         self.settingId = initSetting()
         self.settingId.identifier.connect(self.identifier_setting)
         self.settingId.exec()
+
         
     def identifier_setting(self,container_number,cabinet_number,cluster_number):
         self.ui.label_14.setText(f"集装箱-{container_number}-电池柜-{cabinet_number}-电池包-{cluster_number}")
 
+        
 if __name__ == "__main__":
     
     app = QApplication(sys.argv)
