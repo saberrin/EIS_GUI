@@ -7,7 +7,7 @@ from repository import insert_measurements
 from db_init import init_database
 from repository import get_cluster_latest_measurements
 
-DB_PATH = "C:/EIS_GUI/eis_xjj.db"
+DB_PATH = "eis_xjj.db"
 
 # def generate_random_measurements(num_samples: int) -> List[EisMeasurement]:
 #     measurements = []

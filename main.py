@@ -17,6 +17,7 @@ from custom_widget.menuWidget import MenuWidget
 from custom_widget.imageClickedLabel import ImageClickedLabel
 from database.db_init import init_database
 from custom_widget.initSetting import initSetting
+from tools.I2C_Reader import I2CReader
 
 # OUR APPLICATION MAIN WINDOW :
 #-----> MAIN APPLICATION CLASS
@@ -59,8 +60,9 @@ class MainWindow(QMainWindow):
         self.settingId = initSetting()
         self.settingId.identifier.connect(self.identifier_setting)
         self.settingId.exec()
-                # Initialize and retain the database connection
-    
+        
+        self.reader = I2CReader(device='/dev/i2c-11', address=0x28)
+        
         
     # Example usage of the cursor to fetch the recently inserted IDs
         if self.cursor:

@@ -3,7 +3,7 @@ import sqlite3
 def init_database():
     try:
         # Use the absolute path to your database file
-        db_path = "C:/EIS_GUI/eis_xjj.db"
+        db_path = "./database/eis_xjj.db"
 
         # Connect to the SQLite database
         connection = sqlite3.connect(db_path)
