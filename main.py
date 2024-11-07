@@ -61,7 +61,8 @@ class MainWindow(QMainWindow):
         self.settingId.identifier.connect(self.identifier_setting)
         self.settingId.exec()
         
-        self.reader = I2CReader(device='/dev/i2c-11', address=0x28)
+        self.reader = I2CReader(device='/dev/i2c-11', bus_number=11,address=0x28)
+        self.reader.start_reading()
         
         
     # Example usage of the cursor to fetch the recently inserted IDs

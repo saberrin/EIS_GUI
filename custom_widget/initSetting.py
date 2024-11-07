@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPlainTextEdit, QLineEdit, QPushButton,QMessageBox
 from PyQt6.QtCore import pyqtSignal, QObject, Qt, QTimer
-import serial
 from ui.ui_initSetting import Ui_initSetting
 from PyQt6.QtWidgets import QDialog
 from PyQt6.QtGui import  QFont

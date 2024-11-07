@@ -4,16 +4,20 @@ import sqlite3
 from datetime import datetime
 import fcntl
 import time
+import threading
+from smbus2 import SMBus
+
 class I2CReader(QObject):
     new_data_received_UIT = pyqtSignal(int, float, float, float)
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
 
-    def __init__(self, device, address):
+    def __init__(self, device, bus_number,address):
         super().__init__()
         self.device = device
+        self.bus = bus_number
         self.address = address
-        self.chunk_size = 32
+        self.chunk_size = 1
         self.line_ending = b'_end'
         self.running = False
         self.data = []
@@ -46,6 +50,9 @@ class I2CReader(QObject):
             print("Cannot start reading as database connection is not established.")
             return
         self.running = True
+        self.thread = threading.Thread(target=self.read_data, daemon=True)
+        # self.thread_write = threading.Thread(target=self.write_data, daemon=True)       
+        self.thread.start()
         self.new_data_received_check.emit("Starting I2C reading...")
 
     def stop_reading(self):
@@ -56,7 +63,7 @@ class I2CReader(QObject):
     def read_data(self):
         print("Attempting to open I2C bus...")
         self.new_data_received_check.emit("Attempting to open I2C bus...")
-        
+        self.write_data("start\n")
         try:
             while self.running:
                 line = self.read_until_end()
@@ -92,8 +99,24 @@ class I2CReader(QObject):
                             del buffer[:line_end_index]
                             print("Line received:", line.decode('utf-8').strip())      
             except IOError as e:
-                print(f"Error: {e}")
-                time.sleep(1)  
+                # print(f"Error: {e}")
+                time.sleep(0.01)  
+                
+
+    def write_data(self,data_to_send):
+        if isinstance(data_to_send, str):
+            if not (data_to_send.endswith('\n')):
+                data_to_send = data_to_send + "\n"
+            with SMBus(self.bus) as bus:  
+                try:                                                                            
+                    for char in data_to_send:
+                        bus.write_byte(self.address, ord(char))
+                        print(f"Sent: 0x{ord(char):X} ('{char}')")
+                        time.sleep(0.1) 
+                except Exception as e:
+                        print(f"Error sending data: {e}")
+        else:
+            print("Input must be a string")
 
     def parse_and_emit_signals(self, line):
         print(f"Parsing line: {line}")
