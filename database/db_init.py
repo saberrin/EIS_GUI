@@ -1,8 +1,14 @@
+
 import sqlite3
-from config import DB_PATH
+# from config import DB_PATH  
+import os
+
+DB_PATH = "./eis_xjj.db"  #本地调试用路径
 
 def init_database():
     try:
+        
+        
         # Connect to the SQLite database
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
@@ -10,7 +16,7 @@ def init_database():
         # Disable foreign key constraints temporarily
         cursor.execute("PRAGMA foreign_keys = OFF;")
         
-        # Create tables with foreign key constraints
+        # Create the container table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS container (
             "container_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -18,36 +24,31 @@ def init_database():
             "description" TEXT
         );
         """)
-
+        
+        # Create the battery_cluster table
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS battery_cabinet (
-            "cabinet_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+        CREATE TABLE IF NOT EXISTS battery_cluster (
+            "cluster_id" INTEGER PRIMARY KEY AUTOINCREMENT,
             "container_id" INTEGER,
             "description" TEXT,
             CONSTRAINT "fk_cabinet_container" FOREIGN KEY ("container_id") REFERENCES "container" ("container_id") ON DELETE NO ACTION ON UPDATE NO ACTION
         );
         """)
 
+        # Create the battery_pack table
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS battery_cluster (
-            "cluster_id" INTEGER PRIMARY KEY AUTOINCREMENT,
-            "cabinet_id" INTEGER,
-            "description" TEXT,
-            CONSTRAINT "fk_cluster_cabinet" FOREIGN KEY ("cabinet_id") REFERENCES "battery_cabinet" ("cabinet_id") ON DELETE NO ACTION ON UPDATE NO ACTION
-        );
-        """)
-
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS battery_cell (
-            "cell_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        CREATE TABLE IF NOT EXISTS battery_pack (
+            "pack_id" INTEGER PRIMARY KEY AUTOINCREMENT,
             "cluster_id" INTEGER,
-            "serial_number" TEXT,
             "description" TEXT,
-            CONSTRAINT "fk_cell_cluster" FOREIGN KEY ("cluster_id") REFERENCES "battery_cluster" ("cluster_id") ON DELETE NO ACTION ON UPDATE NO ACTION
+            "dispersion_rate" REAL,
+            "pack_saftety_rate" REAL,
+            "real_time_id" TEXT,
+            CONSTRAINT "fk_pack_cluster" FOREIGN KEY ("cluster_id") REFERENCES "battery_cluster" ("cluster_id") ON DELETE SET NULL ON UPDATE CASCADE
         );
         """)
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_cell_cluster_id ON battery_cell(cluster_id)")
 
+        # Create the eis_measurement table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS eis_measurement (
             "measurement_id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,18 +61,30 @@ def init_database():
             CONSTRAINT "fk_measurement_cell" FOREIGN KEY ("cell_id") REFERENCES "battery_cell" ("cell_id") ON DELETE NO ACTION ON UPDATE NO ACTION
         );
         """)
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_cell_id_creation_time ON eis_measurement(cell_id, creation_time)")
+        
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_cell_id_creation_time ON eis_measurement(cell_id, real_time_id)")
 
+        # Create the generated_info table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS generated_info (
             "generated_info_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             "measurement_id" INTEGER,
-            "coefficient_of_variation" REAL,
-            "predicted_temperature" REAL,
+            "dispersion_rate" REAL,
+            "temperature" REAL,
             "real_time_id" TEXT,
+            "cell_id" INTEGER,
+            "sei_rate" INTEGER,
+            "dendrites_rate" INTEGER,
+            "electrolyte_rate" INTEGER,
+            "polar_rate" REAL,
+            "conduct_rate" REAL,
             CONSTRAINT "fk_info_measurement" FOREIGN KEY ("measurement_id") REFERENCES "eis_measurement" ("measurement_id") ON DELETE NO ACTION ON UPDATE NO ACTION
         );
         """)
+
+        # Create indexes to optimize search queries
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_measurement_cell ON eis_measurement(cell_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_info_measurement ON generated_info(measurement_id);")
 
         # Re-enable foreign key constraints
         cursor.execute("PRAGMA foreign_keys = ON;")
@@ -85,3 +98,10 @@ def init_database():
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return None, None
+    finally:
+        if 'connection' in locals() and connection:
+            connection.close()
+
+# Example usage
+if __name__ == "__main__":
+    init_database()

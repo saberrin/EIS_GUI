@@ -1,18 +1,19 @@
 from PyQt6.QtCore import QObject, pyqtSignal
-# import smbus2
 import sqlite3
 from datetime import datetime
 import fcntl
 import time
 import threading
+import re
 from smbus2 import SMBus
+from repository import Repository
 
 class I2CReader(QObject):
     new_data_received_UIT = pyqtSignal(int, float, float, float)
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
 
-    def __init__(self, device, bus_number,address):
+    def __init__(self, device, bus_number, address):
         super().__init__()
         self.device = device
         self.bus = bus_number
@@ -24,25 +25,15 @@ class I2CReader(QObject):
         self.temperature = None
         self.voltage = None
         
-        # Initialize SQLite database connection
+        # Initialize SQLite database connection using the updated database
+        self.db_path = "./eis_xjj.db"
         try:
-            self.connection = sqlite3.connect("bms01.db")
+            self.connection = sqlite3.connect(self.db_path)
             self.cursor = self.connection.cursor()
-            self.cursor.execute("""
-                CREATE TABLE IF NOT EXISTS eis_001 (
-                    real_imp REAL,
-                    imag_imp REAL,
-                    frequency REAL,
-                    temperature REAL,
-                    voltage REAL,
-                    real_time_id TEXT
-                )
-            """)
-            self.connection.commit()
             print("SQLite database connection successful")
         except Exception as e:
             print(f"Error connecting to SQLite database: {e}")
-            self.connection = None 
+            self.connection = None
 
     def start_reading(self):
         print("Starting I2C reading...")
@@ -51,7 +42,6 @@ class I2CReader(QObject):
             return
         self.running = True
         self.thread = threading.Thread(target=self.read_data, daemon=True)
-        # self.thread_write = threading.Thread(target=self.write_data, daemon=True)       
         self.thread.start()
         self.new_data_received_check.emit("Starting I2C reading...")
 
@@ -72,12 +62,11 @@ class I2CReader(QObject):
                     print(f"Received line: {line_decoded}")
                     self.data.append(line_decoded)
                     self.parse_and_emit_signals(line_decoded)
-                    self.parse_and_insert_data(line_decoded)
         except IOError as e:
             print(f"Could not open I2C bus: {e}")
             self.new_data_received_check.emit(f"Could not open I2C bus: {e}")
             self.running = False
-    
+
     def read_until_end(self):
         buffer = bytearray()
         I2C_SLAVE = 0x0703
@@ -88,111 +77,91 @@ class I2CReader(QObject):
                     while True:
                         chunk = f.read(self.chunk_size)
                         if not chunk:
-                            print("No more data available from device.")
                             break
-
                         buffer.extend(chunk)
-
-                        while self.line_ending in buffer:
+                        if self.line_ending in buffer:
                             line_end_index = buffer.index(self.line_ending) + len(self.line_ending)
                             line = buffer[:line_end_index]
                             del buffer[:line_end_index]
-                            print("Line received:", line.decode('utf-8').strip())      
-            except IOError as e:
-                # print(f"Error: {e}")
-                time.sleep(0.01)  
-                
+                            return line
+            except IOError:
+                time.sleep(0.01)
 
-    def write_data(self,data_to_send):
+    def write_data(self, data_to_send):
         if isinstance(data_to_send, str):
-            if not (data_to_send.endswith('\n')):
-                data_to_send = data_to_send + "\n"
-            with SMBus(self.bus) as bus:  
-                try:                                                                            
+            if not data_to_send.endswith('\n'):
+                data_to_send += "\n"
+            with SMBus(self.bus) as bus:
+                try:
                     for char in data_to_send:
                         bus.write_byte(self.address, ord(char))
-                        print(f"Sent: 0x{ord(char):X} ('{char}')")
-                        time.sleep(0.1) 
+                        time.sleep(0.1)
                 except Exception as e:
-                        print(f"Error sending data: {e}")
+                    print(f"Error sending data: {e}")
         else:
             print("Input must be a string")
 
     def parse_and_emit_signals(self, line):
+        """
+        Parses the incoming I2C line and emits the appropriate signals.
+        """
         print(f"Parsing line: {line}")
-        if 'QGKJ_DATA_UIT' in line:
-            try:
-                battery_number, voltage, current, temperature = self.parse_uit_data(line)
-                print(f"Emitting UIT signal with: {battery_number}, {voltage}, {current}, {temperature}")
-                self.new_data_received_UIT.emit(battery_number, voltage, current, temperature)
-            except (ValueError, IndexError) as e:
-                print(f"Error parsing UIT data: {line}, Error: {e}")
-        elif 'QGKJ_DATA_SWF' in line:
-            try:
-                battery_number, frequency, real_imp, imag_imp = self.parse_swf_data(line)
-                print(f"Emitting SWF signal with: {battery_number}, {frequency}, {real_imp}, {imag_imp}")
-                self.new_data_received_SWF.emit(battery_number, frequency, real_imp, imag_imp)
-            except (ValueError, IndexError) as e:
-                print(f"Error parsing SWF data: {line}, Error: {e}")
-        elif 'RcalVolt' in line:
-            self.new_data_received_check.emit(line)
 
-    def parse_uit_data(self, line):
-        parts = line.split('_')
-        if len(parts) >= 4: 
-            battery_number = int(parts[3].split('@')[1])
-            voltage = float(parts[4].split('U')[1])
-            current = float(parts[5].split('I')[1])
-            temperature = float(parts[6].split('T')[1].split('_end')[0])
-            self.voltage = voltage
-            return battery_number, voltage, current, temperature
-        raise ValueError("Invalid UIT data format")
+        # Extract the unique cell ID from the line (e.g., 0x28)
+        board_id_match = re.match(r'(\w+)_EIS_data_packet_start', line)
+        if not board_id_match:
+            print("Invalid data packet format")
+            return
+        cell_id = int(board_id_match.group(1), 16)
 
-    def parse_swf_data(self, line):
-        parts = line.split('_')
-        if len(parts) >= 4:
-            battery_number = int(parts[3].split('@')[1])
-            freq = float(parts[4].split('Freq')[1].split('rea')[0])
-            real_imp = float(parts[4].split('rea')[1].split('image')[0])
-            imag_imp = float(parts[4].split('image')[1].split('_end')[0])
-            return battery_number, freq, real_imp, imag_imp
-        raise ValueError("Invalid SWF data format")
-
-    def parse_and_insert_data(self, line):
-        if 'QGKJ_DATA_UIT' in line:
-            if '_T' in line and '_end' in line:
-                self.temperature = float(line.split('_T')[1].split('_end')[0])
-            if 'U' in line and '_end' in line:
-                self.voltage = float(line.split('1_U')[1].split('_I')[0])
-
-        elif 'QGKJ_DATA_SWF' in line and self.temperature is not None:
-            try:
-                frequency = float(line.split('Freq')[1].split('rea')[0])
-                real_imp = float(line.split('rea')[1].split('image')[0])
-                imag_imp = float(line.split('image')[1].split('_end')[0])
-                real_time_id = datetime.now()
-
-                self.insert_data(real_imp, imag_imp, frequency, self.temperature, real_time_id, self.voltage)
-            except (ValueError, IndexError) as e:
-                print(f"Error parsing SWF data: {line}, Error: {e}")
-
-    def insert_data(self, real_imp, imag_imp, frequency, temperature, real_time_id, voltage):
-        if self.connection is None:
-            print("Database connection is not available. Data insertion aborted.")
+        # Extract voltage
+        voltage_match = re.search(r'VOLTAGE_([\d.]+)', line)
+        voltage = float(voltage_match.group(1)) if voltage_match else None
+        if voltage is None:
+            print("Voltage not found in the data packet.")
             return
 
-        try:
-            self.cursor.execute("""
-                INSERT INTO eis_001 (real_imp, imag_imp, frequency, temperature, voltage, real_time_id)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (real_imp, imag_imp, frequency, temperature, voltage, real_time_id))
-            self.connection.commit()
-            print("Data inserted successfully")
-        except Exception as e:
-            print(f"Error inserting data: {e}")
-            self.connection.rollback()
+        # Extract data points (R, I, F)
+        data_pattern = r'R(\d+),([-\d.]+),I\1,([-\d.]+),F\1,([\d.]+)'
+        data_points = re.findall(data_pattern, line)
+
+        if not data_points:
+            print("No valid data points found in the packet.")
+            return
+
+        # Insert data into the database
+        self.insert_measurements(cell_id, data_points, voltage)
+
+    def insert_measurements(self, cell_id, data_points, voltage):
+        """
+        Inserts parsed data into the database using the Repository class.
+        """
+        repo = Repository()
+        real_time_id = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        measurements = []
+        for dp in data_points:
+            real_impedance = float(dp[1])
+            imag_impedance = float(dp[2])
+            frequency = float(dp[3])
+            
+            # Create an EisMeasurement object
+            measurement = {
+                "cell_id": cell_id,
+                "real_time_id": real_time_id,
+                "frequency": frequency,
+                "real_impedance": real_impedance,
+                "imag_impedance": imag_impedance,
+                "voltage": voltage
+            }
+            measurements.append(measurement)
+
+        # Insert all measurements
+        repo.insert_measurements(measurements)
+        print(f"Inserted {len(measurements)} measurements for cell {cell_id}.")
 
     def close(self):
         if self.connection:
             self.cursor.close()
-            self.connection.close()     
+            self.connection.close()
+            print("Database connection closed.")

@@ -1,1 +1,0 @@
-DB_PATH = "./database/eis_xjj.db"
