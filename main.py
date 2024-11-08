@@ -66,33 +66,33 @@ class MainWindow(QMainWindow):
         
         
     # Example usage of the cursor to fetch the recently inserted IDs
-        if self.cursor:
-            # Fetch the latest container ID
-            self.cursor.execute("SELECT container_id FROM container ORDER BY container_id DESC LIMIT 1")
-            container_id = self.cursor.fetchone()
+        # if self.cursor:
+        #     # Fetch the latest container ID
+        #     self.cursor.execute("SELECT container_id FROM container ORDER BY container_id DESC LIMIT 1")
+        #     container_id = self.cursor.fetchone()
             
-            if container_id is not None:
-                print("Latest container_id:", container_id[0])
+        #     if container_id is not None:
+        #         print("Latest container_id:", container_id[0])
                 
-                # Fetch the latest cabinet ID related to the container
-                self.cursor.execute("SELECT cabinet_id FROM battery_cabinet WHERE container_id = ? ORDER BY cabinet_id DESC LIMIT 1", (container_id[0],))
-                cabinet_id = self.cursor.fetchone()
+        #         # Fetch the latest cabinet ID related to the container
+        #         self.cursor.execute("SELECT cabinet_id FROM battery_cabinet WHERE container_id = ? ORDER BY cabinet_id DESC LIMIT 1", (container_id[0],))
+        #         cabinet_id = self.cursor.fetchone()
                 
-                if cabinet_id is not None:
-                    print("Latest cabinet_id:", cabinet_id[0])
+        #         if cabinet_id is not None:
+        #             print("Latest cabinet_id:", cabinet_id[0])
                     
-                    # Fetch the latest cluster ID related to the cabinet
-                    self.cursor.execute("SELECT cluster_id FROM battery_cluster WHERE cabinet_id = ? ORDER BY cluster_id DESC LIMIT 1", (cabinet_id[0],))
-                    cluster_id = self.cursor.fetchone()
+        #             # Fetch the latest cluster ID related to the cabinet
+        #             self.cursor.execute("SELECT cluster_id FROM battery_cluster WHERE cabinet_id = ? ORDER BY cluster_id DESC LIMIT 1", (cabinet_id[0],))
+        #             cluster_id = self.cursor.fetchone()
                     
-                    if cluster_id is not None:
-                        print("Latest cluster_id:", cluster_id[0])
-                    else:
-                        print("No cluster_id found for the latest cabinet.")
-                else:
-                    print("No cabinet_id found for the latest container.")
-            else:
-                print("No container_id found in the container table.")
+        #             if cluster_id is not None:
+        #                 print("Latest cluster_id:", cluster_id[0])
+        #             else:
+        #                 print("No cluster_id found for the latest cabinet.")
+        #         else:
+        #             print("No cabinet_id found for the latest container.")
+        #     else:
+        #         print("No container_id found in the container table.")
 
     def closeEvent(self, event):
         # Close the database connection on exit
@@ -107,22 +107,22 @@ class MainWindow(QMainWindow):
     def identifier_setting(self,container_number,cabinet_number,cluster_number):
         self.ui.label_14.setText(f"集装箱-{container_number}-电池柜-{cabinet_number}-电池包-{cluster_number}")
 
-        # Insert the values into the database
-        try:
-            # Insert into container table
-            self.cursor.execute("INSERT OR IGNORE INTO container (container_id) VALUES (?)", (container_number,))
+        # # Insert the values into the database
+        # try:
+        #     # Insert into container table
+        #     self.cursor.execute("INSERT OR IGNORE INTO container (container_id) VALUES (?)", (container_number,))
 
-            # Insert into battery_cabinet table
-            self.cursor.execute("INSERT OR IGNORE INTO battery_cabinet (cabinet_id, container_id) VALUES (?, ?)", (cabinet_number, container_number))
+        #     # Insert into battery_cabinet table
+        #     self.cursor.execute("INSERT OR IGNORE INTO battery_cabinet (cabinet_id, container_id) VALUES (?, ?)", (cabinet_number, container_number))
 
-            # Insert into battery_cluster table
-            self.cursor.execute("INSERT OR IGNORE INTO battery_cluster (cluster_id, cabinet_id) VALUES (?, ?)", (cluster_number, cabinet_number))
+        #     # Insert into battery_cluster table
+        #     self.cursor.execute("INSERT OR IGNORE INTO battery_cluster (cluster_id, cabinet_id) VALUES (?, ?)", (cluster_number, cabinet_number))
 
-            # Commit the changes to save the data
-            self.conn.commit()
-            print("Data inserted successfully.")
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
+        #     # Commit the changes to save the data
+        #     self.conn.commit()
+        #     print("Data inserted successfully.")
+        # except sqlite3.Error as e:
+        #     print(f"Database error: {e}")
 
 if __name__ == "__main__":
     

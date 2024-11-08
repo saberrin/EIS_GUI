@@ -6,6 +6,7 @@ import fcntl
 import time
 import threading
 from smbus2 import SMBus
+import re
 
 class I2CReader(QObject):
     new_data_received_UIT = pyqtSignal(int, float, float, float)
@@ -69,10 +70,22 @@ class I2CReader(QObject):
                 line = self.read_until_end()
                 if line:
                     line_decoded = line.decode('utf-8', errors='replace').strip()
+
+                # 检查数据地址是否正确
+                    if not line_decoded.startswith(self.address):
+                        match = re.search(r"0x[0-9A-Fa-f]+_Received I2C_Command_(.+?)_end", line_decoded)
+                        if match:
+                            command_to_resend = match.group(1)
+                            print(f"Incorrect address in line: {line_decoded}. Resending command: {command_to_resend}")
+                            self.write_data(f"{command_to_resend}\n")  
+                        else:
+                            print(f"Format error in line: {line_decoded}")
+                        continue  
+
                     print(f"Received line: {line_decoded}")
                     self.data.append(line_decoded)
-                    self.parse_and_emit_signals(line_decoded)
-                    self.parse_and_insert_data(line_decoded)
+                    # self.parse_and_emit_signals(line_decoded)
+                    # self.parse_and_insert_data(line_decoded)
         except IOError as e:
             print(f"Could not open I2C bus: {e}")
             self.new_data_received_check.emit(f"Could not open I2C bus: {e}")
@@ -93,11 +106,12 @@ class I2CReader(QObject):
 
                         buffer.extend(chunk)
 
-                        while self.line_ending in buffer:
+                        if self.line_ending in buffer:
                             line_end_index = buffer.index(self.line_ending) + len(self.line_ending)
                             line = buffer[:line_end_index]
                             del buffer[:line_end_index]
-                            print("Line received:", line.decode('utf-8').strip())      
+                            # print("Line received:", line.decode('utf-8').strip()) 
+                            return line     
             except IOError as e:
                 # print(f"Error: {e}")
                 time.sleep(0.01)  
