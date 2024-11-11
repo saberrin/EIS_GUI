@@ -65,37 +65,16 @@ class MainWindow(QMainWindow):
         self.reader.start_reading()
         
         
-   
     def closeEvent(self, event):
         # Close the database connection on exit
         if self.conn:
             self.conn.close()
             print("Database connection closed.")
         event.accept()
-        
-        # self.ui = uic.loadUi("./ui/ui_main.ui", self)
-        
-
-        
+              
     def identifier_setting(self,container_number,cabinet_number,cluster_number):
         self.ui.label_14.setText(f"集装箱-{container_number}-电池柜-{cabinet_number}-电池包-{cluster_number}")
 
-        # # Insert the values into the database
-        # try:
-        #     # Insert into container table
-        #     self.cursor.execute("INSERT OR IGNORE INTO container (container_id) VALUES (?)", (container_number,))
-
-        #     # Insert into battery_cabinet table
-        #     self.cursor.execute("INSERT OR IGNORE INTO battery_cabinet (cabinet_id, container_id) VALUES (?, ?)", (cabinet_number, container_number))
-
-        #     # Insert into battery_cluster table
-        #     self.cursor.execute("INSERT OR IGNORE INTO battery_cluster (cluster_id, cabinet_id) VALUES (?, ?)", (cluster_number, cabinet_number))
-
-        #     # Commit the changes to save the data
-        #     self.conn.commit()
-        #     print("Data inserted successfully.")
-        # except sqlite3.Error as e:
-        #     print(f"Database error: {e}")
 
 if __name__ == "__main__":
     

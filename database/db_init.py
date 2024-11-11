@@ -1,9 +1,7 @@
 
 import sqlite3
-from config import DB_PATH  
+from database.config import DB_PATH  
 import os
-
-# DB_PATH = "./eis_xjj.db"  #本地调试用路径
 
 def init_database():
     try:
