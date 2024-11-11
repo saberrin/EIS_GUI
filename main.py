@@ -65,14 +65,41 @@ class MainWindow(QMainWindow):
         self.reader.start_reading()
         
         
-   
+    # Example usage of the cursor to fetch the recently inserted IDs
+        # if self.cursor:
+        #     # Fetch the latest container ID
+        #     self.cursor.execute("SELECT container_id FROM container ORDER BY container_id DESC LIMIT 1")
+        #     container_id = self.cursor.fetchone()
+            
+        #     if container_id is not None:
+        #         print("Latest container_id:", container_id[0])
+                
+        #         # Fetch the latest cabinet ID related to the container
+        #         self.cursor.execute("SELECT cabinet_id FROM battery_cabinet WHERE container_id = ? ORDER BY cabinet_id DESC LIMIT 1", (container_id[0],))
+        #         cabinet_id = self.cursor.fetchone()
+                
+        #         if cabinet_id is not None:
+        #             print("Latest cabinet_id:", cabinet_id[0])
+                    
+        #             # Fetch the latest cluster ID related to the cabinet
+        #             self.cursor.execute("SELECT cluster_id FROM battery_cluster WHERE cabinet_id = ? ORDER BY cluster_id DESC LIMIT 1", (cabinet_id[0],))
+        #             cluster_id = self.cursor.fetchone()
+                    
+        #             if cluster_id is not None:
+        #                 print("Latest cluster_id:", cluster_id[0])
+        #             else:
+        #                 print("No cluster_id found for the latest cabinet.")
+        #         else:
+        #             print("No cabinet_id found for the latest container.")
+        #     else:
+        #         print("No container_id found in the container table.")
+
     def closeEvent(self, event):
         # Close the database connection on exit
         if self.conn:
             self.conn.close()
             print("Database connection closed.")
         event.accept()
-        
         # self.ui = uic.loadUi("./ui/ui_main.ui", self)
         
 

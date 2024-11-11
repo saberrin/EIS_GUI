@@ -4,7 +4,7 @@ from datetime import datetime
 @dataclass
 class EisMeasurement:
     cell_id: int
-    real_time_id: datetime
+    creation_time: datetime
     frequency: float
     real_impedance: float
     imag_impedance: float
