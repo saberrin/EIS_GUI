@@ -6,7 +6,11 @@ import time
 import threading
 import re
 from smbus2 import SMBus
-from repository import Repository
+from typing import List, Dict
+from database.repository import Repository
+from database.entity import EisMeasurement
+
+
 
 class I2CReader(QObject):
     new_data_received_UIT = pyqtSignal(int, float, float, float)
@@ -24,6 +28,7 @@ class I2CReader(QObject):
         self.data = []
         self.temperature = None
         self.voltage = None
+        self.repo = Repository()
         
         # Initialize SQLite database connection using the updated database
         self.db_path = "./eis_xjj.db"
@@ -61,7 +66,7 @@ class I2CReader(QObject):
                     line_decoded = line.decode('utf-8', errors='replace').strip()
                     print(f"Received line: {line_decoded}")
                     self.data.append(line_decoded)
-                    self.parse_and_emit_signals(line_decoded)
+                    self.parse_and_insert_data(line_decoded)
         except IOError as e:
             print(f"Could not open I2C bus: {e}")
             self.new_data_received_check.emit(f"Could not open I2C bus: {e}")
@@ -101,63 +106,68 @@ class I2CReader(QObject):
         else:
             print("Input must be a string")
 
-    def parse_and_emit_signals(self, line):
+    def parse_and_insert_data(self, line: str):
         """
-        Parses the incoming I2C line and emits the appropriate signals.
+        Parses the incoming data line, creates EisMeasurement objects, and inserts them into the database.
         """
-        print(f"Parsing line: {line}")
+        if "EIS_data_packet_start" in line:
+            try:
+                # Extract the voltage value
+                voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
+                
+                # Extract data points
+                data_points = self.extract_data_points(line)
+                
+                # Cell ID (unique identifier for your device, like 0x28)
+                cell_id = int(line.split('_')[0], 16)
 
-        # Extract the unique cell ID from the line (e.g., 0x28)
-        board_id_match = re.match(r'(\w+)_EIS_data_packet_start', line)
-        if not board_id_match:
-            print("Invalid data packet format")
-            return
-        cell_id = int(board_id_match.group(1), 16)
+                # Insert the parsed measurements into the database
+                self.insert_measurements(cell_id, data_points, voltage)
 
-        # Extract voltage
-        voltage_match = re.search(r'VOLTAGE_([\d.]+)', line)
-        voltage = float(voltage_match.group(1)) if voltage_match else None
-        if voltage is None:
-            print("Voltage not found in the data packet.")
-            return
+            except (ValueError, IndexError) as e:
+                print(f"Error parsing data: {line}, Error: {e}")
 
-        # Extract data points (R, I, F)
-        data_pattern = r'R(\d+),([-\d.]+),I\1,([-\d.]+),F\1,([\d.]+)'
-        data_points = re.findall(data_pattern, line)
-
-        if not data_points:
-            print("No valid data points found in the packet.")
-            return
-
-        # Insert data into the database
-        self.insert_measurements(cell_id, data_points, voltage)
-
-    def insert_measurements(self, cell_id, data_points, voltage):
+    def extract_data_points(self, line: str) -> List[tuple]:
         """
-        Inserts parsed data into the database using the Repository class.
+        Extracts R, I, and F data points from the line and returns a list of tuples.
         """
-        repo = Repository()
+        data_points = []
+        sections = line.split(";")
+        
+        for section in sections:
+            if section.startswith("R") and "I" in section and "F" in section:
+                try:
+                    real_imp = float(section.split(",")[1])
+                    imag_imp = float(section.split(",")[3])
+                    frequency = float(section.split(",")[5])
+                    data_points.append((real_imp, imag_imp, frequency))
+                except (ValueError, IndexError):
+                    continue
+        
+        return data_points
+
+    def insert_measurements(self, cell_id: int, data_points: List[tuple], voltage: float):
+        """
+        Converts parsed data into EisMeasurement objects and inserts them into the database.
+        """
         real_time_id = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
         measurements = []
+
+        # Create EisMeasurement objects
         for dp in data_points:
-            real_impedance = float(dp[1])
-            imag_impedance = float(dp[2])
-            frequency = float(dp[3])
-            
-            # Create an EisMeasurement object
-            measurement = {
-                "cell_id": cell_id,
-                "real_time_id": real_time_id,
-                "frequency": frequency,
-                "real_impedance": real_impedance,
-                "imag_impedance": imag_impedance,
-                "voltage": voltage
-            }
+            real_impedance, imag_impedance, frequency = dp
+            measurement = EisMeasurement(
+                cell_id=cell_id,
+                real_time_id=real_time_id,
+                frequency=frequency,
+                real_impedance=real_impedance,
+                imag_impedance=imag_impedance,
+                voltage=voltage
+            )
             measurements.append(measurement)
 
-        # Insert all measurements
-        repo.insert_measurements(measurements)
+        # Insert into database using Repository
+        self.repo.insert_measurements(measurements)
         print(f"Inserted {len(measurements)} measurements for cell {cell_id}.")
 
     def close(self):

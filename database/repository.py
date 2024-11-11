@@ -1,36 +1,44 @@
 import sqlite3
 from typing import List, Dict
-from entity import EisMeasurement
+from database.entity import EisMeasurement
 from datetime import datetime
-# from config import DB_PATH
+from config import DB_PATH
 
-DB_PATH = "./eis_xjj.db"  #本地调试用路径for bs
+# DB_PATH = "./eis_xjj.db"  #本地调试用路径for bs
+
 class Repository:
     def __init__(self):
-        self.connection = sqlite3.connect(DB_PATH)
+        # self.connection = sqlite3.connect(DB_PATH)
+        self.connection = sqlite3.connect(DB_PATH, check_same_thread=False)
+        self.cursor = self.connection.cursor()
 
-    def __del__(self):
-        if self.connection:
-            self.connection.close()
+    # def __del__(self):
+    #     if self.connection:
+    #         self.connection.close()
 
     def insert_measurements(self, measurements: List[EisMeasurement]):
         """
-        Inserts a list of EIS measurements into the database.
+        Insert multiple measurements into the database.
         """
-        measurements = [
-            (m.cell_id, m.real_time_id, m.frequency, m.real_impedance, m.imag_impedance, m.voltage)
-            for m in measurements
-        ]
         try:
-            cursor = self.connection.cursor()
-            cursor.executemany("""
+            # Confirm that the table exists
+            self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='eis_measurement'")
+            if not self.cursor.fetchone():
+                print("Table 'eis_measurement' does not exist.")
+                return
+        
+            self.cursor.executemany("""
                 INSERT INTO eis_measurement (cell_id, real_time_id, frequency, real_impedance, imag_impedance, voltage)
-                VALUES (?, ?, ?, ?, ?, ?);
-            """, measurements)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, [
+                (m.cell_id, m.real_time_id, m.frequency, m.real_impedance, m.imag_impedance, m.voltage)
+                for m in measurements
+            ])
             self.connection.commit()
-        finally:
-            if cursor:
-                cursor.close()
+            print("Measurements inserted successfully.")
+        except Exception as e:
+            print(f"Error inserting measurements: {e}")
+            self.connection.rollback()
 
     def insert_generated_info(self, generated_info_list: List[Dict]):
         """
