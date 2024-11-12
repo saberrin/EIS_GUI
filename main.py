@@ -37,10 +37,10 @@ class MainWindow(QMainWindow):
 
         self.init_batterycell()
         self.ui.pushButton.clicked.connect(lambda: self.switchPage(0))
-
+        self.reader = None
         self.ui.pushButton_3.clicked.connect(lambda: self.start_loop())
-
-        
+        self.ui.pushButton_4.clicked.connect(lambda:self.stop_loop())
+        self.ui.pushButton_4.setEnabled(False)
 
     def init_batterycell(self):
         self.ui.batteryList = []
@@ -57,26 +57,29 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(index)
     
     def start_loop(self):
+        self.ui.pushButton_3.setEnabled(False)
+        self.ui.pushButton_4.setEnabled(True)
+
         self.settingId = initSetting()
         self.settingId.identifier.connect(self.identifier_setting)
         self.settingId.exec()
+        address_list = [0x26,0x27,0x28,0x29]
         
-        self.reader = I2CReader(device='/dev/i2c-11', bus_number=11,address=0x28)
-        self.reader.start_reading()
-        
-        
-   
+        for address in (address_list):
+            self.reader = I2CReader(device='/dev/i2c-11', bus_number=11)
+            self.reader.start_reading(address)
+
+    def stop_loop(self):
+        self.ui.pushButton_3.setEnabled(True)
+        self.ui.pushButton_4.setEnabled(False)
+        if self.reader is not None:
+            self.reader.close()
+         
     def closeEvent(self, event):
-        # Close the database connection on exit
         if self.conn:
             self.conn.close()
             print("Database connection closed.")
-        event.accept()
-        
-        # self.ui = uic.loadUi("./ui/ui_main.ui", self)
-        
-
-        
+      
     def identifier_setting(self,container_number,cabinet_number,cluster_number):
         self.ui.label_14.setText(f"集装箱-{container_number}-电池柜-{cabinet_number}-电池包-{cluster_number}")
 
