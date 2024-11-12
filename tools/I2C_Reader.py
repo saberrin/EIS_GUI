@@ -68,15 +68,15 @@ class I2CReader(QObject):
                     line_decoded = line.decode('utf-8', errors='replace').strip()
 
                 # 检查数据地址是否正确
-                    if not line_decoded.startswith(self.address):
-                        match = re.search(r"0x[0-9A-Fa-f]+_Received I2C_Command_(.+?)_end", line_decoded)
-                        if match:
-                            command_to_resend = match.group(1)
-                            print(f"Incorrect address in line: {line_decoded}. Resending command: {command_to_resend}")
-                            self.write_data(f"{command_to_resend}\n")  
-                        else:
-                            print(f"Format error in line: {line_decoded}")
-                        continue  
+                    # if not line_decoded.startswith(self.address):
+                    #     match = re.search(r"0x[0-9A-Fa-f]+_Received I2C_Command_(.+?)_end", line_decoded)
+                    #     if match:
+                    #         command_to_resend = match.group(1)
+                    #         print(f"Incorrect address in line: {line_decoded}. Resending command: {command_to_resend}")
+                    #         self.write_data(f"{command_to_resend}\n")  
+                    #     else:
+                    #         print(f"Format error in line: {line_decoded}")
+                    #     continue  
 
                     print(f"Received line: {line_decoded}")
                     self.data.append(line_decoded)
