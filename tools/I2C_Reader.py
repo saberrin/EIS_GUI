@@ -10,20 +10,19 @@ from typing import List, Dict
 from database.repository import Repository
 from database.entity import EisMeasurement
 
-
-
 class I2CReader(QObject):
     new_data_received_UIT = pyqtSignal(int, float, float, float)
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
 
-    def __init__(self, device, bus_number, address):
+    def __init__(self, device, bus_number,timeout_duration=10):
         super().__init__()
         self.device = device
         self.bus = bus_number
-        self.address = address
+        self.address = None
         self.chunk_size = 1
         self.line_ending = b'_end'
+        self.timeout_duration = timeout_duration
         self.running = False
         self.data = []
         self.temperature = None
@@ -40,13 +39,14 @@ class I2CReader(QObject):
             print(f"Error connecting to SQLite database: {e}")
             self.connection = None
 
-    def start_reading(self):
+    def start_reading(self,address):
+        self.address = address
         print("Starting I2C reading...")
         if self.connection is None:
             print("Cannot start reading as database connection is not established.")
             return
         self.running = True
-        self.thread = threading.Thread(target=self.read_data, daemon=True)
+        self.thread = threading.Thread(target=self.read_data, daemon=True) 
         self.thread.start()
         self.new_data_received_check.emit("Starting I2C reading...")
 
@@ -54,6 +54,8 @@ class I2CReader(QObject):
         print("Stopping I2C reading...")
         self.new_data_received_check.emit("Stopping I2C reading...")
         self.running = False
+        # if hasattr(self, 'thread') and self.thread.is_alive():
+        #     self.thread.join()  
 
     def read_data(self):
         print("Attempting to open I2C bus...")
@@ -86,8 +88,9 @@ class I2CReader(QObject):
 
     def read_until_end(self):
         buffer = bytearray()
-        I2C_SLAVE = 0x0703
-        while True:
+        I2C_SLAVE = 0x0703 
+        start_time = time.time()
+        while self.running:
             try:
                 with open(self.device, 'rb', buffering=0) as f:
                     fcntl.ioctl(f, I2C_SLAVE, self.address)
@@ -101,7 +104,12 @@ class I2CReader(QObject):
                             line = buffer[:line_end_index]
                             del buffer[:line_end_index]
                             return line
-            except IOError:
+            except IOError as e:
+                if time.time() - start_time > self.timeout_duration:
+                    print(f"Failed to open I2C bus after {self.timeout_duration} seconds. Stopping read attempts.")
+                    self.new_data_received_check.emit(f"Failed to open I2C bus after {self.timeout_duration} seconds.")
+                    self.running = False
+                    break
                 time.sleep(0.01)
 
     def write_data(self, data_to_send):
@@ -112,7 +120,7 @@ class I2CReader(QObject):
                 try:
                     for char in data_to_send:
                         bus.write_byte(self.address, ord(char))
-                        time.sleep(0.1)
+                        time.sleep(0.01)
                 except Exception as e:
                     print(f"Error sending data: {e}")
         else:
@@ -183,6 +191,7 @@ class I2CReader(QObject):
         print(f"Inserted {len(measurements)} measurements for cell {cell_id}.")
 
     def close(self):
+        self.stop_reading()
         if self.connection:
             self.cursor.close()
             self.connection.close()
