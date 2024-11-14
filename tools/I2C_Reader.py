@@ -30,6 +30,20 @@ class I2CReader(QObject):
         self.repo = Repository()
         self.confirmed_addresses = []
         self.failed_addresses = []
+
+        # User input attributes for container, cluster, and pack
+        self.container_number = None
+        self.cluster_number = None
+        self.pack_number = None
+
+    def set_user_selection(self, container_number, cluster_number, pack_number):
+        """Sets the container, cluster, and pack based on user input."""
+        self.container_number = container_number
+        self.cluster_number = cluster_number
+        self.pack_number = pack_number
+        print(f"Identifiers set: Container {container_number}, Cluster {cluster_number}, Pack {pack_number}")
+
+
         # Initialize SQLite database connection using the updated database
         self.db_path = "./eis_xjj.db"
         try:
@@ -190,6 +204,11 @@ class I2CReader(QObject):
         """
         Parses the incoming data line, creates EisMeasurement objects, and inserts them into the database.
         """
+
+        if self.container_number is None or self.cluster_number is None or self.pack_number is None:
+            print("Error: Container, Cluster, or Pack not selected.")
+            return
+    
         if "EIS_data_packet_start" in line:
             try:
                 # Extract the voltage value
@@ -227,9 +246,6 @@ class I2CReader(QObject):
         return data_points
 
     def insert_measurements(self, cell_id: int, data_points: List[tuple], voltage: float):
-        """
-        Converts parsed data into EisMeasurement objects and inserts them into the database.
-        """
         real_time_id = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         measurements = []
 
@@ -242,13 +258,21 @@ class I2CReader(QObject):
                 frequency=frequency,
                 real_impedance=real_impedance,
                 imag_impedance=imag_impedance,
-                voltage=voltage
+                voltage=voltage,
+                container_number=self.container_number,
+                cluster_number=self.cluster_number,
+                pack_number=self.pack_number
             )
             measurements.append(measurement)
 
         # Insert into database using Repository
-        self.repo.insert_measurements(measurements)
-        print(f"Inserted {len(measurements)} measurements for cell {cell_id}.")
+        try:
+            print(f"Inserting {len(measurements)} measurements for cell {cell_id}.")
+            self.repo.insert_measurements(measurements)
+            print("Data inserted successfully into eis_measurement.")
+        except Exception as e:
+            print(f"Error during data insertion: {e}") 
+
 
     def close(self):
         self.stop_reading()

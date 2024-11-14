@@ -11,6 +11,8 @@ class Repository:
         # self.connection = sqlite3.connect(DB_PATH, check_same_thread=False)
         # self.cursor = self.connection.cursor()
 
+
+
     def insert_measurements(self, measurements: List[EisMeasurement]):
         """
         Insert multiple measurements into the database.
@@ -25,17 +27,20 @@ class Repository:
                 return
         
             cursor.executemany("""
-                INSERT INTO eis_measurement (cell_id, real_time_id, frequency, real_impedance, imag_impedance, voltage)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, [
-                (m.cell_id, m.real_time_id, m.frequency, m.real_impedance, m.imag_impedance, m.voltage)
-                for m in measurements
-            ])
+            INSERT INTO eis_measurement (cell_id, real_time_id, frequency, real_impedance, imag_impedance, voltage, 
+                                         container_number, cluster_number, pack_number)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, [
+            (m.cell_id, m.real_time_id, m.frequency, m.real_impedance, m.imag_impedance, m.voltage,
+             m.container_number, m.cluster_number, m.pack_number)
+            for m in measurements
+        ])
             connection.commit()
             print("Measurements inserted successfully.")
         except Exception as e:
             print(f"Error inserting measurements: {e}")
             connection.rollback()
+
 
     def insert_generated_info(self, generated_info_list: List[Dict]):
         """

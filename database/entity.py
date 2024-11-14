@@ -9,3 +9,6 @@ class EisMeasurement:
     real_impedance: float
     imag_impedance: float
     voltage: float
+    container_number: int
+    cluster_number: int
+    pack_number: int

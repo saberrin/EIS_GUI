@@ -46,7 +46,7 @@ def init_database():
         );
         """)
 
-        # Create the eis_measurement table
+        # Create the eis_measurement table with the corrected syntax
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS eis_measurement (
             "measurement_id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,6 +56,9 @@ def init_database():
             "real_impedance" REAL,
             "imag_impedance" REAL,
             "voltage" REAL,
+            "container_number" INTEGER,
+            "cluster_number" INTEGER,
+            "pack_number" INTEGER,
             CONSTRAINT "fk_measurement_cell" FOREIGN KEY ("cell_id") REFERENCES "battery_cell" ("cell_id") ON DELETE NO ACTION ON UPDATE NO ACTION
         );
         """)

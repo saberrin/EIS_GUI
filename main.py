@@ -26,21 +26,30 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        
+        # Initialize database
         self.conn, self.cursor = init_database()
-        UIFunction.constantFunction(self) 
+        UIFunction.constantFunction(self)
         UIFunction.maximize_restore(self)
         
-        
-        #菜单栏
-        self.menu = MenuWidget() 
+        # Initialize menu and layout
+        self.menu = MenuWidget()
         self.ui.horizontalLayout_21.addWidget(self.menu)
 
-        self.init_batterycell()
+        # Setup buttons and signal connections
         self.ui.pushButton.clicked.connect(lambda: self.switchPage(0))
-        self.reader = None
-        self.ui.pushButton_3.clicked.connect(lambda: self.start_loop())
-        self.ui.pushButton_4.clicked.connect(lambda:self.stop_loop())
+        self.ui.pushButton_3.clicked.connect(self.start_loop)
+        self.ui.pushButton_4.clicked.connect(self.stop_loop)
         self.ui.pushButton_4.setEnabled(False)
+
+        # Delay reader initialization until identifiers are set
+        self.reader = None
+        self.container_number = None
+        self.cluster_number = None
+        self.pack_number = None
+
+        # Initialize battery cell display
+        self.init_batterycell()
 
     def init_batterycell(self):
         self.ui.batteryList = []
@@ -48,51 +57,63 @@ class MainWindow(QMainWindow):
             for col in range(13):
                 label = ImageClickedLabel(f"Label {row+1},{col+1}", self)
                 self.ui.batteryList.append(label)
-                self.ui.gridLayout.addWidget(label, row, col)  # 添加到布局中
+                self.ui.gridLayout.addWidget(label, row, col)
         for i in range(52):
             self.ui.batteryList[i].clicked.connect(lambda: self.switchPage(1))
 
     def switchPage(self, index):
-        print(f"clicked by{index}")
+        print(f"Switching to page {index}")
         self.ui.stackedWidget.setCurrentIndex(index)
     
     def start_loop(self):
-        self.ui.pushButton_3.setEnabled(False)
-        self.ui.pushButton_4.setEnabled(True)
-
+        # Ensure identifiers are set before reading starts
         self.settingId = initSetting()
         self.settingId.identifier.connect(self.identifier_setting)
         self.settingId.exec()
 
+        # Check if identifiers are set
+        if not all([self.container_number, self.cluster_number, self.pack_number]):
+            print("Error: Please set container, cluster, and pack identifiers before starting.")
+            self.ui.pushButton_3.setEnabled(True)
+            return
+
+        # Load configuration and initialize I2C reader
         with open("config.json", "r") as config_file:
             config = json.load(config_file)
         
-        bus_number = config.get("bus_number")
+        bus_number = config.get("bus_number", 1)
         address_list = [int(address, 16) for address in config.get("address_list", [])]
+
+        # Initialize I2C Reader with identifiers and configuration
         self.reader = I2CReader(bus_number=bus_number)
-        # self.menu.get_reader(self.reader)
-        self.reader.start_reading(address_list)
+        self.reader.set_user_selection(self.container_number, self.cluster_number, self.pack_number)
         
+        # Start I2C reading
+        self.ui.pushButton_3.setEnabled(False)
+        self.ui.pushButton_4.setEnabled(True)
+        self.reader.start_reading(address_list)
 
     def stop_loop(self):
+        if self.reader:
+            self.reader.close()
         self.ui.pushButton_3.setEnabled(True)
         self.ui.pushButton_4.setEnabled(False)
-        if self.reader is not None:
-            self.reader.close()
-         
+
     def closeEvent(self, event):
         if self.conn:
             self.conn.close()
             print("Database connection closed.")
       
-    def identifier_setting(self,container_number,cabinet_number,cluster_number):
-        self.ui.label_14.setText(f"集装箱-{container_number}-电池柜-{cabinet_number}-电池包-{cluster_number}")
-
+    def identifier_setting(self, container_number, cluster_number, pack_number):
+        # Set identifiers and update display
+        self.container_number = container_number
+        self.cluster_number = cluster_number
+        self.pack_number = pack_number
+        self.ui.label_14.setText(f"Container {container_number} - Cluster {cluster_number} - Pack {pack_number}")
+        print(f"Identifiers set: Container {container_number}, Cluster {cluster_number}, Pack {pack_number}")
 
 if __name__ == "__main__":
-    
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
-
