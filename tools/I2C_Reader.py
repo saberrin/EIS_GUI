@@ -15,7 +15,7 @@ class I2CReader(QObject):
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
 
-    def __init__(self, bus_number,timeout_duration=10):
+    def __init__(self, bus_number,timeout_duration=1):
         super().__init__()
         self.device = "/dev/i2c-" + str(bus_number)
         self.bus = bus_number
@@ -40,22 +40,11 @@ class I2CReader(QObject):
             print(f"Error connecting to SQLite database: {e}")
             self.connection = None
 
-    # def start_reading(self,address):
-    #     self.address = address
-    #     print("Starting I2C reading...")
-    #     if self.connection is None:
-    #         print("Cannot start reading as database connection is not established.")
-    #         return
-    #     self.running = True
-    #     self.thread = threading.Thread(target=self.read_data, daemon=True) 
-    #     self.thread.start()
-    #     self.new_data_received_check.emit("Starting I2C reading...")
     def start_reading(self, address_list):
         print("Starting I2C reading...")
 
         thread = threading.Thread(target=self.process_address, args=(address_list,))
         thread.start()
-
         time.sleep(0.1)  
 
 
@@ -102,6 +91,26 @@ class I2CReader(QObject):
     def read_until_end(self,address):
         buffer = bytearray()
         I2C_SLAVE = 0x0703 
+        while self.running:
+            try:
+                with open(self.device, 'rb', buffering=0) as f:
+                    fcntl.ioctl(f, I2C_SLAVE, address)
+                    while True:
+                        chunk = f.read(self.chunk_size)
+                        if not chunk:
+                            break
+                        buffer.extend(chunk)
+                        if self.line_ending in buffer:
+                            line_end_index = buffer.index(self.line_ending) + len(self.line_ending)
+                            line = buffer[:line_end_index]
+                            del buffer[:line_end_index]
+                            return line
+            except IOError as e:
+                time.sleep(0.01)
+
+    def read_overtimedetect(self,address):
+        buffer = bytearray()
+        I2C_SLAVE = 0x0703 
         start_time = time.time()
         while self.running:
             try:
@@ -138,10 +147,9 @@ class I2CReader(QObject):
             print("Input must be a string")
     
     def verify_data(self, data: str, address, expected_data:str, retries: int = 3):
-
         retries_left = retries
         while retries_left > 0:
-            line = self.read_until_end(address)
+            line = self.read_overtimedetect(address)
             if line:
                 line_decoded = line.decode('utf-8', errors='replace').strip()
                 print(f"Received: {line_decoded}")
