@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QMenuBar, QMessageBox
 from PyQt6.QtGui import QAction, QFont
-# from custom_widget.paraSetting import paraSetting
+from custom_widget.paraSetting import paraSetting
 class MenuWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -33,11 +33,11 @@ class MenuWidget(QWidget):
         setting_menu.setFont(menu_font)  # 设置菜单字体
 
         # 创建"参数设置"操作并添加到"设置"菜单
-        # para_action = QAction('参数设置', self)
-        # para_action.setFont(menu_font)  # 设置操作的字体
-        # para_action.triggered.connect(self.para_setting)
-        # setting_menu.addAction(para_action)
-        # self.settingWidget = paraSetting()
+        para_action = QAction('参数设置', self)
+        para_action.setFont(menu_font)  # 设置操作的字体
+        para_action.triggered.connect(self.para_setting)
+        setting_menu.addAction(para_action)
+        self.settingWidget = paraSetting()
         # 添加"帮助"菜单
         help_menu = menu_bar.addMenu('帮助')
         help_menu.setFont(menu_font)  # 设置菜单字体

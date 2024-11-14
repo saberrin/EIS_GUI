@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
 
         address_list = [0x26, 0x27, 0x28, 0x29]
         self.reader = I2CReader(bus_number=11)
+        self.menu.get_reader(self.reader)
         self.reader.start_reading(address_list)
 
     def stop_loop(self):
