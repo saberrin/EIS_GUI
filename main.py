@@ -18,7 +18,7 @@ from custom_widget.imageClickedLabel import ImageClickedLabel
 from database.db_init import init_database
 from custom_widget.initSetting import initSetting
 from tools.I2C_Reader import I2CReader
-from tools.I2CScanner import I2CScanner
+import json
 # OUR APPLICATION MAIN WINDOW :
 #-----> MAIN APPLICATION CLASS
 class MainWindow(QMainWindow):
@@ -64,10 +64,15 @@ class MainWindow(QMainWindow):
         self.settingId.identifier.connect(self.identifier_setting)
         self.settingId.exec()
 
-        address_list = [0x26, 0x27, 0x28, 0x29]
-        self.reader = I2CReader(bus_number=11)
-        self.menu.get_reader(self.reader)
+        with open("config.json", "r") as config_file:
+            config = json.load(config_file)
+        
+        bus_number = config.get("bus_number")
+        address_list = [int(address, 16) for address in config.get("address_list", [])]
+        self.reader = I2CReader(bus_number=bus_number)
+        # self.menu.get_reader(self.reader)
         self.reader.start_reading(address_list)
+        
 
     def stop_loop(self):
         self.ui.pushButton_3.setEnabled(True)

@@ -138,6 +138,7 @@ class I2CReader(QObject):
                 data_to_send += "\n"
             with SMBus(self.bus) as bus:
                 try:
+                    self.clear_buffer(address)
                     for char in data_to_send:
                         bus.write_byte(address, ord(char))
                         time.sleep(0.01)
@@ -145,7 +146,22 @@ class I2CReader(QObject):
                     print(f"Error sending data: {e}")
         else:
             print("Input must be a string")
-    
+            
+    def clear_buffer(self, address):
+        """
+        清空 I2C 从机buffer
+        """
+        try:
+            I2C_SLAVE = 0x0703
+            with open(self.device, 'rb', buffering=0) as f:
+                fcntl.ioctl(f, I2C_SLAVE, address)
+                while True:
+                    chunk = f.read(self.chunk_size)
+                    if not chunk:
+                        break
+        except IOError:
+            pass  
+
     def verify_data(self, data: str, address, expected_data:str, retries: int = 3):
         retries_left = retries
         while retries_left > 0:
@@ -243,7 +259,7 @@ class I2CReader(QObject):
 
 if __name__ == "__main__":
     
-    address_list = [0x26, 0x27, 0x28, 0x29]
+    address_list = [0x26, 0x27, 0x28]
     reader = I2CReader(bus_number=11)
     data = "SET_SweepStartFreq_To_10000"
     for address in address_list:

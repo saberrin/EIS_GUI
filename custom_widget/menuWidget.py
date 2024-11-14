@@ -53,9 +53,9 @@ class MenuWidget(QWidget):
 
         # 设置主窗口布局
         self.setLayout(layout)
-    def get_reader(self, reader):
-        self.reader = reader
-        self.settingWidget.get_reader(self.reader)
+    # def get_reader(self, reader):
+    #     self.reader = reader
+    #     self.settingWidget.get_reader(self.reader)
 
     def show_about(self):
         # 显示关于信息
