@@ -15,20 +15,21 @@ class I2CReader(QObject):
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
 
-    def __init__(self, device, bus_number,timeout_duration=10):
+    def __init__(self, bus_number,timeout_duration=10):
         super().__init__()
-        self.device = device
+        self.device = "/dev/i2c-" + str(bus_number)
         self.bus = bus_number
         self.address = None
         self.chunk_size = 1
         self.line_ending = b'_end'
         self.timeout_duration = timeout_duration
-        self.running = False
+        self.running = True
         self.data = []
         self.temperature = None
         self.voltage = None
         self.repo = Repository()
-        
+        self.confirmed_addresses = []
+        self.failed_addresses = []
         # Initialize SQLite database connection using the updated database
         self.db_path = "./eis_xjj.db"
         try:
@@ -39,16 +40,44 @@ class I2CReader(QObject):
             print(f"Error connecting to SQLite database: {e}")
             self.connection = None
 
-    def start_reading(self,address):
-        self.address = address
+    # def start_reading(self,address):
+    #     self.address = address
+    #     print("Starting I2C reading...")
+    #     if self.connection is None:
+    #         print("Cannot start reading as database connection is not established.")
+    #         return
+    #     self.running = True
+    #     self.thread = threading.Thread(target=self.read_data, daemon=True) 
+    #     self.thread.start()
+    #     self.new_data_received_check.emit("Starting I2C reading...")
+    def start_reading(self, address_list):
         print("Starting I2C reading...")
-        if self.connection is None:
-            print("Cannot start reading as database connection is not established.")
-            return
-        self.running = True
-        self.thread = threading.Thread(target=self.read_data, daemon=True) 
-        self.thread.start()
-        self.new_data_received_check.emit("Starting I2C reading...")
+
+        thread = threading.Thread(target=self.process_address, args=(address_list,))
+        thread.start()
+
+        time.sleep(0.1)  
+
+
+    def process_address(self, address_list):
+        for address in address_list:
+            data = "start\n"
+            self.write_data(data,address)
+            expected_data = f"{hex(address)}_Received I2C_Command_{data}_end"
+
+            if self.verify_data(data, address, expected_data): 
+                print(f"Address {hex(address)} confirmed successfully.")
+                self.confirmed_addresses.append(address) 
+            else:
+                print(f"Failed to get confirmation from address {hex(address)}.")
+                self.failed_addresses.append(address) 
+
+            if len(self.confirmed_addresses) + len(self.failed_addresses) == len(address_list):
+                print("Starting data reading for confirmed addresses...")
+                for address in self.confirmed_addresses:
+                    self.thread = threading.Thread(target=self.read_data, args=(address,))
+                    self.thread.start()
+
 
     def stop_reading(self):
         print("Stopping I2C reading...")
@@ -57,43 +86,27 @@ class I2CReader(QObject):
         # if hasattr(self, 'thread') and self.thread.is_alive():
         #     self.thread.join()  
 
-    def read_data(self):
+    def read_data(self,address):
         print("Attempting to open I2C bus...")
         self.new_data_received_check.emit("Attempting to open I2C bus...")
-        self.write_data("start\n")
-        try:
-            while self.running:
-                line = self.read_until_end()
-                if line:
-                    line_decoded = line.decode('utf-8', errors='replace').strip()
+        # self.write_data("start\n")
+        while self.running:
+            line = self.read_until_end(address)
+            if line:
+                line_decoded = line.decode('utf-8', errors='replace').strip()
+                print(f"Received line: {line_decoded}")
+                self.data.append(line_decoded)
+                self.parse_and_insert_data(line_decoded)
+        
 
-                # 检查数据地址是否正确
-                    # if not line_decoded.startswith(self.address):
-                    #     match = re.search(r"0x[0-9A-Fa-f]+_Received I2C_Command_(.+?)_end", line_decoded)
-                    #     if match:
-                    #         command_to_resend = match.group(1)
-                    #         print(f"Incorrect address in line: {line_decoded}. Resending command: {command_to_resend}")
-                    #         self.write_data(f"{command_to_resend}\n")  
-                    #     else:
-                    #         print(f"Format error in line: {line_decoded}")
-                    #     continue  
-
-                    print(f"Received line: {line_decoded}")
-                    self.data.append(line_decoded)
-                    self.parse_and_insert_data(line_decoded)
-        except IOError as e:
-            print(f"Could not open I2C bus: {e}")
-            self.new_data_received_check.emit(f"Could not open I2C bus: {e}")
-            self.running = False
-
-    def read_until_end(self):
+    def read_until_end(self,address):
         buffer = bytearray()
         I2C_SLAVE = 0x0703 
         start_time = time.time()
         while self.running:
             try:
                 with open(self.device, 'rb', buffering=0) as f:
-                    fcntl.ioctl(f, I2C_SLAVE, self.address)
+                    fcntl.ioctl(f, I2C_SLAVE, address)
                     while True:
                         chunk = f.read(self.chunk_size)
                         if not chunk:
@@ -106,25 +119,48 @@ class I2CReader(QObject):
                             return line
             except IOError as e:
                 if time.time() - start_time > self.timeout_duration:
-                    print(f"Failed to open I2C bus after {self.timeout_duration} seconds. Stopping read attempts.")
-                    self.new_data_received_check.emit(f"Failed to open I2C bus after {self.timeout_duration} seconds.")
-                    self.running = False
+                    print(f"Failed to open I2C bus after {self.timeout_duration} seconds.")
                     break
                 time.sleep(0.01)
 
-    def write_data(self, data_to_send):
+    def write_data(self, data_to_send,address):
         if isinstance(data_to_send, str):
             if not data_to_send.endswith('\n'):
                 data_to_send += "\n"
             with SMBus(self.bus) as bus:
                 try:
                     for char in data_to_send:
-                        bus.write_byte(self.address, ord(char))
+                        bus.write_byte(address, ord(char))
                         time.sleep(0.01)
                 except Exception as e:
                     print(f"Error sending data: {e}")
         else:
             print("Input must be a string")
+    
+    def verify_data(self, data: str, address, expected_data:str, retries: int = 3):
+
+        retries_left = retries
+        while retries_left > 0:
+            line = self.read_until_end(address)
+            if line:
+                line_decoded = line.decode('utf-8', errors='replace').strip()
+                print(f"Received: {line_decoded}")
+                if line_decoded == expected_data:
+                    print("Data verified successfully!")
+                    return True  # Data is valid and verified
+                else:
+                    print(f"Unexpected data: {line_decoded}. Retrying...")
+                    self.write_data(data,address)
+                    retries_left -= 1
+                    time.sleep(0.01)
+            else:
+                retries_left -= 1
+                time.sleep(0.01)
+        print(f"Failed to verify data after {retries} attempts.")
+        return False
+
+                        
+                    
 
     def parse_and_insert_data(self, line: str):
         """
@@ -196,3 +232,11 @@ class I2CReader(QObject):
             self.cursor.close()
             self.connection.close()
             print("Database connection closed.")
+
+if __name__ == "__main__":
+    
+    address_list = [0x26, 0x27, 0x28, 0x29]
+    reader = I2CReader(bus_number=11)
+    data = "SET_SweepStartFreq_To_10000"
+    for address in address_list:
+        reader.write_data(data,address)
