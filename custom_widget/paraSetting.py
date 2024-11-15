@@ -7,6 +7,7 @@ from PyQt6.QtGui import  QFont
 import json
 import threading
 class paraSetting(QDialog):
+    update_ui_signal = pyqtSignal(str, str)  
     def __init__(self):
         super().__init__()
         self.d = Ui_Dialog()
@@ -29,6 +30,7 @@ class paraSetting(QDialog):
         self.confirmed_addresses = []
         self.failed_addresses = []
         self.d.bn_west.clicked.connect(self.start_thread)
+        self.update_ui_signal.connect(self.show_message_box)
         
     def start_thread(self):
         thread = threading.Thread(target=self.update_para)
@@ -97,11 +99,18 @@ class paraSetting(QDialog):
                     else:
                         command_SET_SweepLog = 'SET_SweepLog_To_1' + "\n"
                     self.send_data(command_SET_SweepLog,address) 
-
-                QMessageBox.about(self, '提示', '参数设置完成')        
-        except(AttributeError):
-            QMessageBox.about(self, '提示', '请先建立端口连接！')
-            print("Attempted to write to a closed serial port.") 
+                result_message = (
+                    f"参数设置完成\n\n"
+                    f"成功地址{', '.join(hex(addr) for addr in self.confirmed_addresses)}\n"
+                    f"失败地址{', '.join(hex(addr) for addr in self.failed_addresses)}"
+                )
+                self.update_ui_signal.emit('提示', result_message)        
+        except AttributeError:
+            self.update_ui_signal.emit('提示', 'I2C总线未连接')
+            print("Attempted to write to a closed port.") 
+        
+    def show_message_box(self, title, message):
+        QMessageBox.about(self, title, message)
         
                 
 
