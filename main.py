@@ -18,6 +18,7 @@ from custom_widget.imageClickedLabel import ImageClickedLabel
 from database.db_init import init_database
 from custom_widget.initSetting import initSetting
 from tools.I2C_Reader import I2CReader
+from tools.nyquist_plot import NyquistPlot
 import json
 # OUR APPLICATION MAIN WINDOW :
 #-----> MAIN APPLICATION CLASS
@@ -50,6 +51,8 @@ class MainWindow(QMainWindow):
 
         # Initialize battery cell display
         self.init_batterycell()
+
+        self.init_Nyquist()
 
     def init_batterycell(self):
         self.ui.batteryList = []
@@ -87,6 +90,8 @@ class MainWindow(QMainWindow):
         # Initialize I2C Reader with identifiers and configuration
         self.reader = I2CReader(bus_number=bus_number)
         self.reader.set_user_selection(self.container_number, self.cluster_number, self.pack_number)
+
+        self.reader.new_data_received_SWF.connect(self.update_Nyquist)
         
         # Start I2C reading
         self.ui.pushButton_3.setEnabled(False)
@@ -111,6 +116,13 @@ class MainWindow(QMainWindow):
         self.pack_number = pack_number
         self.ui.label_14.setText(f"Container {container_number} - Cluster {cluster_number} - Pack {pack_number}")
         print(f"Identifiers set: Container {container_number}, Cluster {cluster_number}, Pack {pack_number}")
+    
+    def init_Nyquist(self):
+        self.NyquistPage = NyquistPlot()  
+        self.ui.horizontalLayout_33.addWidget(self.NyquistPage)
+        
+    def update_Nyquist(self, battery_number, freq, real_impedance, negative_imaginary_impedance):
+        self.NyquistPage.add_data(battery_number, real_impedance, negative_imaginary_impedance)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

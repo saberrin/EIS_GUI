@@ -100,6 +100,7 @@ class I2CReader(QObject):
                 print(f"Received line: {line_decoded}")
                 self.data.append(line_decoded)
                 self.parse_and_insert_data(line_decoded)
+                self.parse_and_emit_signals(line_decoded)
         
 
     def read_until_end(self,address):
@@ -198,7 +199,45 @@ class I2CReader(QObject):
         return False
 
                         
-                    
+    def parse_and_emit_signals(self, line):
+        # print(f"Parsing line: {line}")
+        if 'SWF' in line:
+            try:
+                battery_number, frequency, real_imp, imag_imp = self.parse_swf_data(line)
+                print(f"Emitting SWF signal with: {battery_number}, {frequency}, {real_imp}, {imag_imp}")
+                self.new_data_received_SWF.emit(battery_number, frequency, real_imp, imag_imp)
+            except (ValueError, IndexError) as e:
+                print(f"Error parsing SWF data: {line}, Error: {e}")
+
+    def parse_swf_data(self, line):
+        try:
+            # Remove prefix and split the main data section
+            if line.startswith("Received line:"):
+                line = line[len("Received line: "):].strip()
+            
+            # Extract battery number from the 0x-prefixed address
+            battery_number = int(line.split('_')[0], 16)
+
+            # Extract the frequency, real impedance, and imaginary impedance
+            if "SWF" in line:
+                freq_start = line.find("Freq") + len("Freq")
+                freq_end = line.find("rea")
+                frequency = float(line[freq_start:freq_end])
+
+                rea_start = freq_end + len("rea")
+                rea_end = line.find("image")
+                real_imp = float(line[rea_start:rea_end])
+
+                img_start = rea_end + len("image")
+                img_end = line.find("_end")
+                imag_imp = float(line[img_start:img_end])
+
+                return battery_number, frequency, real_imp, imag_imp
+            else:
+                raise ValueError("Invalid SWF data format")
+        except (ValueError, IndexError) as e:
+            print(f"Error parsing SWF data from line: {line}, Error: {e}")
+            raise
 
     def parse_and_insert_data(self, line: str):
         """
