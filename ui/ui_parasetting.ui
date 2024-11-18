@@ -399,12 +399,12 @@ QComboBox::drop-down {
            </property>
            <item>
             <property name="text">
-             <string>扫频</string>
+             <string>单频</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>单频</string>
+             <string>扫频</string>
             </property>
            </item>
           </widget>

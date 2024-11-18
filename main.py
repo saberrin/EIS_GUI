@@ -66,7 +66,6 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(index)
     
     def start_loop(self):
-        
         # Ensure identifiers are set before reading starts
         self.settingId = initSetting()
         self.settingId.identifier.connect(self.identifier_setting)
