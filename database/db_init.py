@@ -59,8 +59,6 @@ def init_database():
             "container_number" INTEGER,
             "cluster_number" INTEGER,
             "pack_number" INTEGER,
-            CONSTRAINT "fk_measurement_cell" FOREIGN KEY ("cell_id") REFERENCES "battery_cell" ("cell_id") ON DELETE NO ACTION ON UPDATE NO ACTION
-        );
         """)
         
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_cell_id_creation_time ON eis_measurement(cell_id, real_time_id)")
@@ -79,8 +77,6 @@ def init_database():
             "electrolyte_rate" INTEGER,
             "polar_rate" REAL,
             "conduct_rate" REAL,
-            CONSTRAINT "fk_info_measurement" FOREIGN KEY ("measurement_id") REFERENCES "eis_measurement" ("measurement_id") ON DELETE NO ACTION ON UPDATE NO ACTION
-        );
         """)
 
         # Create indexes to optimize search queries
