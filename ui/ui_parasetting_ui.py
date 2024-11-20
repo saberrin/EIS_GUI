@@ -547,8 +547,8 @@ class Ui_Dialog(object):
         self.bn_close.setText("")
         self.label_16.setText(QCoreApplication.translate("Dialog", u"\u91c7\u6837\u70b9\u6570", None))
         self.label_12.setText(QCoreApplication.translate("Dialog", u"\u91c7\u6837\u6a21\u5f0f", None))
-        self.comboBox.setItemText(0, QCoreApplication.translate("Dialog", u"\u5355\u9891", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("Dialog", u"\u626b\u9891", None))
+        self.comboBox.setItemText(0, QCoreApplication.translate("Dialog", u"\u626b\u9891", None))
+        self.comboBox.setItemText(1, QCoreApplication.translate("Dialog", u"\u5355\u9891", None))
 
         self.label_15.setText(QCoreApplication.translate("Dialog", u"\u8d77\u59cb\u9891\u7387", None))
         self.label_11.setText(QCoreApplication.translate("Dialog", u"\u7ec8\u6b62\u9891\u7387", None))
