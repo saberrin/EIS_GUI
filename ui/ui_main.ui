@@ -727,7 +727,7 @@ QPushButton:pressed {
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_5">
                     <property name="spacing">
-                     <number>5</number>
+                     <number>0</number>
                     </property>
                     <property name="leftMargin">
                      <number>5</number>
@@ -825,7 +825,7 @@ QPushButton:pressed {
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_6">
                     <property name="spacing">
-                     <number>5</number>
+                     <number>0</number>
                     </property>
                     <property name="leftMargin">
                      <number>5</number>
