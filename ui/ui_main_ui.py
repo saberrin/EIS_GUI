@@ -369,7 +369,7 @@ class Ui_MainWindow(object):
         self.frame_7.setObjectName(u"frame_7")
         sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(17)
+        sizePolicy5.setVerticalStretch(37)
         sizePolicy5.setHeightForWidth(self.frame_7.sizePolicy().hasHeightForWidth())
         self.frame_7.setSizePolicy(sizePolicy5)
         self.frame_7.setFrameShape(QFrame.StyledPanel)
@@ -391,7 +391,7 @@ class Ui_MainWindow(object):
         self.frame_12.setFrameShape(QFrame.StyledPanel)
         self.frame_12.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_32 = QHBoxLayout(self.frame_12)
-        self.horizontalLayout_32.setSpacing(5)
+        self.horizontalLayout_32.setSpacing(0)
         self.horizontalLayout_32.setObjectName(u"horizontalLayout_32")
         self.horizontalLayout_32.setContentsMargins(0, 0, 0, 0)
 
@@ -401,7 +401,7 @@ class Ui_MainWindow(object):
         self.textEdit.setObjectName(u"textEdit")
         sizePolicy7 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy7.setHorizontalStretch(0)
-        sizePolicy7.setVerticalStretch(8)
+        sizePolicy7.setVerticalStretch(16)
         sizePolicy7.setHeightForWidth(self.textEdit.sizePolicy().hasHeightForWidth())
         self.textEdit.setSizePolicy(sizePolicy7)
 
@@ -409,8 +409,8 @@ class Ui_MainWindow(object):
 
         self.frame_13 = QFrame(self.frame_home_stat)
         self.frame_13.setObjectName(u"frame_13")
-        sizePolicy3.setHeightForWidth(self.frame_13.sizePolicy().hasHeightForWidth())
-        self.frame_13.setSizePolicy(sizePolicy3)
+        sizePolicy2.setHeightForWidth(self.frame_13.sizePolicy().hasHeightForWidth())
+        self.frame_13.setSizePolicy(sizePolicy2)
         self.frame_13.setFrameShape(QFrame.StyledPanel)
         self.frame_13.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_37 = QHBoxLayout(self.frame_13)
