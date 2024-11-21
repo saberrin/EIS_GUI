@@ -19,6 +19,7 @@ from database.db_init import init_database
 from custom_widget.initSetting import initSetting
 from tools.I2C_Reader import I2CReader
 from tools.nyquist_plot import NyquistPlot
+from custom_widget.infoListWidget import infoListView
 import json
 # OUR APPLICATION MAIN WINDOW :
 #-----> MAIN APPLICATION CLASS
@@ -37,6 +38,9 @@ class MainWindow(QMainWindow):
         self.menu = MenuWidget()
         self.ui.horizontalLayout_21.addWidget(self.menu)
 
+        self.ui.horizontalLayout_32.addWidget(infoListView())
+
+        
         # Setup buttons and signal connections
         self.ui.pushButton.clicked.connect(lambda: self.switchPage(0))
         self.ui.pushButton_3.clicked.connect(self.start_loop)
