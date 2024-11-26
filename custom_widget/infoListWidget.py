@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import  QVBoxLayout, QTableView, QWidget,QHeaderView
+from PyQt6.QtWidgets import  QVBoxLayout, QTableView, QWidget,QHeaderView,QHBoxLayout
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QColor
@@ -7,14 +7,16 @@ from PyQt6.QtGui import QFont, QColor
 class infoListView(QWidget):
     def __init__(self):
         super().__init__()
-        self.fontsize = 8
+        self.fontsize = 16
         # 创建一个垂直布局
-        self.layout = QVBoxLayout(self)
-
+        self.layout = QHBoxLayout(self)
+        # self.layout.setAlignment(Qt.AlignmentFlag.AlignCenter)  
+        self.layout.setSpacing(0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         # 创建一个列表视图
         self.tableView = QTableView()
         self.layout.addWidget(self.tableView)
-
+        self.layout.setStretch(0, 1)  
         # 创建一个标准项目模型
         self.model = QStandardItemModel(1,6)
 
@@ -24,17 +26,11 @@ class infoListView(QWidget):
         self.tableView.verticalHeader().hide()
         self.tableView.setShowGrid(False)
 
-        # self.tableView.verticalHeader().setDefaultSectionSize(30) 
-        
-
-        self.tableView.horizontalHeader().setDefaultSectionSize(40)
-        self.tableView.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)  # 列0：固定大小
-        self.tableView.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)    # 列1：固定大小
-        self.tableView.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Fixed)  # 列2：自动调整大小
-        self.tableView.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)  # 列3：固定大小
-        self.tableView.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Fixed)  # 列2：自动调整大小
-        self.tableView.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)  # 列3：固定大小
-        # self.tableView.horizontalHeader().setMaximumSectionSize(24)
+        # self.tableView.verticalHeader().setDefaultSectionSize(65) 
+        self.tableView.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        # 列宽自适应
+        for col in range(6):
+            self.tableView.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeMode.Stretch)
         
         # 添加一些数据项到模型中
         lists = ["离散度:", "一致性:", "异常电芯:"]
@@ -60,7 +56,7 @@ class infoListView(QWidget):
             font = item.font()
             font = QFont("Arial", self.fontsize)
             font.setBold(True)                  # 设置字体加粗
-            item.setFont(font)
+            item.setFont(font)  
             self.model.setItem(0, 2*col+1, item)
 
         

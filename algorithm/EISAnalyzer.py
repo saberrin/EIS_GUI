@@ -3,6 +3,7 @@ from scipy.spatial.distance import euclidean
 from scipy.stats import zscore
 from fastdtw import fastdtw
 
+
 class EISAnalyzer:
     def __init__(self, curves):
         self.curves = curves
@@ -26,12 +27,12 @@ class EISAnalyzer:
 
     def calculate_dtw_distance(self, curve1, curve2):
         """
-        计算两个曲线的DTW距离（在归一化后）。
+        计算两个曲线的DTW距离
         """
-        real1, imag1 = self.normalize_curve(curve1)
-        real2, imag2 = self.normalize_curve(curve2)
-        # real1, imag1 = curve1
-        # real2, imag2 = curve2
+        # real1, imag1 = self.normalize_curve(curve1)
+        # real2, imag2 = self.normalize_curve(curve2)
+        real1, imag1 = curve1
+        real2, imag2 = curve2
         data1 = np.column_stack((real1, imag1))  # 归一化后合并
         data2 = np.column_stack((real2, imag2))
         dtw_distance, _ = fastdtw(data1, data2, dist=euclidean)
@@ -50,7 +51,8 @@ class EISAnalyzer:
                     total_distance += dtw_distance
             consistency = 1 / (total_distance / (len(curves) - 1))  # 一致性定义为DTW距离的倒数
             distances[battery1] = consistency
-        return distances
+        # return self.normalize_results(distances)
+        return np.mean(np.array(list(distances.values())))
 
     def calculate_dispersion(self, curves):
         """
@@ -65,7 +67,8 @@ class EISAnalyzer:
                     all_distances.append(dtw_distance)
             dispersion = np.mean(all_distances)  # 离散性定义为DTW距离的标准差
             distances[battery1] = dispersion
-        return distances
+        # return self.normalize_results(distances)
+        return np.mean(np.array(list(distances.values())))
 
     def detect_outliers(self, threshold=3.0):
         """
@@ -79,32 +82,38 @@ class EISAnalyzer:
         outlier_indices = np.unique(np.where((np.abs(real_zscore) > threshold) | (np.abs(imag_zscore) > threshold))[0])
         return [list(self.curves.keys())[i] for i in outlier_indices]
 
-    def detect_outliers_method2(self, threshold=-0.1):
+    def detect_outliers_method2(self, threshold=0.5):
         """
         基于DTW距离的相似度进行异常检测（归一化后）。
         """
-        keys = list(self.curves.keys())
-        similarity_scores = {key: [] for key in keys}
-
-        for i in range(len(keys)):
-            for j in range(i + 1, len(keys)):
-                curve1 = self.curves[keys[i]]
-                curve2 = self.curves[keys[j]]
-                dtw_distance = self.calculate_dtw_distance(curve1, curve2)
-                similarity = -dtw_distance  # 使用负DTW距离作为相似度
-                similarity_scores[keys[i]].append(similarity)
-                similarity_scores[keys[j]].append(similarity)
-
-        mean_similarity = {key: np.mean(similarities) for key, similarities in similarity_scores.items()}
-        outliers = [key for key, mean_sim in mean_similarity.items() if mean_sim < threshold]
+        outliers = []
+        distances = {}
+        for battery1, curve1 in self.curves.items():
+            total_distance = 0
+            for battery2, curve2 in self.curves.items():
+                if battery1 != battery2:
+                    dtw_distance = self.calculate_dtw_distance(curve1, curve2)
+                    total_distance += dtw_distance
+            consistency = 1 / (total_distance / (len(self.curves) - 1))  # 一致性定义为DTW距离的倒数
+            distances[battery1] = consistency
+        for battery, consistency in distances.items():
+            if consistency < threshold:
+                outliers.append(battery)
         return outliers
 
 if __name__ == '__main__':
     # 示例电池数据（实部和虚部阻抗）
     curves = {
-        1: ([195, 194, 193], [-512, -511, -510]),  # Battery 1
-        2: ([198, 197, 196], [-515, -514, -513]),  # Battery 2
-        3: ([400, 401, 402], [-800, -801, -802]),  # Battery 3 
+    1: ([195, 194, 193], [-512, -511, -510]),  # Battery 1
+    2: ([198, 197, 196], [-515, -514, -513]),  # Battery 2
+    3: ([400, 401, 402], [-800, -801, -802]),  # Battery 3
+    4: ([202, 201, 200], [-510, -509, -508]),  # Battery 4
+    5: ([210, 209, 208], [-520, -519, -518]),  # Battery 5
+    6: ([180, 179, 178], [-500, -501, -502]),  # Battery 6
+    7: ([215, 214, 213], [-530, -529, -528]),  # Battery 7
+    8: ([205, 204, 203], [-515, -514, -513]),  # Battery 8
+    9: ([190, 189, 188], [-505, -504, -503]),  # Battery 9
+    10: ([210, 211, 212], [-522, -521, -520]),  # Battery 10
     }
 
     # 创建分析器对象
@@ -119,9 +128,9 @@ if __name__ == '__main__':
     print(f"Consistency: {consistency}")
 
     # 检测异常（方法1：基于z-score）
-    outliers = analyzer.detect_outliers()
-    print(f"Outliers (Method 1): {outliers}")
+    # outliers = analyzer.detect_outliers()
+    # print(f"Outliers (Method 1): {outliers}")
 
     # 检测异常（方法2：基于DTW相似度）
     outliers_method2 = analyzer.detect_outliers_method2()
-    print(f"Outliers (Method 2): {outliers}")
+    print(f"Outliers (Method 2): {outliers_method2}")
