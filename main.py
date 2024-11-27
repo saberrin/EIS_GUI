@@ -1,13 +1,15 @@
 import sys
+import os
 import time
 import sqlite3
+
 
 
 #IMPORTING ALL THE NECESSERY PYSIDE2 MODULES FOR OUR APPLICATION.
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import ( QCoreApplication, QPropertyAnimation, QDate, QDateTime, QMetaObject, QObject, QPoint, QRect, QSize, QTime, QUrl, Qt, QEvent) 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
+from PyQt6.QtGui import (QBrush, QPixmap, QColor, QConicalGradient, QCursor, QFont, QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter, QPixmap, QRadialGradient)
 from PyQt6.QtWidgets import *
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QMainWindow
 from PyQt6 import uic
@@ -19,6 +21,7 @@ from database.db_init import init_database
 from custom_widget.initSetting import initSetting
 from tools.I2C_Reader import I2CReader
 from custom_widget.nyquist_plot import NyquistPlot
+from tools.heatmap_plt import HeatMap3DWidget
 from custom_widget.infoListWidget import infoListView
 from database.repository import Repository
 from collections import defaultdict
@@ -70,6 +73,18 @@ class MainWindow(QMainWindow):
 
         self.init_Nyquist()
 
+        self.init_heatmap()
+
+    def init_heatmap(self):
+        # Define the STL file path and save path for the heatmap
+        stl_file = "3d_pack_model/1x13_battery_pack_model.STL"
+        save_path = "3d_pack_model/heatmap_render.png"
+
+        # Create and render the heatmap directly in the layout
+        from tools.heatmap_plt import HeatMap3DWidget
+        heatmap = HeatMap3DWidget(stl_file, num_cells=13)
+        heatmap.create_responsive_label(save_path, self.ui.horizontalLayout_15)
+
     def init_batterycell(self):
         self.ui.batteryList = []
         for row in range(2):
@@ -77,6 +92,7 @@ class MainWindow(QMainWindow):
                 label = ImageClickedLabel()
                 self.ui.batteryList.append(label)
                 self.ui.gridLayout.addWidget(label, row, col)
+        
         for i in range(14):
             self.ui.batteryList[i].clicked.connect(lambda: self.switchPage(1))
             self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i+1))
@@ -174,9 +190,13 @@ class MainWindow(QMainWindow):
         self.infoList.populate_data(discrepancy,consistency,outliers_method2)
         
 
+
+
 if __name__ == "__main__":
+  
     app = QApplication(sys.argv)
     window = MainWindow()
 
     window.show()
     sys.exit(app.exec())
+
