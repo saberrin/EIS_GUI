@@ -676,7 +676,7 @@ QPushButton:pressed {
                 <string notr="true"/>
                </property>
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_top">
                 <property name="styleSheet">
@@ -746,7 +746,7 @@ QPushButton:pressed {
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                         <horstretch>0</horstretch>
-                        <verstretch>4</verstretch>
+                        <verstretch>2</verstretch>
                        </sizepolicy>
                       </property>
                       <property name="minimumSize">
@@ -774,6 +774,9 @@ QPushButton:pressed {
                        <property name="bottomMargin">
                         <number>0</number>
                        </property>
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
                       </layout>
                      </widget>
                     </item>
@@ -791,7 +794,23 @@ QPushButton:pressed {
                       <property name="frameShadow">
                        <enum>QFrame::Raised</enum>
                       </property>
-                      <layout class="QHBoxLayout" name="horizontalLayout_15"/>
+                      <layout class="QHBoxLayout" name="horizontalLayout_15">
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                      </layout>
                      </widget>
                     </item>
                    </layout>
