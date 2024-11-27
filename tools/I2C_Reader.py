@@ -9,11 +9,13 @@ from smbus2 import SMBus
 from typing import List, Dict
 from database.repository import Repository
 from database.entity import EisMeasurement
-
+from algorithm.EISAnalyzer import EISAnalyzer
+from collections import Counter
 class I2CReader(QObject):
-    new_data_received_UIT = pyqtSignal(int, float, float, float)
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
+    new_data_received_finish_list = pyqtSignal(list)
+    new_data_received_batterycellInfo = pyqtSignal(int, float, float) #实部阻抗和电压数据
 
     def __init__(self, bus_number,timeout_duration=1):
         super().__init__()
@@ -30,6 +32,7 @@ class I2CReader(QObject):
         self.repo = Repository()
         self.confirmed_addresses = []
         self.failed_addresses = []
+        self.finish_list = []
 
         # User input attributes for container, cluster, and pack
         self.container_number = None
@@ -57,7 +60,7 @@ class I2CReader(QObject):
     def start_reading(self, address_list):
         print("Starting I2C reading...")
 
-        thread = threading.Thread(target=self.process_address, args=(address_list,))
+        thread = threading.Thread(target=self.process_address, args=(address_list,),daemon=True)
         thread.start()
         time.sleep(0.1)  
 
@@ -78,20 +81,20 @@ class I2CReader(QObject):
             if len(self.confirmed_addresses) + len(self.failed_addresses) == len(address_list):
                 print("Starting data reading for confirmed addresses...")
                 for address in self.confirmed_addresses:
-                    self.thread = threading.Thread(target=self.read_data, args=(address,))
+                    self.thread = threading.Thread(target=self.read_data, args=(address,),daemon=True)
                     self.thread.start()
 
 
     def stop_reading(self):
         print("Stopping I2C reading...")
-        self.new_data_received_check.emit("Stopping I2C reading...")
+        # self.new_data_received_check.emit("Stopping I2C reading...")
         self.running = False
         # if hasattr(self, 'thread') and self.thread.is_alive():
         #     self.thread.join()  
 
     def read_data(self,address):
         print("Attempting to open I2C bus...")
-        self.new_data_received_check.emit("Attempting to open I2C bus...")
+        # self.new_data_received_check.emit("Attempting to open I2C bus...")
         # self.write_data("start\n")
         while self.running:
             line = self.read_until_end(address)
@@ -209,6 +212,28 @@ class I2CReader(QObject):
             except (ValueError, IndexError) as e:
                 print(f"Error parsing SWF data: {line}, Error: {e}")
 
+        if 'EIS_data_packet_start' in line:
+            voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
+            cell_id = int(line.split('_')[0], 16)
+            segments = line.split(';')
+            result = None
+            for segment in segments:
+                parts = segment.split(',')
+                for i, part in enumerate(parts):
+                    if part.startswith('F') and float(parts[i + 1]) == 1000.0:  
+                        for j in range(i, -1, -1):  
+                            if parts[j].startswith('I'):
+                                result = float(parts[j - 1])
+                                break
+                        break
+                if result is not None:
+                    break
+            if result is not None:
+                self.new_data_received_batterycellInfo.emit(cell_id,result,voltage)
+            else:
+                print("error:未找到1000Hz阻抗")
+
+
     def parse_swf_data(self, line):
         try:
             # Remove prefix and split the main data section
@@ -255,7 +280,7 @@ class I2CReader(QObject):
                 
                 # Extract data points
                 data_points = self.extract_data_points(line)
-                
+
                 # Cell ID (unique identifier for your device, like 0x28)
                 cell_id = int(line.split('_')[0], 16)
 
@@ -308,6 +333,9 @@ class I2CReader(QObject):
         try:
             print(f"Inserting {len(measurements)} measurements for cell {cell_id}.")
             self.repo.insert_measurements(measurements)
+            self.finish_list.append(cell_id)
+            if Counter(self.finish_list) == Counter(self.confirmed_addresses):
+                self.new_data_received_finish_list.emit(self.finish_list)
             print("Data inserted successfully into eis_measurement.")
         except Exception as e:
             print(f"Error during data insertion: {e}") 

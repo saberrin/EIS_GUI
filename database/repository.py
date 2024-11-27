@@ -3,7 +3,8 @@ from typing import List, Dict
 from database.entity import EisMeasurement
 from datetime import datetime
 from database.config import DB_PATH
-
+from collections import defaultdict
+from typing import List, Dict
 class Repository:
     def __init__(self):
         super().__init__()
@@ -123,9 +124,61 @@ class Repository:
                     frequency=row[3], 
                     real_impedance=row[4], 
                     imag_impedance=row[5], 
-                    voltage=row[6]
+                    voltage=row[6],
+                    container_number=row[7],
+                    cluster_number=row[8],
+                    pack_number=row[9]
                 ) for row in rows
             ]
+        finally:
+            if connection:
+                connection.close()
+
+
+
+    def get_cell_history(self, cell_id: int, index: int) -> Dict[str, List[EisMeasurement]]:
+        """
+        Fetches the historical measurements for a specific cell based on the provided index (number of distinct real_time_id records).
+
+        Returns:
+            A dictionary where the keys are `real_time_id` values, and the values are lists of `EisMeasurement` objects.
+        """
+        try:
+            with sqlite3.connect(DB_PATH) as connection:
+                cursor = connection.cursor()
+                # Fetch data grouped by real_time_id, limited to the most recent 'index' real_time_ids
+                cursor.execute("""
+                    SELECT * 
+                    FROM eis_measurement 
+                    WHERE cell_id = ? 
+                    ORDER BY real_time_id DESC, frequency ASC;
+                """, (cell_id,))
+                rows = cursor.fetchall()
+
+                # Group the rows by real_time_id
+                grouped_data = defaultdict(list)
+                for row in rows:
+                    measurement = EisMeasurement(
+                        cell_id=row[1],
+                        real_time_id=row[2],
+                        frequency=row[3],
+                        real_impedance=row[4],
+                        imag_impedance=row[5],
+                        voltage=row[6],
+                        container_number=row[7],
+                        cluster_number=row[8],
+                        pack_number=row[9]
+                    )
+                    grouped_data[row[2]].append(measurement)
+
+                # Limit to the most recent 'index' real_time_id groups
+                sorted_keys = sorted(grouped_data.keys(), reverse=True)[:index]
+                return {key: grouped_data[key] for key in sorted_keys}
+
+        except Exception as e:
+            print(f"Error fetching cell history: {e}")
+            return {}
+
         finally:
             if connection:
                 connection.close()
