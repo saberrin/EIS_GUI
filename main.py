@@ -72,12 +72,12 @@ class MainWindow(QMainWindow):
 
     def init_batterycell(self):
         self.ui.batteryList = []
-        for row in range(4):
-            for col in range(13):
+        for row in range(2):
+            for col in range(7):
                 label = ImageClickedLabel()
                 self.ui.batteryList.append(label)
                 self.ui.gridLayout.addWidget(label, row, col)
-        for i in range(52):
+        for i in range(14):
             self.ui.batteryList[i].clicked.connect(lambda: self.switchPage(1))
             self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i+1))
             
