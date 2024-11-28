@@ -70,9 +70,7 @@ class MainWindow(QMainWindow):
 
         # Initialize battery cell display
         self.init_batterycell()
-
         self.init_Nyquist()
-
         self.init_heatmap()
 
     def init_heatmap(self):
@@ -85,6 +83,18 @@ class MainWindow(QMainWindow):
         heatmap = HeatMap3DWidget(stl_file, num_cells=13)
         heatmap.create_responsive_label(save_path, self.ui.horizontalLayout_15)
 
+    def init_single_battery_renderer(self):
+        # Define the STL file path and save path for the single battery render
+        stl_file = "3d_battery_model/single_battery_model.STL"
+        save_path = "3d_battery_model/single_battery_render.png"
+
+        # Create and render the single battery directly in the layout
+        from tools.single_battery_renderer import SingleBattery3DWidget
+        single_battery = SingleBattery3DWidget(stl_file)
+        single_battery.create_responsive_label(save_path, self.ui.horizontalLayout_9)
+
+
+
     def init_batterycell(self):
         self.ui.batteryList = []
         for row in range(2):
@@ -94,16 +104,54 @@ class MainWindow(QMainWindow):
                 self.ui.gridLayout.addWidget(label, row, col)
         
         for i in range(14):
-            self.ui.batteryList[i].clicked.connect(lambda: self.switchPage(1))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + 1))
             self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i+1))
             
     def update_battertcell(self,battery_number, real_imp, voltage):
         self.ui.batteryList[battery_number-1].update_text(voltage, real_imp)
 
-    def switchPage(self, index):
-        print(f"Switching to page {index}")
+    def handle_battery_click(self, battery_index):
+        """
+        Handle clicks on the battery cells.
+        - Map the clicked battery index to a `displayed_battery_id`.
+        - Store the clicked `displayed_battery_id`.
+        - Switch to the detail page.
+        """
+        displayed_battery_id = battery_index + 1  # Map the clicked box to a displayed battery ID
+        print(f"Battery {displayed_battery_id} clicked.")
+        self.switchPage(1, displayed_battery_id)
+
+    def switchPage(self, index, displayed_battery_id=None):
+        print(f"Switching to page {index}, Displayed Battery ID: {displayed_battery_id}")
         self.ui.stackedWidget.setCurrentIndex(index)
+
+        # If moving to page 2 (battery details page), update the corresponding battery info
+        if index == 1 and displayed_battery_id is not None:
+            self.update_battery_details(displayed_battery_id)
+
+    def update_battery_details(self, displayed_battery_id):
+        """
+        Update the detailed battery page with new data and render the 3D image.
+        """
+        print(f"Updating details for battery {displayed_battery_id}")
+
+        # Define the STL file path (can be dynamic if needed)
+        stl_file = "3d_battery_model/single_battery_model.STL"  # Path to the STL file
+
+        # Create the SingleBattery3DWidget instance and render the 3D battery visualization
+        from tools.single_battery_renderer import SingleBattery3DWidget
+        single_battery_renderer = SingleBattery3DWidget(stl_file, self.ui.horizontalLayout_9, displayed_battery_id)
+        
+        # Update battery rendering in the layout
+        single_battery_renderer.update_battery_render(None)
+
+        # Update other UI components (e.g., Nyquist history)
+        self.update_NyquistHistory(displayed_battery_id)
     
+    def update_battertcell(self, battery_number, real_imp, voltage):
+        self.ui.batteryList[battery_number-1].update_text(voltage, real_imp)
+
+
     def start_loop(self):
         # Ensure identifiers are set before reading starts
         self.settingId = initSetting()

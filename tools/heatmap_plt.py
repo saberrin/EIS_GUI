@@ -68,7 +68,7 @@ class HeatMap3DWidget:
             show_edges=False,
             clim=[-20, 60],
         )
-        plotter.add_scalar_bar(title="Temperature (C)", shadow=True)
+        # plotter.add_scalar_bar(title="Temperature (C)", shadow=True)
 
         # Compute the center and bounds of the model
         model_bounds = self.mesh.bounds
@@ -86,7 +86,7 @@ class HeatMap3DWidget:
         
 
         # Render and save the image at the specified resolution
-        plotter.screenshot(save_path, window_size=(render_width*2, render_height*2))
+        plotter.screenshot(save_path, window_size=(render_width, render_height))
         plotter.close()
 
 
@@ -104,8 +104,8 @@ class HeatMap3DWidget:
         layout_height = layout.geometry().height()
 
         # Render the heatmap slightly larger than the layout
-        render_width = int(layout_width * 1.2)
-        render_height = int(layout_height * 1.2)
+        render_width = int(layout_width * 1)
+        render_height = int(layout_height * 1)
         self.render_and_save(save_path, render_width, render_height)
 
         # Load the rendered image
