@@ -43,7 +43,7 @@ class MainWindow(QMainWindow):
         UIFunction.maximize_restore(self)
         
         # Initialize menu and layout
-        self.menu = MenuWidget()
+        self.menu = MenuWidget(self)
         self.ui.horizontalLayout_21.addWidget(self.menu)
 
         self.infoList = infoListView()
@@ -52,8 +52,8 @@ class MainWindow(QMainWindow):
         self.NyquistPageHistory = NyquistPlotHistory()
         self.ui.verticalLayout_8.addWidget(self.NyquistPageHistory)
         # Setup buttons and signal connections
-        self.ui.pushButton.clicked.connect(lambda: self.switchPage(0))
-        self.ui.pushButton.clicked.connect(lambda: self.NyquistPageHistory.clear_all_plots())
+        # self.ui.pushButton.clicked.connect(lambda: self.switchPage(0))
+        # self.ui.pushButton.clicked.connect(lambda: self.NyquistPageHistory.clear_all_plots())
         self.ui.pushButton_3.clicked.connect(self.start_loop)
         self.ui.pushButton_4.clicked.connect(self.stop_loop)
         self.ui.pushButton_4.setEnabled(False)
@@ -104,11 +104,11 @@ class MainWindow(QMainWindow):
                 self.ui.gridLayout.addWidget(label, row, col)
         
         for i in range(14):
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + 1))
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i+1))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + 20))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i + 20))
             
     def update_battertcell(self,battery_number, real_imp, voltage):
-        self.ui.batteryList[battery_number-1].update_text(voltage, real_imp)
+        self.ui.batteryList[battery_number-20].update_text(voltage, real_imp)
 
     def handle_battery_click(self, battery_index):
         """
@@ -147,10 +147,6 @@ class MainWindow(QMainWindow):
 
         # Update other UI components (e.g., Nyquist history)
         self.update_NyquistHistory(displayed_battery_id)
-    
-    def update_battertcell(self, battery_number, real_imp, voltage):
-        self.ui.batteryList[battery_number-1].update_text(voltage, real_imp)
-
 
     def start_loop(self):
         # Ensure identifiers are set before reading starts

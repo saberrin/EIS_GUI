@@ -2,8 +2,9 @@ from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QMenuBar, QMessa
 from PyQt6.QtGui import QAction, QFont
 from custom_widget.paraSetting import paraSetting
 class MenuWidget(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,parent = None):
+        super().__init__(parent)
+        self.main_window = parent  
         # 创建一个垂直布局
         layout = QVBoxLayout(self)
 
@@ -22,11 +23,11 @@ class MenuWidget(QWidget):
         # 添加"文件"菜单
         file_menu = menu_bar.addMenu('文件')
 
-        # 创建"退出"操作并添加到"文件"菜单
-        exit_action = QAction('退出', self)
-        exit_action.setFont(menu_font)  # 设置操作的字体
-        exit_action.triggered.connect(self.close)  # 当点击"退出"时关闭窗口
-        file_menu.addAction(exit_action)
+        # # 创建"退出"操作并添加到"文件"菜单
+        # exit_action = QAction('退出', self)
+        # exit_action.setFont(menu_font)  # 设置操作的字体
+        # exit_action.triggered.connect(self.close)  # 当点击"退出"时关闭窗口
+        # file_menu.addAction(exit_action)
 
         # 添加"设置"菜单
         setting_menu = menu_bar.addMenu('设置')
@@ -48,6 +49,14 @@ class MenuWidget(QWidget):
         about_action.triggered.connect(self.show_about)
         help_menu.addAction(about_action)
 
+        file_menu = menu_bar.addMenu('退出')
+
+        # 创建"退出"操作并添加到"文件"菜单
+        exit_action = QAction('回到主界面', self)
+        exit_action.setFont(menu_font)  # 设置操作的字体
+        exit_action.triggered.connect(self.update_main_window_ui)  # 当点击"退出"时关闭窗口
+        file_menu.addAction(exit_action)
+
         # 将菜单栏添加到布局中
         layout.setMenuBar(menu_bar)
 
@@ -65,6 +74,9 @@ class MenuWidget(QWidget):
         # 显示参数设置信息
         self.settingWidget.exec()
 
+    def update_main_window_ui(self):
+        self.main_window.ui.pushButton.clicked.connect(lambda: self.main_window.switchPage(0))
+        self.main_window.ui.pushButton.clicked.connect(lambda: self.main_window.NyquistPageHistory.clear_all_plots())
 if __name__ == '__main__':
     app = QApplication([])
     window = MenuWidget()
