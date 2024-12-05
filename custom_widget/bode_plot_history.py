@@ -15,10 +15,10 @@ class BodePlotHistory(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
 
         # Create the plot widget for Bode Plot (Magnitude and Phase)
-        self.plot_widget = pg.PlotWidget(title="Bode Plot - History")
-        self.plot_widget.setLabel('left', 'Magnitude (dB)', units='dB')
-        self.plot_widget.setLabel('bottom', 'Frequency (Hz)', units='Hz')
-        self.plot_widget.setBackground('w')
+        self.plot_widget = pg.PlotWidget(title="单电芯短期内阻抗演变趋势（Bode图）")
+        self.plot_widget.setLabel('left', '幅度(dB)', units='dB')
+        self.plot_widget.setLabel('bottom', '频率 (Hz)', units='Hz')
+        self.plot_widget.setBackground('#e8f5e9')
 
         # Add the plot widget to the layout
         self.layout.addWidget(self.plot_widget)

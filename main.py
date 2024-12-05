@@ -21,7 +21,7 @@ from database.db_init import init_database
 from custom_widget.initSetting import initSetting
 from tools.I2C_Reader import I2CReader
 from custom_widget.nyquist_plot import NyquistPlot
-from tools.heatmap_plt import HeatMap3DWidget
+# from tools.heatmap_plt import HeatMap3DWidget
 from custom_widget.infoListWidget import infoListView
 from database.repository import Repository
 from collections import defaultdict
@@ -81,7 +81,7 @@ class MainWindow(QMainWindow):
         # Initialize battery cell display
         self.init_batterycell()
         self.init_Nyquist()
-        self.init_heatmap()
+        # self.init_heatmap()
 
     def init_heatmap(self):
         # Define the STL file path and save path for the heatmap
@@ -102,8 +102,6 @@ class MainWindow(QMainWindow):
         from tools.single_battery_renderer import SingleBattery3DWidget
         single_battery = SingleBattery3DWidget(stl_file)
         single_battery.create_responsive_label(save_path, self.ui.horizontalLayout_9)
-
-
 
     def init_batterycell(self):
         self.ui.batteryList = []
@@ -186,6 +184,7 @@ class MainWindow(QMainWindow):
         self.reader.new_data_received_SWF.connect(self.update_Nyquist)
         self.reader.new_data_received_finish_list.connect(self.update_infoList)
         self.reader.new_data_received_batterycellInfo.connect(self.update_battertcell)
+        self.reader.new_data_received_check.connect(self.update_textEdit)
         
         # Start I2C reading
         self.ui.pushButton_3.setEnabled(False)
@@ -272,7 +271,15 @@ class MainWindow(QMainWindow):
         outliers_method2 = analyzer.detect_outliers_method2()
         print(f"Outliers (Method 2): {outliers_method2}")
         self.infoList.populate_data(discrepancy,consistency,outliers_method2)
-        
+
+    def update_textEdit(self,line):
+        font = QFont('Arial', 15)  
+        self.ui.textEdit.setFont(font)
+        self.ui.textEdit.setStyleSheet("color: white")
+        self.ui.textEdit.append(line)  
+    
+    def update_subtextEdit(self,line):
+        self.ui.textEdit_2.append(line) 
 
 
 
@@ -280,7 +287,6 @@ if __name__ == "__main__":
   
     app = QApplication(sys.argv)
     window = MainWindow()
-
     window.show()
     sys.exit(app.exec())
 

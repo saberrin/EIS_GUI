@@ -15,11 +15,11 @@ class NyquistPlotHistory(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
 
         # Create the plot widget
-        self.plot_widget = pg.PlotWidget(title="Nyquist Plot - History")
-        self.plot_widget.setLabel('left', 'Negative Imaginary Impedance', units='m\u03A9')
-        self.plot_widget.setLabel('bottom', 'Real Impedance', units='m\u03A9')
+        self.plot_widget = pg.PlotWidget(title="单电芯短期内阻抗演变趋势（Nyquist图）")
+        self.plot_widget.setLabel('left', '负虚部阻抗', units='m\u03A9')
+        self.plot_widget.setLabel('bottom', '实部阻抗', units='m\u03A9')
         # self.plot_widget.showGrid(x=True, y=True)
-        self.plot_widget.setBackground('w')
+        self.plot_widget.setBackground('#e8f5e9')
 
         # Add the plot widget to the layout
         self.layout.addWidget(self.plot_widget)

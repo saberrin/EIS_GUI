@@ -17,7 +17,7 @@ class I2CReader(QObject):
     new_data_received_finish_list = pyqtSignal(list)
     new_data_received_batterycellInfo = pyqtSignal(int, float, float) #实部阻抗和电压数据
 
-    def __init__(self, bus_number,timeout_duration=1):
+    def __init__(self, bus_number,timeout_duration=0.2):
         super().__init__()
         self.device = "/dev/i2c-" + str(bus_number)
         self.bus = bus_number
@@ -52,6 +52,7 @@ class I2CReader(QObject):
         try:
             self.connection = sqlite3.connect(self.db_path)
             self.cursor = self.connection.cursor()
+            self.new_data_received_check.emit("已连接SQLite数据库")
             print("SQLite database connection successful")
         except Exception as e:
             print(f"Error connecting to SQLite database: {e}")
@@ -59,7 +60,7 @@ class I2CReader(QObject):
 
     def start_reading(self, address_list):
         print("Starting I2C reading...")
-
+        self.new_data_received_check.emit("I2C总线连接中...")
         thread = threading.Thread(target=self.process_address, args=(address_list,),daemon=True)
         thread.start()
         time.sleep(0.1)  
@@ -80,6 +81,7 @@ class I2CReader(QObject):
 
             if len(self.confirmed_addresses) + len(self.failed_addresses) == len(address_list):
                 print("Starting data reading for confirmed addresses...")
+                self.new_data_received_check.emit("硬件地址校验完成，开始数据读取...")
                 for address in self.confirmed_addresses:
                     self.thread = threading.Thread(target=self.read_data, args=(address,),daemon=True)
                     self.thread.start()
@@ -87,15 +89,12 @@ class I2CReader(QObject):
 
     def stop_reading(self):
         print("Stopping I2C reading...")
-        # self.new_data_received_check.emit("Stopping I2C reading...")
+        self.new_data_received_check.emit("停止 I2C 数据读取")
         self.running = False
         # if hasattr(self, 'thread') and self.thread.is_alive():
         #     self.thread.join()  
 
     def read_data(self,address):
-        print("Attempting to open I2C bus...")
-        # self.new_data_received_check.emit("Attempting to open I2C bus...")
-        # self.write_data("start\n")
         while self.running:
             line = self.read_until_end(address)
             if line:
@@ -336,7 +335,9 @@ class I2CReader(QObject):
             self.finish_list.append(cell_id)
             if Counter(self.finish_list) == Counter(self.confirmed_addresses):
                 self.new_data_received_finish_list.emit(self.finish_list)
+                self.new_data_received_check.emit("数据读取完成,AI智能分析中...")
             print("Data inserted successfully into eis_measurement.")
+            
         except Exception as e:
             print(f"Error during data insertion: {e}") 
 
