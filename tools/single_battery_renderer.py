@@ -39,7 +39,7 @@ class SingleBattery3DWidget:
         plotter.set_background("white")
 
         # Add the mesh to the plotter, using the 'Temperature' array to color the mesh
-        plotter.add_mesh(mesh, scalars="Temperature", cmap="coolwarm", show_edges=True, clim=[-20, 60],)
+        plotter.add_mesh(mesh, scalars="Temperature", cmap="coolwarm", show_edges=False, clim=[-20, 60],)
         
         # plotter.add_scalar_bar(title="Temperature (°C)", vertical=True)
         
@@ -54,6 +54,38 @@ class SingleBattery3DWidget:
         plotter.screenshot(save_path)
 
         # Close the plotter after rendering
+        plotter.close()
+
+
+    def render_static_battery_image(self, save_path, render_width, render_height):
+        """
+        Render a static battery image with a green color and breathing LED effect.
+        """
+        import pyvista as pv
+        import numpy as np
+
+        # Load the STL file
+        mesh = pv.read(self.stl_file)
+
+        # Create the plotter
+        plotter = pv.Plotter(off_screen=True, window_size=[render_width, render_height])
+
+        # Add the mesh with green color (static)
+        plotter.add_mesh(mesh, color="green", opacity=0.5)  # Set to semi-transparent green
+
+        # Adjust camera for 3D effect
+        plotter.camera_position = [(1, 1, 1), (0, 0, 0), (0, 0, 1)]  # Modify as needed for a nice 3D angle
+
+        # Add breathing LED effect (change opacity slightly over time)
+        for i in range(10):  # Simulate breathing effect
+            opacity = 0.5 + 0.1 * np.sin(np.pi * i / 5)  # Vary opacity in a sinusoidal manner
+            plotter.update_mesh(mesh, color="green", opacity=opacity)
+            plotter.render()
+
+        # Save the image as PNG
+        plotter.screenshot(save_path)
+
+        # Close the plotter
         plotter.close()
 
     def create_responsive_label(self, save_path):
@@ -89,3 +121,9 @@ class SingleBattery3DWidget:
 
         # Create and render the 3D battery visualization
         self.create_responsive_label(save_path)
+
+    def update_battery_details(self, temperature=None):
+        """
+        This method combines the rendering process and layout update for battery details.
+        """
+        self.update_battery_render(temperature)

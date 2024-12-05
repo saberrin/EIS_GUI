@@ -4,6 +4,8 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QApplication
 import sys
 from PyQt6.QtGui import QColor
 from math import sqrt
+
+from custom_widget.nyquist_plot import NyquistPlot
 class NyquistPlotHistory(QWidget):
 
     def __init__(self, parent=None):

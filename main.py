@@ -27,6 +27,8 @@ from database.repository import Repository
 from collections import defaultdict
 from algorithm.EISAnalyzer import EISAnalyzer
 from custom_widget.nyquist_plot_history import NyquistPlotHistory
+from custom_widget.bode_plot_history import BodePlotHistory
+from custom_widget.bode_plot import BodePlot
 import json
 # OUR APPLICATION MAIN WINDOW :
 #-----> MAIN APPLICATION CLASS
@@ -49,8 +51,16 @@ class MainWindow(QMainWindow):
         self.infoList = infoListView()
         self.ui.horizontalLayout_32.addWidget(self.infoList)
 
+        # 初始化 Bode 图相关小部件
+        # self.BodePage = BodePlot()  # 创建 BodePlot 实例
+        # self.ui.horizontalLayout_33.addWidget(self.BodePage)
+
         self.NyquistPageHistory = NyquistPlotHistory()
         self.ui.verticalLayout_8.addWidget(self.NyquistPageHistory)
+
+        self.BodePageHistory = BodePlotHistory()  # 创建 BodePlotHistory 实例
+        self.ui.horizontalLayout_8.addWidget(self.BodePageHistory)
+
         # Setup buttons and signal connections
         # self.ui.pushButton.clicked.connect(lambda: self.switchPage(0))
         # self.ui.pushButton.clicked.connect(lambda: self.NyquistPageHistory.clear_all_plots())
@@ -104,11 +114,12 @@ class MainWindow(QMainWindow):
                 self.ui.gridLayout.addWidget(label, row, col)
         
         for i in range(14):
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + 20))
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i + 20))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + 32))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i + 32))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_BodeHistory(i + 32))
             
     def update_battertcell(self,battery_number, real_imp, voltage):
-        self.ui.batteryList[battery_number-20].update_text(voltage, real_imp)
+        self.ui.batteryList[battery_number-32].update_text(voltage, real_imp)
 
     def handle_battery_click(self, battery_index):
         """
@@ -144,6 +155,11 @@ class MainWindow(QMainWindow):
         
         # Update battery rendering in the layout
         single_battery_renderer.update_battery_render(None)
+
+        # For static battery image (always green, no temperature change)
+        # static_image_renderer = SingleBattery3DWidget(stl_file, self.ui.horizontalLayout_8, displayed_battery_id)
+        # static_image_renderer.update_battery_details(None)
+
 
         # Update other UI components (e.g., Nyquist history)
         self.update_NyquistHistory(displayed_battery_id)
@@ -192,8 +208,8 @@ class MainWindow(QMainWindow):
         self.container_number = container_number
         self.cluster_number = cluster_number
         self.pack_number = pack_number
-        self.ui.label_14.setText(f"Container {container_number} - Cluster {cluster_number} - Pack {pack_number}")
-        print(f"Identifiers set: Container {container_number}, Cluster {cluster_number}, Pack {pack_number}")
+        self.ui.label_14.setText(f"集装箱 {container_number} - 电池簇 {cluster_number} - 电池包 {pack_number}")
+        print(f"Identifiers set: 集装箱 {container_number}, 电池簇 {cluster_number}, 电池包 {pack_number}")
     
     def init_Nyquist(self):
         self.NyquistPage = NyquistPlot()  
@@ -211,6 +227,30 @@ class MainWindow(QMainWindow):
                 result[real_time_id][1].append(measurement.imag_impedance) 
         for real_time_id, data in result.items():
             self.NyquistPageHistory.add_data(real_time_id,data[0],data[1])
+
+    def update_Bode(self, battery_number, freq, real_impedance, negative_imaginary_impedance):
+        # 调用 Bode 图实例并添加数据
+        self.BodePage.add_data(battery_number, freq, real_impedance, negative_imaginary_impedance)
+
+
+    def update_BodeHistory(self, cell_id):
+        data = self.repo.get_cell_history(cell_id, index=10)
+        
+        # 用来存储处理后的频率、实部和虚部数据
+        result = defaultdict(lambda: ([], [], []))  # 用频率、实部、虚部的列表初始化
+        
+        # 处理每一条数据
+        for real_time_id, measurements in data.items():
+            for measurement in measurements:
+                # 将频率、实部阻抗和虚部阻抗分别添加到各自的列表
+                result[real_time_id][0].append(measurement.frequency)
+                result[real_time_id][1].append(measurement.real_impedance)
+                result[real_time_id][2].append(measurement.imag_impedance)
+        
+        # 将处理后的数据添加到历史 Bode 图中
+        for real_time_id, data in result.items():
+            self.BodePageHistory.add_data(real_time_id, data[0], data[1], data[2])
+
 
     def update_infoList(self,lists):
         data = []

@@ -75,8 +75,9 @@ class MenuWidget(QWidget):
         self.settingWidget.exec()
 
     def update_main_window_ui(self):
-        self.main_window.ui.pushButton.clicked.connect(lambda: self.main_window.switchPage(0))
-        self.main_window.ui.pushButton.clicked.connect(lambda: self.main_window.NyquistPageHistory.clear_all_plots())
+        self.main_window.switchPage(0)
+        self.main_window.NyquistPageHistory.clear_all_plots()
+        self.main_window.BodePageHistory.clear_all_plots()
 if __name__ == '__main__':
     app = QApplication([])
     window = MenuWidget()
