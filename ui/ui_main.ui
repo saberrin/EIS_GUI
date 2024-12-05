@@ -684,19 +684,19 @@ QPushButton:pressed {
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_19">
                  <property name="spacing">
-                  <number>0</number>
+                  <number>3</number>
                  </property>
                  <property name="leftMargin">
                   <number>0</number>
                  </property>
                  <property name="topMargin">
-                  <number>5</number>
+                  <number>0</number>
                  </property>
                  <property name="rightMargin">
                   <number>0</number>
                  </property>
                  <property name="bottomMargin">
-                  <number>5</number>
+                  <number>0</number>
                  </property>
                  <item>
                   <widget class="QFrame" name="frame_home_main">
@@ -720,7 +720,7 @@ QPushButton:pressed {
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_5">
                     <property name="spacing">
-                     <number>5</number>
+                     <number>2</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -767,7 +767,10 @@ QPushButton:pressed {
                        <property name="bottomMargin">
                         <number>0</number>
                        </property>
-                       <property name="spacing">
+                       <property name="horizontalSpacing">
+                        <number>3</number>
+                       </property>
+                       <property name="verticalSpacing">
                         <number>5</number>
                        </property>
                       </layout>
@@ -789,7 +792,7 @@ QPushButton:pressed {
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_15">
                        <property name="spacing">
-                        <number>5</number>
+                        <number>2</number>
                        </property>
                        <property name="leftMargin">
                         <number>0</number>
@@ -837,7 +840,7 @@ QPushButton:pressed {
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_6">
                     <property name="spacing">
-                     <number>5</number>
+                     <number>2</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -1029,7 +1032,7 @@ QPushButton:disabled {
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_16">
                  <property name="spacing">
-                  <number>0</number>
+                  <number>3</number>
                  </property>
                  <property name="leftMargin">
                   <number>0</number>
@@ -1059,7 +1062,7 @@ QPushButton:disabled {
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_3">
                     <property name="spacing">
-                     <number>0</number>
+                     <number>2</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -1158,7 +1161,7 @@ QPushButton:disabled {
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_4">
                     <property name="spacing">
-                     <number>0</number>
+                     <number>2</number>
                     </property>
                     <property name="leftMargin">
                      <number>0</number>
@@ -1254,7 +1257,7 @@ QPushButton:disabled {
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_20">
                        <property name="spacing">
-                        <number>5</number>
+                        <number>0</number>
                        </property>
                        <property name="leftMargin">
                         <number>0</number>
