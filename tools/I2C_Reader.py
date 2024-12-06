@@ -17,7 +17,7 @@ class I2CReader(QObject):
     new_data_received_finish_list = pyqtSignal(list)
     new_data_received_batterycellInfo = pyqtSignal(int, float, float) #实部阻抗和电压数据
 
-    def __init__(self, bus_number,timeout_duration=0.2):
+    def __init__(self, bus_number,timeout_duration=0.1):
         super().__init__()
         self.device = "/dev/i2c-" + str(bus_number)
         self.bus = bus_number
@@ -213,7 +213,14 @@ class I2CReader(QObject):
 
         if 'EIS_data_packet_start' in line:
             voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
+            
             cell_id = int(line.split('_')[0], 16)
+            if '_A' in line:
+                cell_id  = cell_id
+            elif '_B' in line:
+                cell_id  = cell_id + 1
+            else:
+                cell_id = None 
             segments = line.split(';')
             result = None
             for segment in segments:
@@ -241,6 +248,12 @@ class I2CReader(QObject):
             
             # Extract battery number from the 0x-prefixed address
             battery_number = int(line.split('_')[0], 16)
+            if '_A' in line:
+                battery_number  = battery_number
+            elif '_B' in line:
+                battery_number  = battery_number + 1
+            else:
+                battery_number = None 
 
             # Extract the frequency, real impedance, and imaginary impedance
             if "SWF" in line:
@@ -282,6 +295,12 @@ class I2CReader(QObject):
 
                 # Cell ID (unique identifier for your device, like 0x28)
                 cell_id = int(line.split('_')[0], 16)
+                if '_A' in line:
+                    cell_id  = cell_id
+                elif '_B' in line:
+                    cell_id  = cell_id + 1
+                else:
+                    cell_id = None 
 
                 # Insert the parsed measurements into the database
                 self.insert_measurements(cell_id, data_points, voltage)
