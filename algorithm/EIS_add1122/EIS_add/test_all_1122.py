@@ -9,7 +9,7 @@ import Temperature_Rct_Estimation_all
 # 修改i 可以使用1~45
 i = 20
 # 频率上限统一为100Hz
-eispath = 'eis_save/{}.txt'.format(i)
+eispath = './eis_save/{}.txt'.format(i)
 data = np.loadtxt(eispath)
 # 输入当前电池电压即可 最小为0 最大为1
 Voltage = np.loadtxt('eis_save/Voltage.txt')
