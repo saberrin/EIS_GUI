@@ -921,21 +921,11 @@ QPushButton:pressed {
                      </widget>
                     </item>
                     <item>
-                     <widget class="QTextEdit" name="textEdit">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                        <horstretch>0</horstretch>
-                        <verstretch>16</verstretch>
-                       </sizepolicy>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QFrame" name="frame_13">
+                     <widget class="QFrame" name="frame_8">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                         <horstretch>0</horstretch>
-                        <verstretch>4</verstretch>
+                        <verstretch>20</verstretch>
                        </sizepolicy>
                       </property>
                       <property name="frameShape">
@@ -944,9 +934,9 @@ QPushButton:pressed {
                       <property name="frameShadow">
                        <enum>QFrame::Raised</enum>
                       </property>
-                      <layout class="QHBoxLayout" name="horizontalLayout_37">
+                      <layout class="QHBoxLayout" name="horizontalLayout_17">
                        <property name="spacing">
-                        <number>5</number>
+                        <number>2</number>
                        </property>
                        <property name="leftMargin">
                         <number>0</number>
@@ -961,60 +951,22 @@ QPushButton:pressed {
                         <number>0</number>
                        </property>
                        <item>
-                        <widget class="QLineEdit" name="lineEdit">
+                        <widget class="QTextEdit" name="textEdit">
                          <property name="sizePolicy">
-                          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                           <horstretch>5</horstretch>
+                          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                           <horstretch>4</horstretch>
                            <verstretch>0</verstretch>
                           </sizepolicy>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QPushButton" name="pushButton_6">
+                        <widget class="QTextEdit" name="textEdit_3">
                          <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
+                          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                           <horstretch>6</horstretch>
                            <verstretch>0</verstretch>
                           </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>60</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">QPushButton {
-	font: 10pt &quot;Adobe 黑体 Std R&quot;;
-	border: 2px solid rgb(51,51,51);
-	border-radius: 5px;	
-	color:rgb(255,255,255);
-	background-color: rgb(51,51,51);
-}
-QPushButton:hover {
-	border: 2px solid rgb(0,143,150);
-	background-color: rgb(0,143,150);
-}
-QPushButton:pressed {	
-	border: 2px solid rgb(0,143,150);
-	background-color: rgb(51,51,51);
-}
-
-QPushButton:disabled {	
-	border-radius: 5px;	
-	border: 2px solid rgb(112,112,112);
-	background-color: rgb(112,112,112);
-}</string>
-                         </property>
-                         <property name="text">
-                          <string>发送</string>
-                         </property>
-                         <property name="iconSize">
-                          <size>
-                           <width>20</width>
-                           <height>25</height>
-                          </size>
                          </property>
                         </widget>
                        </item>
@@ -1346,7 +1298,7 @@ QPushButton:disabled {
               <widget class="QFrame" name="frame_11">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>3</horstretch>
+                 <horstretch>4</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
@@ -1419,78 +1371,6 @@ QPushButton:disabled {
                  <number>1</number>
                 </property>
                 <item>
-                 <widget class="QComboBox" name="comboBox_4">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                    <horstretch>1</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QComboBox {
-	font: 10pt &quot;Adobe 黑体 Std R&quot;;
-	border: 2px solid rgb(51,51,51);
-	border-radius: 5px;	
-	color:rgb(255,255,255);
-	background-color: rgb(51,51,51);
-}
-
-QComboBox:hover {
-	border: 2px solid rgb(0,143,170);
-	border-radius: 5px;	
-	color:rgb(255,255,255);
-	background-color: rgb(0,143,170);
-}
-
-QComboBox:!editable, QComboBox::drop-down:editable {
-	background: rgb(51,51,51);
-}
-
-QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-    background:rgb(51,51,51);
-}
-
-QComboBox:on { /* shift the text when the popup opens */
-    padding-top: 3px;
-    padding-left: 4px;
-}
-
-QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 15px;
-
-    border-left-width: 1px;
-    border-left-color: darkgray;
-    border-left-style: solid; /* just a single line */
-    border-top-right-radius: 5px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 5px;
-}
-
-QComboBox::down-arrow {
-    image: url(icons/1x/arrow.png);
-}
-
-QComboBox::down-arrow:on { /* shift the arrow when popup is open */
-    top: 1px;
-    left: 1px;
-}
-
-QComboBox::drop-down {
-    background:rgb(51,51,51);
-}
-
-</string>
-                  </property>
-                  <property name="currentText">
-                   <string/>
-                  </property>
-                  <property name="sizeAdjustPolicy">
-                   <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <widget class="QPushButton" name="pushButton_3">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1559,42 +1439,6 @@ QPushButton:disabled {
                   </property>
                   <property name="text">
                    <string>断开</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="pushButton_5">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                    <horstretch>1</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QPushButton {
-	font: 10pt &quot;Adobe 黑体 Std R&quot;;
-	border: 2px solid rgb(51,51,51);
-	border-radius: 5px;	
-	color:rgb(255,255,255);
-	background-color: rgb(51,51,51);
-}
-QPushButton:hover {
-	border: 2px solid rgb(0,143,150);
-	background-color: rgb(0,143,150);
-}
-QPushButton:pressed {	
-	border: 2px solid rgb(0,143,150);
-	background-color: rgb(51,51,51);
-}
-
-QPushButton:disabled {	
-	border-radius: 5px;	
-	border: 2px solid rgb(112,112,112);
-	background-color: rgb(112,112,112);
-}</string>
-                  </property>
-                  <property name="text">
-                   <string>刷新</string>
                   </property>
                  </widget>
                 </item>
