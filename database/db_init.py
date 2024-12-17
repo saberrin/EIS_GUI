@@ -33,12 +33,15 @@ def init_database():
         # Create the battery_pack table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS battery_pack (
-            "pack_id" INTEGER PRIMARY KEY AUTOINCREMENT,
-            "cluster_id" INTEGER,
+            "battery_pack_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+            "container_number" INTEGER,
+            "cluster_number" INTEGER,
+            "pack_number" INTEGER,  
             "description" TEXT,
             "dispersion_rate" REAL,
             "pack_saftety_rate" REAL,
             "real_time_id" TEXT,
+                       
             CONSTRAINT "fk_pack_cluster" FOREIGN KEY ("cluster_id") REFERENCES "battery_cluster" ("cluster_id") ON DELETE SET NULL ON UPDATE CASCADE
         );
         """)
@@ -59,6 +62,17 @@ def init_database():
         );
         """)
 
+        # 检查 sent_time 是否存在，若不存在则添加
+        cursor.execute("PRAGMA table_info(eis_measurement);")
+        columns = [column[1] for column in cursor.fetchall()]
+        if "sent_time" not in columns:
+            cursor.execute("""
+            ALTER TABLE eis_measurement
+            ADD COLUMN sent_time TEXT DEFAULT NULL;
+            """)
+            print("Added 'sent_time' column to eis_measurement table.")
+
+
         # Create an index for optimized search on eis_measurement table
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_cell_id_creation_time ON eis_measurement(cell_id, real_time_id);")
 
@@ -66,7 +80,6 @@ def init_database():
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS generated_info (
             "generated_info_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            "measurement_id" INTEGER,
             "dispersion_rate" REAL,
             "temperature" REAL,
             "real_time_id" TEXT,
