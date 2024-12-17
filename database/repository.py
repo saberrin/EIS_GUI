@@ -54,7 +54,33 @@ class Repository:
                 INSERT INTO generated_info (measurement_id, dispersion_rate, temperature, real_time_id, cell_id,
                                             sei_rate, dendrites_rate, electrolyte_rate, polar_rate, conduct_rate)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            """, generated_info_list)
+            """, [
+            (info['measurement_id'], info['dispersion_rate'], info['temperature'], info['real_time_id'], 
+             info['cell_id'], info['sei_rate'], info['dendrites_rate'], info['electrolyte_rate'], 
+             info['polar_rate'], info['conduct_rate'])
+            for info in generated_info_list
+            ])
+            connection.commit()
+        finally:
+            if connection:
+                connection.close()
+    
+    def insert_battery_pack(self, battery_pack_list: List[Dict]):
+        """
+        Inserts generated info data into the database.
+        """
+        try:
+            connection = sqlite3.connect(DB_PATH)
+            cursor = connection.cursor()
+            cursor.executemany("""
+                INSERT INTO battery_pack (pack_id, cluster_id, description, dispersion_rate, pack_saftety_rate,
+                                            real_time_id)
+                VALUES (?, ?, ?, ?, ?, ?);
+            """, [
+            (pack['pack_id'], pack['cluster_id'], pack['description'], pack['dispersion_rate'], 
+             pack['pack_saftety_rate'], pack['real_time_id'])
+            for pack in battery_pack_list
+            ])
             connection.commit()
         finally:
             if connection:
