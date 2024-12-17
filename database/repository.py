@@ -73,11 +73,11 @@ class Repository:
             connection = sqlite3.connect(DB_PATH)
             cursor = connection.cursor()
             cursor.executemany("""
-                INSERT INTO battery_pack (pack_id, cluster_id, description, dispersion_rate, pack_saftety_rate,
+                INSERT INTO battery_pack (cluster_id, description, dispersion_rate, pack_saftety_rate,
                                             real_time_id)
                 VALUES (?, ?, ?, ?, ?, ?);
             """, [
-            (pack['pack_id'], pack['cluster_id'], pack['description'], pack['dispersion_rate'], 
+            (pack['cluster_id'], pack['description'], pack['dispersion_rate'], 
              pack['pack_saftety_rate'], pack['real_time_id'])
             for pack in battery_pack_list
             ])
