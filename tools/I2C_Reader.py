@@ -31,6 +31,7 @@ class I2CReader(QObject):
         self.voltage = None
         self.repo = Repository()
         self.confirmed_addresses = []
+        self.confirmed_addresses_1 = [] #继电器切换后的电芯地址                                     
         self.failed_addresses = []
         self.finish_list = []
 
@@ -82,6 +83,7 @@ class I2CReader(QObject):
             if len(self.confirmed_addresses) + len(self.failed_addresses) == len(address_list):
                 print("Starting data reading for confirmed addresses...")
                 self.new_data_received_check.emit("硬件地址校验完成，开始数据读取...")
+                self.confirmed_addresses_1 = [x + 1 for x in self.confirmed_addresses]
                 for address in self.confirmed_addresses:
                     self.thread = threading.Thread(target=self.read_data, args=(address,),daemon=True)
                     self.thread.start()
@@ -352,7 +354,7 @@ class I2CReader(QObject):
             print(f"Inserting {len(measurements)} measurements for cell {cell_id}.")
             self.repo.insert_measurements(measurements)
             self.finish_list.append(cell_id)
-            if Counter(self.finish_list) == Counter(self.confirmed_addresses):
+            if Counter(self.finish_list) == Counter(self.confirmed_addresses) + Counter(self.confirmed_addresses_1):
                 self.new_data_received_finish_list.emit(self.finish_list)
                 self.new_data_received_check.emit("数据读取完成,AI智能分析中...")
             print("Data inserted successfully into eis_measurement.")

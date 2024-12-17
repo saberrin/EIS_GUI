@@ -356,67 +356,42 @@ class Ui_MainWindow(object):
         self.horizontalLayout_32.setSpacing(0)
         self.horizontalLayout_32.setObjectName("horizontalLayout_32")
         self.verticalLayout_6.addWidget(self.frame_12)
-        self.textEdit = QtWidgets.QTextEdit(parent=self.frame_home_stat)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.frame_8 = QtWidgets.QFrame(parent=self.frame_home_stat)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(16)
+        sizePolicy.setVerticalStretch(20)
+        sizePolicy.setHeightForWidth(self.frame_8.sizePolicy().hasHeightForWidth())
+        self.frame_8.setSizePolicy(sizePolicy)
+        self.frame_8.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.frame_8.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.frame_8.setObjectName("frame_8")
+        self.horizontalLayout_17 = QtWidgets.QHBoxLayout(self.frame_8)
+        self.horizontalLayout_17.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_17.setSpacing(2)
+        self.horizontalLayout_17.setObjectName("horizontalLayout_17")
+        self.textEdit = QtWidgets.QTextEdit(parent=self.frame_8)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(4)
+        sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textEdit.sizePolicy().hasHeightForWidth())
         self.textEdit.setSizePolicy(sizePolicy)
         self.textEdit.setObjectName("textEdit")
-        self.verticalLayout_6.addWidget(self.textEdit)
-        self.frame_13 = QtWidgets.QFrame(parent=self.frame_home_stat)
+        self.horizontalLayout_17.addWidget(self.textEdit)
+        self.frame_13 = QtWidgets.QFrame(parent=self.frame_8)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(4)
+        sizePolicy.setHorizontalStretch(6)
+        sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame_13.sizePolicy().hasHeightForWidth())
         self.frame_13.setSizePolicy(sizePolicy)
         self.frame_13.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.frame_13.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame_13.setObjectName("frame_13")
-        self.horizontalLayout_37 = QtWidgets.QHBoxLayout(self.frame_13)
-        self.horizontalLayout_37.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_37.setSpacing(5)
-        self.horizontalLayout_37.setObjectName("horizontalLayout_37")
-        self.lineEdit = QtWidgets.QLineEdit(parent=self.frame_13)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(5)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
-        self.lineEdit.setSizePolicy(sizePolicy)
-        self.lineEdit.setObjectName("lineEdit")
-        self.horizontalLayout_37.addWidget(self.lineEdit)
-        self.pushButton_6 = QtWidgets.QPushButton(parent=self.frame_13)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_6.sizePolicy().hasHeightForWidth())
-        self.pushButton_6.setSizePolicy(sizePolicy)
-        self.pushButton_6.setMaximumSize(QtCore.QSize(60, 16777215))
-        self.pushButton_6.setStyleSheet("QPushButton {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
-"    border: 2px solid rgb(51,51,51);\n"
-"    border-radius: 5px;    \n"
-"    color:rgb(255,255,255);\n"
-"    background-color: rgb(51,51,51);\n"
-"}\n"
-"QPushButton:hover {\n"
-"    border: 2px solid rgb(0,143,150);\n"
-"    background-color: rgb(0,143,150);\n"
-"}\n"
-"QPushButton:pressed {    \n"
-"    border: 2px solid rgb(0,143,150);\n"
-"    background-color: rgb(51,51,51);\n"
-"}\n"
-"\n"
-"QPushButton:disabled {    \n"
-"    border-radius: 5px;    \n"
-"    border: 2px solid rgb(112,112,112);\n"
-"    background-color: rgb(112,112,112);\n"
-"}")
-        self.pushButton_6.setIconSize(QtCore.QSize(20, 25))
-        self.pushButton_6.setObjectName("pushButton_6")
-        self.horizontalLayout_37.addWidget(self.pushButton_6)
-        self.verticalLayout_6.addWidget(self.frame_13)
+        self.horizontalLayout_18 = QtWidgets.QHBoxLayout(self.frame_13)
+        self.horizontalLayout_18.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_18.setSpacing(0)
+        self.horizontalLayout_18.setObjectName("horizontalLayout_18")
+        self.horizontalLayout_17.addWidget(self.frame_13)
+        self.verticalLayout_6.addWidget(self.frame_8)
         self.horizontalLayout_19.addWidget(self.frame_home_stat)
         self.stackedWidget.addWidget(self.page_top)
         self.page_sub = QtWidgets.QWidget()
@@ -522,14 +497,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_20.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_20.setSpacing(0)
         self.horizontalLayout_20.setObjectName("horizontalLayout_20")
-        self.textEdit_2 = QtWidgets.QTextEdit(parent=self.frame_9)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.textEdit_2.sizePolicy().hasHeightForWidth())
-        self.textEdit_2.setSizePolicy(sizePolicy)
-        self.textEdit_2.setObjectName("textEdit_2")
-        self.horizontalLayout_20.addWidget(self.textEdit_2)
         self.verticalLayout_4.addWidget(self.frame_9)
         self.horizontalLayout_16.addWidget(self.frame_right)
         self.stackedWidget.addWidget(self.page_sub)
@@ -554,7 +521,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_11.setObjectName("horizontalLayout_11")
         self.frame_11 = QtWidgets.QFrame(parent=self.frame_low)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(3)
+        sizePolicy.setHorizontalStretch(4)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame_11.sizePolicy().hasHeightForWidth())
         self.frame_11.setSizePolicy(sizePolicy)
@@ -593,70 +560,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_12 = QtWidgets.QHBoxLayout(self.frame_10)
         self.horizontalLayout_12.setContentsMargins(-1, 1, -1, 1)
         self.horizontalLayout_12.setObjectName("horizontalLayout_12")
-        self.comboBox_4 = QtWidgets.QComboBox(parent=self.frame_10)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_4.sizePolicy().hasHeightForWidth())
-        self.comboBox_4.setSizePolicy(sizePolicy)
-        self.comboBox_4.setStyleSheet("QComboBox {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
-"    border: 2px solid rgb(51,51,51);\n"
-"    border-radius: 5px;    \n"
-"    color:rgb(255,255,255);\n"
-"    background-color: rgb(51,51,51);\n"
-"}\n"
-"\n"
-"QComboBox:hover {\n"
-"    border: 2px solid rgb(0,143,170);\n"
-"    border-radius: 5px;    \n"
-"    color:rgb(255,255,255);\n"
-"    background-color: rgb(0,143,170);\n"
-"}\n"
-"\n"
-"QComboBox:!editable, QComboBox::drop-down:editable {\n"
-"    background: rgb(51,51,51);\n"
-"}\n"
-"\n"
-"QComboBox:!editable:on, QComboBox::drop-down:editable:on {\n"
-"    background:rgb(51,51,51);\n"
-"}\n"
-"\n"
-"QComboBox:on { /* shift the text when the popup opens */\n"
-"    padding-top: 3px;\n"
-"    padding-left: 4px;\n"
-"}\n"
-"\n"
-"QComboBox::drop-down {\n"
-"    subcontrol-origin: padding;\n"
-"    subcontrol-position: top right;\n"
-"    width: 15px;\n"
-"\n"
-"    border-left-width: 1px;\n"
-"    border-left-color: darkgray;\n"
-"    border-left-style: solid; /* just a single line */\n"
-"    border-top-right-radius: 5px; /* same radius as the QComboBox */\n"
-"    border-bottom-right-radius: 5px;\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow {\n"
-"    image: url(icons/1x/arrow.png);\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow:on { /* shift the arrow when popup is open */\n"
-"    top: 1px;\n"
-"    left: 1px;\n"
-"}\n"
-"\n"
-"QComboBox::drop-down {\n"
-"    background:rgb(51,51,51);\n"
-"}\n"
-"\n"
-"")
-        self.comboBox_4.setCurrentText("")
-        self.comboBox_4.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
-        self.comboBox_4.setObjectName("comboBox_4")
-        self.horizontalLayout_12.addWidget(self.comboBox_4)
         self.pushButton_3 = QtWidgets.QPushButton(parent=self.frame_10)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(1)
@@ -715,35 +618,6 @@ class Ui_MainWindow(object):
 "}")
         self.pushButton_4.setObjectName("pushButton_4")
         self.horizontalLayout_12.addWidget(self.pushButton_4)
-        self.pushButton_5 = QtWidgets.QPushButton(parent=self.frame_10)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_5.sizePolicy().hasHeightForWidth())
-        self.pushButton_5.setSizePolicy(sizePolicy)
-        self.pushButton_5.setStyleSheet("QPushButton {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
-"    border: 2px solid rgb(51,51,51);\n"
-"    border-radius: 5px;    \n"
-"    color:rgb(255,255,255);\n"
-"    background-color: rgb(51,51,51);\n"
-"}\n"
-"QPushButton:hover {\n"
-"    border: 2px solid rgb(0,143,150);\n"
-"    background-color: rgb(0,143,150);\n"
-"}\n"
-"QPushButton:pressed {    \n"
-"    border: 2px solid rgb(0,143,150);\n"
-"    background-color: rgb(51,51,51);\n"
-"}\n"
-"\n"
-"QPushButton:disabled {    \n"
-"    border-radius: 5px;    \n"
-"    border: 2px solid rgb(112,112,112);\n"
-"    background-color: rgb(112,112,112);\n"
-"}")
-        self.pushButton_5.setObjectName("pushButton_5")
-        self.horizontalLayout_12.addWidget(self.pushButton_5)
         self.horizontalLayout_11.addWidget(self.frame_10)
         self.verticalLayout_2.addWidget(self.frame_low)
         self.horizontalLayout_2.addWidget(self.frame_bottom_east)
@@ -751,7 +625,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -761,7 +635,5 @@ class Ui_MainWindow(object):
         self.bn_min.setToolTip(_translate("MainWindow", "Minimize"))
         self.bn_max.setToolTip(_translate("MainWindow", "Maximize"))
         self.bn_close.setToolTip(_translate("MainWindow", "Close"))
-        self.pushButton_6.setText(_translate("MainWindow", "发送"))
         self.pushButton_3.setText(_translate("MainWindow", "连接"))
         self.pushButton_4.setText(_translate("MainWindow", "断开"))
-        self.pushButton_5.setText(_translate("MainWindow", "刷新"))

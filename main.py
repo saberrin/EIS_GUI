@@ -29,7 +29,10 @@ from algorithm.EISAnalyzer import EISAnalyzer
 from custom_widget.nyquist_plot_history import NyquistPlotHistory
 from custom_widget.bode_plot_history import BodePlotHistory
 from custom_widget.bode_plot import BodePlot
+from custom_widget.PackAdviceTextEdit import PackAdviceTextEdit
+from custom_widget.CellAdviceTextEdit import CellAdviceTextEdit
 import json
+from algorithm.start_algorithm import StartAlgorithm
 # OUR APPLICATION MAIN WINDOW :
 #-----> MAIN APPLICATION CLASS
 class MainWindow(QMainWindow):
@@ -61,9 +64,12 @@ class MainWindow(QMainWindow):
         self.BodePageHistory = BodePlotHistory()  # 创建 BodePlotHistory 实例
         self.ui.horizontalLayout_8.addWidget(self.BodePageHistory)
 
+        self.PackTextEdit = PackAdviceTextEdit()
+        self.ui.horizontalLayout_18.addWidget(self.PackTextEdit)
+
+        self.CellTextEdit = CellAdviceTextEdit()
+        self.ui.horizontalLayout_20.addWidget(self.CellTextEdit)
         # Setup buttons and signal connections
-        # self.ui.pushButton.clicked.connect(lambda: self.switchPage(0))
-        # self.ui.pushButton.clicked.connect(lambda: self.NyquistPageHistory.clear_all_plots())
         self.ui.pushButton_3.clicked.connect(self.start_loop)
         self.ui.pushButton_4.clicked.connect(self.stop_loop)
         self.ui.pushButton_4.setEnabled(False)
@@ -115,6 +121,7 @@ class MainWindow(QMainWindow):
             self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + 32))
             self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i + 32))
             self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_BodeHistory(i + 32))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_textEdit_celladvice(i + 32))
             
     def update_battertcell(self,battery_number, real_imp, voltage):
         self.ui.batteryList[battery_number-32].update_text(voltage, real_imp)
@@ -157,8 +164,6 @@ class MainWindow(QMainWindow):
         # For static battery image (always green, no temperature change)
         # static_image_renderer = SingleBattery3DWidget(stl_file, self.ui.horizontalLayout_8, displayed_battery_id)
         # static_image_renderer.update_battery_details(None)
-
-
         # Update other UI components (e.g., Nyquist history)
         self.update_NyquistHistory(displayed_battery_id)
 
@@ -183,6 +188,9 @@ class MainWindow(QMainWindow):
 
         self.reader.new_data_received_SWF.connect(self.update_Nyquist)
         self.reader.new_data_received_finish_list.connect(self.update_infoList)
+        self.reader.new_data_received_finish_list.connect(self.update_textEdit_packadvice)
+        self.reader.new_data_received_finish_list.connect(self.start_algorithm)
+        # self.reader.new_data_received_finish_list.connect(self.update_textEdit_celladvice)
         self.reader.new_data_received_batterycellInfo.connect(self.update_battertcell)
         self.reader.new_data_received_check.connect(self.update_textEdit)
         
@@ -196,6 +204,10 @@ class MainWindow(QMainWindow):
             self.reader.close()
         self.ui.pushButton_3.setEnabled(True)
         self.ui.pushButton_4.setEnabled(False)
+
+    def start_algorithm(self,lists):
+        self.algo = StartAlgorithm(lists)
+        self.algo.start()
 
     def closeEvent(self, event):
         if self.conn:
@@ -255,7 +267,6 @@ class MainWindow(QMainWindow):
         data = []
         for cell_id in lists:
             data.append(self.repo.get_cell_measurements(cell_id))
-        print(data)
         result = defaultdict(lambda: ([], []))  
         for measurements in data:
             for measurement in measurements:
@@ -276,8 +287,14 @@ class MainWindow(QMainWindow):
         font = QFont('Arial', 15)  
         self.ui.textEdit.setFont(font)
         self.ui.textEdit.setStyleSheet("color: white")
-        self.ui.textEdit.append(line)  
+        self.ui.textEdit.append(line)
+
+    def update_textEdit_packadvice(self):
+        self.PackTextEdit.update_textedit()
     
+    def update_textEdit_celladvice(self,cell_id):
+        self.CellTextEdit.update_textedit(cell_id)
+
     def update_subtextEdit(self,line):
         self.ui.textEdit_2.append(line) 
 
