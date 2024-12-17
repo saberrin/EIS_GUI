@@ -75,7 +75,7 @@ class Repository:
             cursor.executemany("""
                 INSERT INTO battery_pack (cluster_id, description, dispersion_rate, pack_saftety_rate,
                                             real_time_id)
-                VALUES (?, ?, ?, ?, ?, ?);
+                VALUES (?, ?, ?, ?, ?);
             """, [
             (pack['cluster_id'], pack['description'], pack['dispersion_rate'], 
              pack['pack_saftety_rate'], pack['real_time_id'])
