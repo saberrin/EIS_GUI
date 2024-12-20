@@ -6,6 +6,8 @@ from PyQt6.QtWidgets import QDialog
 from PyQt6.QtGui import  QFont
 import json
 import threading
+from PyQt6.QtGui import QFont, QColor
+
 class paraSetting(QDialog):
     update_ui_signal = pyqtSignal(str, str)  
     def __init__(self):
@@ -31,8 +33,11 @@ class paraSetting(QDialog):
         self.failed_addresses = []
         self.d.bn_west.clicked.connect(self.start_thread)
         self.update_ui_signal.connect(self.show_message_box)
+        self.current_msg_box = None
         
     def start_thread(self):
+        result_message = ("参数配置中，请等待。。。" )
+        self.update_ui_signal.emit('提示', result_message)
         thread = threading.Thread(target=self.update_para)
         thread.start()
         
@@ -108,9 +113,34 @@ class paraSetting(QDialog):
         except AttributeError:
             self.update_ui_signal.emit('提示', 'I2C总线未连接')
             print("Attempted to write to a closed port.") 
-        
+
     def show_message_box(self, title, message):
-        QMessageBox.about(self, title, message)
+        # If a message box is already being displayed, close it first
+        if self.current_msg_box:
+            self.current_msg_box.close()
+
+        # Create a new message box
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        
+        # Set font size and color
+        msg_box.setStyleSheet("""
+            QMessageBox {
+                font-size: 14px;
+                color: white;
+            }
+            QMessageBox QLabel {
+                color: white;
+            }
+        """)
+
+        # Show the message box without blocking the thread
+        msg_box.show()  # Use show() to display the message box without blocking
+
+        # Save the current message box instance
+        self.current_msg_box = msg_box
+
         
                 
 

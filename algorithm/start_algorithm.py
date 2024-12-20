@@ -58,16 +58,16 @@ class StartAlgorithm(QObject):
         """
         Generate random generated info data.
         """
-        data = []
-        for cell_id in self.address:
-            data.append(self.repository.get_cell_measurements(cell_id))
-        result = defaultdict(lambda: ([], []))  
-        for measurements in data:
-            for measurement in measurements:
-                cell_id = f"Battery{measurement.cell_id}"  
-                result[cell_id][0].append(measurement.real_impedance)  
-                result[cell_id][1].append(measurement.imag_impedance)  
-        result = dict(result)
+        # data = []
+        # for cell_id in self.address:
+        #     data.append(self.repository.get_cell_measurements(cell_id))
+        # result = defaultdict(lambda: ([], []))  
+        # for measurements in data:
+        #     for measurement in measurements:
+        #         cell_id = f"Battery{measurement.cell_id}"  
+        #         result[cell_id][0].append(measurement.real_impedance)  
+        #         result[cell_id][1].append(measurement.imag_impedance)  
+        # result = dict(result)
         ##
         ##这里加入算法
         ##
