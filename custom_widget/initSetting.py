@@ -7,8 +7,9 @@ from PyQt6 import uic
 CONTAINER_NUMBER = 2
 CLUSTER_NUMBER = 2 
 PACK_NUMBER = 8 
+PORT_NUMBER = 4
 class initSetting(QDialog):
-    identifier = pyqtSignal(int, int, int)
+    identifier = pyqtSignal(int, int, int,int)
     def __init__(self):
         super().__init__()
         self.d = Ui_initSetting()
@@ -19,22 +20,25 @@ class initSetting(QDialog):
         self.d.comboBox_2.addItem("请选择")
         self.d.comboBox_3.addItem("请选择")
         self.d.comboBox.addItem("请选择")
+        self.d.comboBox_4.addItem("请选择")
         self.d.comboBox_2.addItems([str(i) for i in range(1, CONTAINER_NUMBER + 1)])
         self.d.comboBox_3.addItems([str(i) for i in range(1, CLUSTER_NUMBER + 1)])
         self.d.comboBox.addItems([str(i) for i in range(1, PACK_NUMBER + 1)])
+        self.d.comboBox_4.addItems([str(i) for i in range(1, PORT_NUMBER + 1)])
 
         self.d.pushButton_2.clicked.connect(self.update_para)
     def update_para(self):
         container = self.d.comboBox_2.currentText()
         cluster = self.d.comboBox_3.currentText()
         pack = self.d.comboBox.currentText()
-
-        if container != "请选择" and cluster != "请选择" and pack != "请选择":
+        port = self.d.comboBox_4.currentText()
+        if container != "请选择" and cluster != "请选择" and pack != "请选择" and port != "请选择":
             try:
                 container_int = int(container)
                 cluster_int = int(cluster)
                 pack_int = int(pack)
-                self.identifier.emit(container_int,cluster_int,pack_int)
+                port_int = int(port)
+                self.identifier.emit(container_int,cluster_int,pack_int,port_int)
                 self.close()
                 QMessageBox.about(self, '提示', '编号设置完成！')
             except ValueError:
