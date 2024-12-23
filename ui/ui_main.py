@@ -225,29 +225,15 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame_menu.sizePolicy().hasHeightForWidth())
         self.frame_menu.setSizePolicy(sizePolicy)
-        self.frame_menu.setMinimumSize(QtCore.QSize(0, 30))
-        self.frame_menu.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.frame_menu.setMinimumSize(QtCore.QSize(0, 40))
+        self.frame_menu.setMaximumSize(QtCore.QSize(16777215, 40))
         self.frame_menu.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.frame_menu.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.frame_menu.setObjectName("frame_menu")
         self.horizontalLayout_38 = QtWidgets.QHBoxLayout(self.frame_menu)
         self.horizontalLayout_38.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_38.setSpacing(5)
+        self.horizontalLayout_38.setSpacing(2)
         self.horizontalLayout_38.setObjectName("horizontalLayout_38")
-        self.frame_14 = QtWidgets.QFrame(parent=self.frame_menu)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.frame_14.sizePolicy().hasHeightForWidth())
-        self.frame_14.setSizePolicy(sizePolicy)
-        self.frame_14.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.frame_14.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        self.frame_14.setObjectName("frame_14")
-        self.horizontalLayout_21 = QtWidgets.QHBoxLayout(self.frame_14)
-        self.horizontalLayout_21.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_21.setSpacing(0)
-        self.horizontalLayout_21.setObjectName("horizontalLayout_21")
-        self.horizontalLayout_38.addWidget(self.frame_14)
         self.verticalLayout_2.addWidget(self.frame_menu)
         self.frame = QtWidgets.QFrame(parent=self.frame_bottom_east)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
@@ -514,8 +500,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame_low.sizePolicy().hasHeightForWidth())
         self.frame_low.setSizePolicy(sizePolicy)
-        self.frame_low.setMinimumSize(QtCore.QSize(0, 30))
-        self.frame_low.setMaximumSize(QtCore.QSize(16777215, 30))
+        self.frame_low.setMinimumSize(QtCore.QSize(0, 40))
+        self.frame_low.setMaximumSize(QtCore.QSize(16777215, 40))
         self.frame_low.setStyleSheet("")
         self.frame_low.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.frame_low.setFrameShadow(QtWidgets.QFrame.Shadow.Plain)
@@ -572,7 +558,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_3.sizePolicy().hasHeightForWidth())
         self.pushButton_3.setSizePolicy(sizePolicy)
         self.pushButton_3.setStyleSheet("QPushButton {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
+"    font: 16pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -601,7 +587,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4.sizePolicy().hasHeightForWidth())
         self.pushButton_4.setSizePolicy(sizePolicy)
         self.pushButton_4.setStyleSheet("QPushButton {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
+"    font: 16pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"

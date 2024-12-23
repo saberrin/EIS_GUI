@@ -40,9 +40,34 @@ class initSetting(QDialog):
                 port_int = int(port)
                 self.identifier.emit(container_int,cluster_int,pack_int,port_int)
                 self.close()
-                QMessageBox.about(self, '提示', '编号设置完成！')
+                self.show_message_box('提示', '编号设置完成！')
             except ValueError:
-                QMessageBox.about(self, '提示', '编号必须是有效的数字！')
+                self.show_message_box('提示', '编号必须是有效的数字！')
         else:
-            QMessageBox.about(self, '提示', '请完成所有编号设置！')
+            self.show_message_box('提示', '请完成所有编号设置！')
+    
+    def show_message_box(self, title, message):
+        # If a message box is already being displayed, close it first
+
+
+        # Create a new message box
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        
+        # Set font size and color
+        msg_box.setStyleSheet("""
+            QMessageBox {
+                font-size: 14px;
+                color: white;
+            }
+            QMessageBox QLabel {
+                color: white;
+            }
+        """)
+
+        # Show the message box without blocking the thread
+        msg_box.show()  # Use show() to display the message box without blocking
+
+      
     

@@ -12,16 +12,22 @@ class MenuWidget(QWidget):
         menu_bar = QMenuBar(self)
 
         # 设置菜单栏的字体
-        menu_font = QFont("Arial", 12)  # 字体和大小
+        menu_font = QFont("Arial", 20)  # 字体和大小
         menu_bar.setFont(menu_font)
 
         # 使用样式表改变菜单栏的背景颜色
         
-        # menu_bar.setStyleSheet("QMenuBar { background-color: #A9A9A9; }")  # 灰色背景
+        menu_bar.setStyleSheet("""
+            QMenuBar { color: white; }
+            QMenu { min-width: 200px; }
+            QMenu::item { padding: 10px; }  
+        """)
 
 
-        # 添加"文件"菜单
-        file_menu = menu_bar.addMenu('文件')
+
+
+        # # 添加"文件"菜单
+        # file_menu = menu_bar.addMenu('文件')
 
         # # 创建"退出"操作并添加到"文件"菜单
         # exit_action = QAction('退出', self)
@@ -62,9 +68,6 @@ class MenuWidget(QWidget):
 
         # 设置主窗口布局
         self.setLayout(layout)
-    # def get_reader(self, reader):
-    #     self.reader = reader
-    #     self.settingWidget.get_reader(self.reader)
 
     def show_about(self):
         # 显示关于信息

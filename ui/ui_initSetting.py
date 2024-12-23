@@ -65,8 +65,9 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_16.sizePolicy().hasHeightForWidth())
         self.label_16.setSizePolicy(sizePolicy)
-        self.label_16.setMinimumSize(QtCore.QSize(100, 40))
+        self.label_16.setMinimumSize(QtCore.QSize(120, 40))
         self.label_16.setStyleSheet("QLabel {\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -87,7 +88,7 @@ class Ui_initSetting(object):
         self.comboBox.setSizePolicy(sizePolicy)
         self.comboBox.setMinimumSize(QtCore.QSize(100, 40))
         self.comboBox.setStyleSheet("QComboBox {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -150,7 +151,7 @@ class Ui_initSetting(object):
         self.comboBox_2.setSizePolicy(sizePolicy)
         self.comboBox_2.setMinimumSize(QtCore.QSize(100, 40))
         self.comboBox_2.setStyleSheet("QComboBox {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -213,7 +214,7 @@ class Ui_initSetting(object):
         self.pushButton_2.setSizePolicy(sizePolicy)
         self.pushButton_2.setMinimumSize(QtCore.QSize(100, 40))
         self.pushButton_2.setStyleSheet("QPushButton {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -241,8 +242,9 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_15.sizePolicy().hasHeightForWidth())
         self.label_15.setSizePolicy(sizePolicy)
-        self.label_15.setMinimumSize(QtCore.QSize(100, 40))
+        self.label_15.setMinimumSize(QtCore.QSize(120, 40))
         self.label_15.setStyleSheet("QLabel {\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -261,8 +263,9 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
-        self.label.setMinimumSize(QtCore.QSize(100, 40))
+        self.label.setMinimumSize(QtCore.QSize(120, 40))
         self.label.setStyleSheet("QLabel {\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -283,7 +286,7 @@ class Ui_initSetting(object):
         self.comboBox_3.setSizePolicy(sizePolicy)
         self.comboBox_3.setMinimumSize(QtCore.QSize(100, 40))
         self.comboBox_3.setStyleSheet("QComboBox {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -344,8 +347,9 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
         self.label_4.setSizePolicy(sizePolicy)
-        self.label_4.setMinimumSize(QtCore.QSize(100, 40))
+        self.label_4.setMinimumSize(QtCore.QSize(120, 40))
         self.label_4.setStyleSheet("QLabel {\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -366,7 +370,7 @@ class Ui_initSetting(object):
         self.comboBox_4.setSizePolicy(sizePolicy)
         self.comboBox_4.setMinimumSize(QtCore.QSize(100, 40))
         self.comboBox_4.setStyleSheet("QComboBox {\n"
-"    font: 10pt \"Adobe 黑体 Std R\";\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"

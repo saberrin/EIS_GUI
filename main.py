@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         
         # Initialize menu and layout
         self.menu = MenuWidget(self)
-        self.ui.horizontalLayout_21.addWidget(self.menu)
+        self.ui.horizontalLayout_38.addWidget(self.menu)
 
         self.infoList = infoListView()
         self.ui.horizontalLayout_32.addWidget(self.infoList)
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         stl_file = "3d_pack_model/1x13_battery_pack_model.STL"
         save_path = "3d_pack_model/heatmap_render.png"
 
-        # Create and render the heatmap directly in the layout
+        # Create and render the heatmap directly in the layoutcd 
         from tools.heatmap_plt import HeatMap3DWidget
         heatmap = HeatMap3DWidget(stl_file, num_cells=13)
         heatmap.create_responsive_label(save_path, self.ui.horizontalLayout_15)
