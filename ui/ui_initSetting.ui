@@ -146,8 +146,8 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox_2">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_16">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -161,60 +161,22 @@
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">QComboBox {
-	font: 10pt &quot;Adobe 黑体 Std R&quot;;
+            <string notr="true">QLabel {
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
 	background-color: rgb(51,51,51);
 }
-
-QComboBox:hover {
-	border: 2px solid rgb(0,143,170);
-	border-radius: 5px;	
-	color:rgb(255,255,255);
-	background-color: rgb(0,143,170);
-}
-
-QComboBox:!editable, QComboBox::drop-down:editable {
-	background: rgb(51,51,51);
-}
-
-QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-    background:rgb(51,51,51);
-}
-
-QComboBox:on { /* shift the text when the popup opens */
-    padding-top: 3px;
-    padding-left: 4px;
-}
-
-QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 15px;
-
-    border-left-width: 1px;
-    border-left-color: darkgray;
-    border-left-style: solid; /* just a single line */
-    border-top-right-radius: 5px; /* same radius as the QComboBox */
-    border-bottom-right-radius: 5px;
-}
-
-QComboBox::down-arrow {
-    image: url(icons/1x/arrow.png);
-}
-
-QComboBox::down-arrow:on { /* shift the arrow when popup is open */
-    top: 1px;
-    left: 1px;
-}
-
-QComboBox::drop-down {
-    background:rgb(51,51,51);
-}
-
-</string>
+QLabel {
+	border: 2px solid rgb(51,51,51);
+	background-color: rgb(51,51,51);
+}</string>
+           </property>
+           <property name="text">
+            <string>集装箱编号</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -290,8 +252,8 @@ QComboBox::drop-down {
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_16">
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBox_2">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -305,22 +267,102 @@ QComboBox::drop-down {
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">QLabel {
+            <string notr="true">QComboBox {
+	font: 10pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
 	background-color: rgb(51,51,51);
 }
-QLabel {
+
+QComboBox:hover {
+	border: 2px solid rgb(0,143,170);
+	border-radius: 5px;	
+	color:rgb(255,255,255);
+	background-color: rgb(0,143,170);
+}
+
+QComboBox:!editable, QComboBox::drop-down:editable {
+	background: rgb(51,51,51);
+}
+
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    background:rgb(51,51,51);
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 5px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 5px;
+}
+
+QComboBox::down-arrow {
+    image: url(icons/1x/arrow.png);
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
+
+QComboBox::drop-down {
+    background:rgb(51,51,51);
+}
+
+</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+	font: 10pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
+	border-radius: 5px;	
+	color:rgb(255,255,255);
 	background-color: rgb(51,51,51);
+}
+QPushButton:hover {
+	border: 2px solid rgb(0,143,150);
+	background-color: rgb(0,143,150);
+}
+QPushButton:pressed {	
+	border: 2px solid rgb(0,143,150);
+	background-color: rgb(51,51,51);
+}
+
+QPushButton:disabled {	
+	border-radius: 5px;	
+	border: 2px solid rgb(112,112,112);
+	background-color: rgb(112,112,112);
 }</string>
            </property>
            <property name="text">
-            <string>集装箱编号</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <string>应用设置</string>
            </property>
           </widget>
          </item>
@@ -392,8 +434,8 @@ QLabel {
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="QPushButton" name="pushButton_2">
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBox_3">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -407,35 +449,99 @@ QLabel {
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">QPushButton {
+            <string notr="true">QComboBox {
 	font: 10pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
 	background-color: rgb(51,51,51);
 }
-QPushButton:hover {
-	border: 2px solid rgb(0,143,150);
-	background-color: rgb(0,143,150);
-}
-QPushButton:pressed {	
-	border: 2px solid rgb(0,143,150);
-	background-color: rgb(51,51,51);
+
+QComboBox:hover {
+	border: 2px solid rgb(0,143,170);
+	border-radius: 5px;	
+	color:rgb(255,255,255);
+	background-color: rgb(0,143,170);
 }
 
-QPushButton:disabled {	
-	border-radius: 5px;	
-	border: 2px solid rgb(112,112,112);
-	background-color: rgb(112,112,112);
-}</string>
-           </property>
-           <property name="text">
-            <string>应用设置</string>
+QComboBox:!editable, QComboBox::drop-down:editable {
+	background: rgb(51,51,51);
+}
+
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+    background:rgb(51,51,51);
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 5px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 5px;
+}
+
+QComboBox::down-arrow {
+    image: url(icons/1x/arrow.png);
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
+
+QComboBox::drop-down {
+    background:rgb(51,51,51);
+}
+
+</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox_3">
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QLabel {
+	border: 2px solid rgb(51,51,51);
+	border-radius: 5px;	
+	color:rgb(255,255,255);
+	background-color: rgb(51,51,51);
+}
+QLabel {
+	border: 2px solid rgb(51,51,51);
+	background-color: rgb(51,51,51);
+}</string>
+           </property>
+           <property name="text">
+            <string>端口编号</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QComboBox" name="comboBox_4">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
