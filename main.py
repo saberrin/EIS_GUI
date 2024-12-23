@@ -118,13 +118,13 @@ class MainWindow(QMainWindow):
                 self.ui.gridLayout.addWidget(label, row, col)
         
         for i in range(14):
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + 32))
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i + 32))
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_BodeHistory(i + 32))
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_textEdit_celladvice(i + 32))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + (self.port_number-1)*13))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i + (self.port_number-1)*13))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_BodeHistory(i + (self.port_number-1)*13))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_textEdit_celladvice(i + (self.port_number-1)*13))
             
     def update_battertcell(self,battery_number, real_imp, voltage):
-        self.ui.batteryList[battery_number-32].update_text(voltage, real_imp)
+        self.ui.batteryList[battery_number].update_text(voltage, real_imp)
 
     def handle_battery_click(self, battery_index):
         """
@@ -183,6 +183,7 @@ class MainWindow(QMainWindow):
 
         # Initialize I2C Reader with identifiers and configuration
         self.reader = I2CReader(bus_number=bus_number)
+        self.reader.get_port(self.port_number)
         self.reader.set_user_selection(self.container_number, self.cluster_number, self.pack_number)
 
         self.reader.new_data_received_SWF.connect(self.update_Nyquist)
@@ -213,13 +214,13 @@ class MainWindow(QMainWindow):
             self.conn.close()
             print("Database connection closed.")
       
-    def identifier_setting(self, container_number, cluster_number, pack_number):
+    def identifier_setting(self, container_number, cluster_number, pack_number,port_number):
         # Set identifiers and update display
         self.container_number = container_number
         self.cluster_number = cluster_number
         self.pack_number = pack_number
-        self.ui.label_14.setText(f"集装箱 {container_number} - 电池簇 {cluster_number} - 电池包 {pack_number}")
-        print(f"Identifiers set: 集装箱 {container_number}, 电池簇 {cluster_number}, 电池包 {pack_number}")
+        self.port_number = port_number
+        self.ui.label_14.setText(f"集装箱 {container_number} - 电池簇 {cluster_number} - 电池包 {pack_number} - 端口号 {port_number}")
     
     def init_Nyquist(self):
         self.NyquistPage = NyquistPlot()  
