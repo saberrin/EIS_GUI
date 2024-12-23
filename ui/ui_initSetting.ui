@@ -156,12 +156,13 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
+	font: 14pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
@@ -340,7 +341,7 @@ QComboBox::drop-down {
            </property>
            <property name="styleSheet">
             <string notr="true">QPushButton {
-	font: 10pt &quot;Adobe 黑体 Std R&quot;;
+	font: 14pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
@@ -376,12 +377,13 @@ QPushButton:disabled {
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
+	font: 14pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
@@ -410,12 +412,13 @@ QLabel {
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
+	font: 14pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
@@ -516,12 +519,13 @@ QComboBox::drop-down {
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
+	font: 14pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
