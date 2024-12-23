@@ -33,7 +33,7 @@ class infoListView(QWidget):
             self.tableView.horizontalHeader().setSectionResizeMode(col, QHeaderView.ResizeMode.Stretch)
         
         # 添加一些数据项到模型中
-        lists = ["离散度:", "一致性:", "异常电芯:"]
+        lists = ["平均离散度:", "平均一致性:", "离散最大电芯:"]
         for col,list in enumerate(lists):
             item = QStandardItem(list)
             item.setForeground(QColor(255, 255, 255))  # 设置文本颜色为白色
@@ -44,7 +44,7 @@ class infoListView(QWidget):
             self.model.setItem(0, 2*col, item)
         
 
-    def populate_data(self,dispersion, consistency, outliers):
+    def populate_data(self,dispersion, consistency, outliers,max_dispersion):
         # 一些示例数据
         dispersion = round(dispersion,2)
         consistency = round(consistency,2)

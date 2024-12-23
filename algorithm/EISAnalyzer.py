@@ -82,11 +82,7 @@ class EISAnalyzer:
         outlier_indices = np.unique(np.where((np.abs(real_zscore) > threshold) | (np.abs(imag_zscore) > threshold))[0])
         return [list(self.curves.keys())[i] for i in outlier_indices]
 
-    def detect_outliers_method2(self, threshold=0.5):
-        """
-        基于DTW距离的相似度进行异常检测（归一化后）。
-        """
-        outliers = []
+    def detect_max_dispersion(self):
         distances = {}
         for battery1, curve1 in self.curves.items():
             total_distance = 0
@@ -94,12 +90,14 @@ class EISAnalyzer:
                 if battery1 != battery2:
                     dtw_distance = self.calculate_dtw_distance(curve1, curve2)
                     total_distance += dtw_distance
-            consistency = 1 / (total_distance / (len(self.curves) - 1))  # 一致性定义为DTW距离的倒数
-            distances[battery1] = consistency
-        for battery, consistency in distances.items():
-            if consistency < threshold:
-                outliers.append(battery)
-        return outliers
+            dispersion = total_distance / (len(self.curves) - 1)  
+            distances[battery1] = dispersion
+        
+        max_battery = max(distances, key=distances.get)
+        max_dispersion = distances[max_battery]
+    
+        return max_battery, max_dispersion
+
 
 if __name__ == '__main__':
     # 示例电池数据（实部和虚部阻抗）

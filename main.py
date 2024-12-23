@@ -140,7 +140,6 @@ class MainWindow(QMainWindow):
     def switchPage(self, index, displayed_battery_id=None):
         print(f"Switching to page {index}, Displayed Battery ID: {displayed_battery_id}")
         self.ui.stackedWidget.setCurrentIndex(index)
-
         # If moving to page 2 (battery details page), update the corresponding battery info
         if index == 1 and displayed_battery_id is not None:
             self.update_battery_details(displayed_battery_id)
@@ -279,9 +278,9 @@ class MainWindow(QMainWindow):
         print(f"Discrepancy: {discrepancy}")
         consistency = analyzer.calculate_consistency(result)
         print(f"Consistency: {consistency}")
-        outliers_method2 = analyzer.detect_outliers_method2()
-        print(f"Outliers (Method 2): {outliers_method2}")
-        self.infoList.populate_data(discrepancy,consistency,outliers_method2)
+        outliers,max_dispersion = analyzer.detect_max_dispersion()
+        print(f"Outliers (Method 2): {outliers}")
+        self.infoList.populate_data(discrepancy,consistency,outliers,max_dispersion)
 
     def update_textEdit(self,line):
         font = QFont('Arial', 15)  
@@ -289,8 +288,8 @@ class MainWindow(QMainWindow):
         self.ui.textEdit.setStyleSheet("color: white")
         self.ui.textEdit.append(line)
 
-    def update_textEdit_packadvice(self):
-        self.PackTextEdit.update_textedit()
+    def update_textEdit_packadvice(self,list):
+        self.PackTextEdit.update_textedit(list)
     
     def update_textEdit_celladvice(self,cell_id):
         self.CellTextEdit.update_textedit(cell_id)

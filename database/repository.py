@@ -126,6 +126,43 @@ class Repository:
             if connection:
                 connection.close()
 
+    def get_latest_generated_info(self, cell_id: int) -> Dict:
+        try:
+            connection = sqlite3.connect(DB_PATH)
+            cursor = connection.cursor()
+            cursor.execute("""
+                SELECT measurement_id, dispersion_rate, temperature, real_time_id, cell_id,
+                    sei_rate, dendrites_rate, electrolyte_rate, polar_rate, conduct_rate
+                FROM generated_info
+                WHERE cell_id = ?
+                ORDER BY real_time_id DESC
+                LIMIT 1;
+            """, (cell_id,))
+            
+            row = cursor.fetchone()
+
+            if row:
+                result = {
+                    "measurement_id": row[0],
+                    "dispersion_rate": row[1],
+                    "temperature": row[2],
+                    "real_time_id": row[3],
+                    "cell_id": row[4],
+                    "sei_rate": row[5],
+                    "dendrites_rate": row[6],
+                    "electrolyte_rate": row[7],
+                    "polar_rate": row[8],
+                    "conduct_rate": row[9]
+                }
+                return result
+            else:
+                return {}
+        except Exception as e:
+            print(f"Error fetching latest generated info: {e}")
+            return {}
+        finally:
+            if connection:
+                connection.close()
 
     def get_cell_measurements(self, cell_id: int, limit: int = 50) -> List[EisMeasurement]:
         """

@@ -17,7 +17,7 @@ class I2CReader(QObject):
     new_data_received_finish_list = pyqtSignal(list)
     new_data_received_batterycellInfo = pyqtSignal(int, float, float) #实部阻抗和电压数据
 
-    def __init__(self, bus_number,timeout_duration=0.1):
+    def __init__(self, bus_number,timeout_duration=0.01):
         super().__init__()
         self.device = "/dev/i2c-" + str(bus_number)
         self.bus = bus_number
@@ -34,7 +34,7 @@ class I2CReader(QObject):
         self.confirmed_addresses_1 = [] #继电器切换后的电芯地址                                     
         self.failed_addresses = []
         self.finish_list = []
-
+        self.real_time_id = None
         # User input attributes for container, cluster, and pack
         self.container_number = None
         self.cluster_number = None
@@ -218,28 +218,52 @@ class I2CReader(QObject):
             
             cell_id = int(line.split('_')[0], 16)
             if '_A' in line:
-                cell_id  = cell_id
+                cell_id = cell_id
             elif '_B' in line:
-                cell_id  = cell_id + 1
+                cell_id = cell_id + 1
             else:
                 cell_id = None 
+            
             segments = line.split(';')
             result = None
+            closest_frequency = None
+            closest_result = None
+            min_diff = float('inf')  # Used to track the closest frequency difference from 1000Hz
+            
             for segment in segments:
                 parts = segment.split(',')
                 for i, part in enumerate(parts):
-                    if part.startswith('F') and float(parts[i + 1]) == 1000.0:  
-                        for j in range(i, -1, -1):  
-                            if parts[j].startswith('I'):
-                                result = float(parts[j - 1])
-                                break
-                        break
+                    if part.startswith('F'):
+                        frequency = float(parts[i + 1])
+                        if frequency == 1000.0:
+                            # If 1000Hz is found, take the corresponding result
+                            for j in range(i, -1, -1):
+                                if parts[j].startswith('I'):
+                                    result = float(parts[j - 1])
+                                    break
+                            break
+                        elif 500 <= frequency <= 1500:
+                            # If the frequency is between 900Hz and 1100Hz, check if it's closer to 1000Hz
+                            diff = abs(frequency - 1000)
+                            if diff < min_diff:
+                                min_diff = diff
+                                closest_frequency = frequency
+                                for j in range(i, -1, -1):
+                                    if parts[j].startswith('I'):
+                                        closest_result = float(parts[j - 1])
+                                        break
                 if result is not None:
                     break
+            # If 1000Hz was found and its result is available
             if result is not None:
-                self.new_data_received_batterycellInfo.emit(cell_id,result,voltage)
+                self.new_data_received_batterycellInfo.emit(cell_id, result, voltage)
+            # If 1000Hz was not found, but a frequency close to 1000Hz in the 900Hz-1100Hz range was found
+            elif closest_frequency is not None:
+                print(f"Warning: 1000Hz not found, using closest frequency {closest_frequency}Hz with value {closest_result}")
+                self.new_data_received_batterycellInfo.emit(cell_id, closest_result, voltage)
             else:
-                print("error:未找到1000Hz阻抗")
+                print("Error: Neither 1000Hz nor any frequency in the 500Hz to 1500Hz range found.")
+
 
 
     def parse_swf_data(self, line):
