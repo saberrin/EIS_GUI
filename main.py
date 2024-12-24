@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         self.conn, self.cursor = init_database()
         UIFunction.constantFunction(self)
         UIFunction.maximize_restore(self)
+        UIFunction.logoTitle(self)
         
         # Initialize menu and layout
         self.menu = MenuWidget(self)
@@ -123,8 +124,8 @@ class MainWindow(QMainWindow):
             self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_BodeHistory(i + (self.port_number-1)*13))
             self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_textEdit_celladvice(i + (self.port_number-1)*13))
             
-    def update_battertcell(self,battery_number, real_imp, voltage):
-        self.ui.batteryList[battery_number].update_text(voltage, real_imp)
+    def update_battertcell(self,battery_number, cell_id, real_imp):
+        self.ui.batteryList[battery_number].update_text(cell_id, real_imp)
 
     def handle_battery_click(self, battery_index):
         """
@@ -187,12 +188,14 @@ class MainWindow(QMainWindow):
         self.reader.set_user_selection(self.container_number, self.cluster_number, self.pack_number)
 
         self.reader.new_data_received_SWF.connect(self.update_Nyquist)
-        self.reader.new_data_received_finish_list.connect(self.update_infoList)
-        self.reader.new_data_received_finish_list.connect(self.update_textEdit_packadvice)
         self.reader.new_data_received_finish_list.connect(self.start_algorithm)
-        # self.reader.new_data_received_finish_list.connect(self.update_textEdit_celladvice)
         self.reader.new_data_received_batterycellInfo.connect(self.update_battertcell)
         self.reader.new_data_received_check.connect(self.update_textEdit)
+
+        self.algo = StartAlgorithm()
+        self.algo.task_done.connect(self.update_textEdit_packadvice)
+        self.algo.task_done.connect(self.update_infoList)
+
         
         # Start I2C reading
         self.ui.pushButton_3.setEnabled(False)
@@ -206,8 +209,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.setEnabled(False)
 
     def start_algorithm(self,lists):
-        self.algo = StartAlgorithm(lists)
-        self.algo.start()
+        self.algo.start(lists)
+        
 
     def closeEvent(self, event):
         if self.conn:
@@ -220,7 +223,7 @@ class MainWindow(QMainWindow):
         self.cluster_number = cluster_number
         self.pack_number = pack_number
         self.port_number = port_number
-        self.ui.label_14.setText(f"集装箱 {container_number} - 电池簇 {cluster_number} - 电池包 {pack_number} - 端口号 {port_number}")
+        self.ui.label_14.setText(f"集装箱 {container_number} - 电池柜 {cluster_number} - 电池包 {pack_number} - 端口号 {port_number}")
     
     def init_Nyquist(self):
         self.NyquistPage = NyquistPlot()  
@@ -276,11 +279,8 @@ class MainWindow(QMainWindow):
         result = dict(result)
         analyzer = EISAnalyzer(result)
         discrepancy = analyzer.calculate_dispersion(result)
-        print(f"Discrepancy: {discrepancy}")
         consistency = analyzer.calculate_consistency(result)
-        print(f"Consistency: {consistency}")
         outliers,max_dispersion = analyzer.detect_max_dispersion()
-        print(f"Outliers (Method 2): {outliers}")
         self.infoList.populate_data(discrepancy,consistency,outliers,max_dispersion)
 
     def update_textEdit(self,line):

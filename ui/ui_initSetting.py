@@ -59,27 +59,6 @@ class Ui_initSetting(object):
         self.frame_bottom.setObjectName("frame_bottom")
         self.gridLayout = QtWidgets.QGridLayout(self.frame_bottom)
         self.gridLayout.setObjectName("gridLayout")
-        self.label_16 = QtWidgets.QLabel(parent=self.frame_bottom)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_16.sizePolicy().hasHeightForWidth())
-        self.label_16.setSizePolicy(sizePolicy)
-        self.label_16.setMinimumSize(QtCore.QSize(120, 40))
-        self.label_16.setStyleSheet("QLabel {\n"
-"    font: 14pt \"Adobe 黑体 Std R\";\n"
-"    border: 2px solid rgb(51,51,51);\n"
-"    border-radius: 5px;    \n"
-"    color:rgb(255,255,255);\n"
-"    background-color: rgb(51,51,51);\n"
-"}\n"
-"QLabel {\n"
-"    border: 2px solid rgb(51,51,51);\n"
-"    background-color: rgb(51,51,51);\n"
-"}")
-        self.label_16.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label_16.setObjectName("label_16")
-        self.gridLayout.addWidget(self.label_16, 0, 0, 1, 1)
         self.comboBox = QtWidgets.QComboBox(parent=self.frame_bottom)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -142,70 +121,7 @@ class Ui_initSetting(object):
 "\n"
 "")
         self.comboBox.setObjectName("comboBox")
-        self.gridLayout.addWidget(self.comboBox, 2, 1, 1, 1)
-        self.comboBox_2 = QtWidgets.QComboBox(parent=self.frame_bottom)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.comboBox_2.sizePolicy().hasHeightForWidth())
-        self.comboBox_2.setSizePolicy(sizePolicy)
-        self.comboBox_2.setMinimumSize(QtCore.QSize(100, 40))
-        self.comboBox_2.setStyleSheet("QComboBox {\n"
-"    font: 14pt \"Adobe 黑体 Std R\";\n"
-"    border: 2px solid rgb(51,51,51);\n"
-"    border-radius: 5px;    \n"
-"    color:rgb(255,255,255);\n"
-"    background-color: rgb(51,51,51);\n"
-"}\n"
-"\n"
-"QComboBox:hover {\n"
-"    border: 2px solid rgb(0,143,170);\n"
-"    border-radius: 5px;    \n"
-"    color:rgb(255,255,255);\n"
-"    background-color: rgb(0,143,170);\n"
-"}\n"
-"\n"
-"QComboBox:!editable, QComboBox::drop-down:editable {\n"
-"    background: rgb(51,51,51);\n"
-"}\n"
-"\n"
-"QComboBox:!editable:on, QComboBox::drop-down:editable:on {\n"
-"    background:rgb(51,51,51);\n"
-"}\n"
-"\n"
-"QComboBox:on { /* shift the text when the popup opens */\n"
-"    padding-top: 3px;\n"
-"    padding-left: 4px;\n"
-"}\n"
-"\n"
-"QComboBox::drop-down {\n"
-"    subcontrol-origin: padding;\n"
-"    subcontrol-position: top right;\n"
-"    width: 15px;\n"
-"\n"
-"    border-left-width: 1px;\n"
-"    border-left-color: darkgray;\n"
-"    border-left-style: solid; /* just a single line */\n"
-"    border-top-right-radius: 5px; /* same radius as the QComboBox */\n"
-"    border-bottom-right-radius: 5px;\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow {\n"
-"    image: url(icons/1x/arrow.png);\n"
-"}\n"
-"\n"
-"QComboBox::down-arrow:on { /* shift the arrow when popup is open */\n"
-"    top: 1px;\n"
-"    left: 1px;\n"
-"}\n"
-"\n"
-"QComboBox::drop-down {\n"
-"    background:rgb(51,51,51);\n"
-"}\n"
-"\n"
-"")
-        self.comboBox_2.setObjectName("comboBox_2")
-        self.gridLayout.addWidget(self.comboBox_2, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.comboBox, 1, 1, 1, 1)
         self.pushButton_2 = QtWidgets.QPushButton(parent=self.frame_bottom)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -235,7 +151,7 @@ class Ui_initSetting(object):
 "    background-color: rgb(112,112,112);\n"
 "}")
         self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout.addWidget(self.pushButton_2, 4, 1, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_2, 3, 1, 1, 1)
         self.label_15 = QtWidgets.QLabel(parent=self.frame_bottom)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -256,28 +172,7 @@ class Ui_initSetting(object):
 "}")
         self.label_15.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_15.setObjectName("label_15")
-        self.gridLayout.addWidget(self.label_15, 1, 0, 1, 1)
-        self.label = QtWidgets.QLabel(parent=self.frame_bottom)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setMinimumSize(QtCore.QSize(120, 40))
-        self.label.setStyleSheet("QLabel {\n"
-"    font: 14pt \"Adobe 黑体 Std R\";\n"
-"    border: 2px solid rgb(51,51,51);\n"
-"    border-radius: 5px;    \n"
-"    color:rgb(255,255,255);\n"
-"    background-color: rgb(51,51,51);\n"
-"}\n"
-"QLabel {\n"
-"    border: 2px solid rgb(51,51,51);\n"
-"    background-color: rgb(51,51,51);\n"
-"}")
-        self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_15, 0, 0, 1, 1)
         self.comboBox_3 = QtWidgets.QComboBox(parent=self.frame_bottom)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -340,7 +235,28 @@ class Ui_initSetting(object):
 "\n"
 "")
         self.comboBox_3.setObjectName("comboBox_3")
-        self.gridLayout.addWidget(self.comboBox_3, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.comboBox_3, 0, 1, 1, 1)
+        self.label = QtWidgets.QLabel(parent=self.frame_bottom)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMinimumSize(QtCore.QSize(120, 40))
+        self.label.setStyleSheet("QLabel {\n"
+"    font: 14pt \"Adobe 黑体 Std R\";\n"
+"    border: 2px solid rgb(51,51,51);\n"
+"    border-radius: 5px;    \n"
+"    color:rgb(255,255,255);\n"
+"    background-color: rgb(51,51,51);\n"
+"}\n"
+"QLabel {\n"
+"    border: 2px solid rgb(51,51,51);\n"
+"    background-color: rgb(51,51,51);\n"
+"}")
+        self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
         self.label_4 = QtWidgets.QLabel(parent=self.frame_bottom)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -361,7 +277,7 @@ class Ui_initSetting(object):
 "}")
         self.label_4.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_4.setObjectName("label_4")
-        self.gridLayout.addWidget(self.label_4, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
         self.comboBox_4 = QtWidgets.QComboBox(parent=self.frame_bottom)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -424,7 +340,7 @@ class Ui_initSetting(object):
 "\n"
 "")
         self.comboBox_4.setObjectName("comboBox_4")
-        self.gridLayout.addWidget(self.comboBox_4, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.comboBox_4, 2, 1, 1, 1)
         self.verticalLayout_2.addWidget(self.frame_bottom)
         self.verticalLayout.addWidget(self.frame_2)
 
@@ -435,7 +351,6 @@ class Ui_initSetting(object):
         _translate = QtCore.QCoreApplication.translate
         initSetting.setWindowTitle(_translate("initSetting", "Dialog"))
         self.lab_heading.setText(_translate("initSetting", "请手动设置当前电池包编号"))
-        self.label_16.setText(_translate("initSetting", "集装箱编号"))
         self.pushButton_2.setText(_translate("initSetting", "应用设置"))
         self.label_15.setText(_translate("initSetting", "电池柜编号"))
         self.label.setText(_translate("initSetting", "电池包编号"))
