@@ -19,7 +19,9 @@ class HeatMap3DWidget(QWidget):
 
         # 初始化布局和 QLabel
         self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
+        
 
     def split_cells(self, num_points, num_cells):
         """将模型的点分配到每个电池（cell）"""
@@ -67,7 +69,7 @@ class HeatMap3DWidget(QWidget):
         render_height *= upscale_factor
 
         plotter = pv.Plotter(off_screen=True)
-        plotter.set_background("white")
+        plotter.set_background("#e8f5e9")
         plotter.enable_anti_aliasing()
 
         # Assign temperature data to the mesh
@@ -104,8 +106,8 @@ class HeatMap3DWidget(QWidget):
         self.clear_existing_widgets()
 
         # 渲染图片
-        render_width = int(ui_width // 2)  # 最大宽度为 UI 宽度的一半
-        render_height = int(ui_height // 2)  # 最大高度为 UI 高度的一半
+        render_width = int(ui_width // 4)  # 最大宽度为 UI 宽度的一半
+        render_height = int(ui_height // 4)  # 最大高度为 UI 高度的一半
         self.render_and_save(save_path, render_width, render_height)
 
         # 创建 QLabel 显示渲染的图片

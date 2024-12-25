@@ -278,7 +278,7 @@ class I2CReader(QObject):
             # If 1000Hz was not found, but a frequency close to 1000Hz in the 900Hz-1100Hz range was found
             elif closest_frequency is not None:
                 print(f"Warning: 1000Hz not found, using closest frequency {closest_frequency}Hz with value {closest_result}")
-                self.new_data_received_batterycellInfo.emit(cell_id, closest_result)
+                self.new_data_received_batterycellInfo.emit(cell_id, cell_id_true,closest_result)
             else:
                 print("Error: Neither 1000Hz nor any frequency in the 500Hz to 1500Hz range found.")
 
