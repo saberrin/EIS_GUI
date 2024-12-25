@@ -90,7 +90,7 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background:rgb(51,51,51);</string>
+          <string notr="true">background:rgb(255, 255, 255);</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
@@ -173,12 +173,16 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Segoe UI Light</family>
-                 <pointsize>24</pointsize>
+                 <family>Adobe 黑体 Std R</family>
+                 <pointsize>9</pointsize>
+                 <weight>50</weight>
+                 <italic>false</italic>
+                 <bold>false</bold>
                 </font>
                </property>
                <property name="styleSheet">
-                <string notr="true">color:rgb(255,255,255);</string>
+                <string notr="true">color:rgb(0, 0, 0);
+font: 9pt &quot;Adobe 黑体 Std R&quot;;</string>
                </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;电芯级智能阻抗谱巡检仪&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
