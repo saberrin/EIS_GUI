@@ -182,7 +182,7 @@
                </property>
                <property name="styleSheet">
                 <string notr="true">color:rgb(0, 0, 0);
-font: 9pt &quot;Adobe 黑体 Std R&quot;;</string>
+font: 14pt &quot;Adobe 黑体 Std R&quot;;</string>
                </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;电芯级智能阻抗谱巡检仪&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

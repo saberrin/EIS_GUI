@@ -24,8 +24,6 @@ from custom_widget.nyquist_plot import NyquistPlot
 # from tools.heatmap_plt import HeatMap3DWidget
 from custom_widget.infoListWidget import infoListView
 from database.repository import Repository
-from collections import defaultdict
-from algorithm.EISAnalyzer import EISAnalyzer
 from custom_widget.nyquist_plot_history import NyquistPlotHistory
 from custom_widget.bode_plot_history import BodePlotHistory
 from custom_widget.bode_plot import BodePlot
@@ -54,10 +52,6 @@ class MainWindow(QMainWindow):
 
         self.infoList = infoListView()
         self.ui.horizontalLayout_32.addWidget(self.infoList)
-
-        # 初始化 Bode 图相关小部件
-        # self.BodePage = BodePlot()  # 创建 BodePlot 实例
-        # self.ui.horizontalLayout_33.addWidget(self.BodePage)
 
         self.NyquistPageHistory = NyquistPlotHistory()
         self.ui.verticalLayout_8.addWidget(self.NyquistPageHistory)
@@ -233,55 +227,17 @@ class MainWindow(QMainWindow):
         self.NyquistPage.add_data(battery_number, real_impedance, negative_imaginary_impedance)
     
     def update_NyquistHistory(self, cell_id):
-        data =  self.repo.get_cell_history(cell_id,index=10)
-        result = defaultdict(lambda: ([], []))  
-        for real_time_id, measurements in data.items():
-            for measurement in measurements:
-                result[real_time_id][0].append(measurement.real_impedance)  
-                result[real_time_id][1].append(measurement.imag_impedance) 
-        for real_time_id, data in result.items():
-            self.NyquistPageHistory.add_data(real_time_id,data[0],data[1])
+        self.NyquistPageHistory.update_data(cell_id)
 
     def update_Bode(self, battery_number, freq, real_impedance, negative_imaginary_impedance):
         # 调用 Bode 图实例并添加数据
         self.BodePage.add_data(battery_number, freq, real_impedance, negative_imaginary_impedance)
 
-
     def update_BodeHistory(self, cell_id):
-        data = self.repo.get_cell_history(cell_id, index=10)
-        
-        # 用来存储处理后的频率、实部和虚部数据
-        result = defaultdict(lambda: ([], [], []))  # 用频率、实部、虚部的列表初始化
-        
-        # 处理每一条数据
-        for real_time_id, measurements in data.items():
-            for measurement in measurements:
-                # 将频率、实部阻抗和虚部阻抗分别添加到各自的列表
-                result[real_time_id][0].append(measurement.frequency)
-                result[real_time_id][1].append(measurement.real_impedance)
-                result[real_time_id][2].append(measurement.imag_impedance)
-        
-        # 将处理后的数据添加到历史 Bode 图中
-        for real_time_id, data in result.items():
-            self.BodePageHistory.add_data(real_time_id, data[0], data[1], data[2])
-
+        self.BodePageHistory.update_data(cell_id)
 
     def update_infoList(self,lists):
-        data = []
-        for cell_id in lists:
-            data.append(self.repo.get_cell_measurements(cell_id))
-        result = defaultdict(lambda: ([], []))  
-        for measurements in data:
-            for measurement in measurements:
-                cell_id = f"Battery{measurement.cell_id}"  
-                result[cell_id][0].append(measurement.real_impedance)  
-                result[cell_id][1].append(measurement.imag_impedance)  
-        result = dict(result)
-        analyzer = EISAnalyzer(result)
-        discrepancy = analyzer.calculate_dispersion(result)
-        consistency = analyzer.calculate_consistency(result)
-        outliers,max_dispersion = analyzer.detect_max_dispersion()
-        self.infoList.populate_data(discrepancy,consistency,outliers,max_dispersion)
+        self.infoList.update_data(lists)
 
     def update_textEdit(self,line):
         font = QFont('Arial', 15)  

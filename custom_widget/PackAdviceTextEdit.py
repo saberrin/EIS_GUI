@@ -33,7 +33,7 @@ class PackAdviceTextEdit(QTextEdit):
             <title></title>
             <style>
                 body {{
-                    font-size: 20px; 
+                    font-size: 16px; 
                     color: white;
                 }}
             </style>

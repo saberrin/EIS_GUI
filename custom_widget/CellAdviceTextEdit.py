@@ -10,6 +10,7 @@ class CellAdviceTextEdit(QTextEdit):
         info = self.repository.get_latest_generated_info(cell_id)
         if info:
             dispersion_rate = info['dispersion_rate']
+            dispersion_rate = round(dispersion_rate,2)
             if dispersion_rate > 0.5:
                 dispersion_rate_advice = "离散度较大，建议及时排查"
             else:
@@ -28,7 +29,7 @@ class CellAdviceTextEdit(QTextEdit):
             <title></title>
             <style>
                 body {{
-                    font-size: 24px; 
+                    font-size: 18px; 
                     color: white;
                 }}
             </style>

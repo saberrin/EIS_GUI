@@ -20,7 +20,7 @@ class ImageClickedLabel(QLabel):
         # 设置自适应大小策略，保证标签根据内容大小自适应
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
-        self.setFont(QFont("Arial", 14))
+        self.setFont(QFont("Arial", 12))
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:

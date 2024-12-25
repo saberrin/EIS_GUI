@@ -12,9 +12,9 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(600, 400)
+        Dialog.resize(1049, 645)
         Dialog.setMinimumSize(QtCore.QSize(450, 235))
-        Dialog.setMaximumSize(QtCore.QSize(600, 450))
+        Dialog.setMaximumSize(QtCore.QSize(1049, 645))
         Dialog.setStyleSheet("QDialog {\n"
 "    background:rgb(51,51,51);\n"
 "}")
@@ -44,10 +44,14 @@ class Ui_Dialog(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.lab_heading = QtWidgets.QLabel(parent=self.frame_top)
         font = QtGui.QFont()
-        font.setFamily("Segoe UI")
-        font.setPointSize(14)
+        font.setFamily("Adobe 黑体 Std R")
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
         self.lab_heading.setFont(font)
-        self.lab_heading.setStyleSheet("color:rgb(255,255,255);")
+        self.lab_heading.setStyleSheet("color:rgb(255,255,255);\n"
+"font: 16pt \"Adobe 黑体 Std R\";")
         self.lab_heading.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.lab_heading.setObjectName("lab_heading")
         self.horizontalLayout.addWidget(self.lab_heading)
@@ -105,11 +109,11 @@ class Ui_Dialog(object):
         self.gridLayout.setObjectName("gridLayout")
         self.label_16 = QtWidgets.QLabel(parent=self.frame_bottom)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setHorizontalStretch(2)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_16.sizePolicy().hasHeightForWidth())
         self.label_16.setSizePolicy(sizePolicy)
-        self.label_16.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_16.setMinimumSize(QtCore.QSize(120, 40))
         self.label_16.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -120,6 +124,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_16.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_16.setObjectName("label_16")
         self.gridLayout.addWidget(self.label_16, 0, 0, 1, 1)
         self.lineEdit = QtWidgets.QLineEdit(parent=self.frame_bottom)
@@ -128,7 +133,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
         self.lineEdit.setSizePolicy(sizePolicy)
-        self.lineEdit.setMaximumSize(QtCore.QSize(75, 25))
+        self.lineEdit.setMaximumSize(QtCore.QSize(100, 40))
         self.lineEdit.setSizeIncrement(QtCore.QSize(0, 0))
         self.lineEdit.setObjectName("lineEdit")
         self.gridLayout.addWidget(self.lineEdit, 0, 1, 1, 1)
@@ -138,7 +143,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_12.sizePolicy().hasHeightForWidth())
         self.label_12.setSizePolicy(sizePolicy)
-        self.label_12.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_12.setMinimumSize(QtCore.QSize(120, 40))
         self.label_12.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -149,6 +154,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_12.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_12.setObjectName("label_12")
         self.gridLayout.addWidget(self.label_12, 0, 2, 1, 1)
         self.comboBox = QtWidgets.QComboBox(parent=self.frame_bottom)
@@ -157,6 +163,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
         self.comboBox.setSizePolicy(sizePolicy)
+        self.comboBox.setMinimumSize(QtCore.QSize(100, 40))
         self.comboBox.setMaximumSize(QtCore.QSize(75, 16777215))
         self.comboBox.setStyleSheet("QComboBox {\n"
 "    font: 10pt \"Adobe 黑体 Std R\";\n"
@@ -223,7 +230,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_15.sizePolicy().hasHeightForWidth())
         self.label_15.setSizePolicy(sizePolicy)
-        self.label_15.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_15.setMinimumSize(QtCore.QSize(120, 40))
         self.label_15.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -234,6 +241,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_15.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_15.setObjectName("label_15")
         self.gridLayout.addWidget(self.label_15, 1, 0, 1, 1)
         self.lineEdit_2 = QtWidgets.QLineEdit(parent=self.frame_bottom)
@@ -242,7 +250,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
         self.lineEdit_2.setSizePolicy(sizePolicy)
-        self.lineEdit_2.setMaximumSize(QtCore.QSize(75, 25))
+        self.lineEdit_2.setMaximumSize(QtCore.QSize(100, 40))
         self.lineEdit_2.setSizeIncrement(QtCore.QSize(0, 0))
         self.lineEdit_2.setObjectName("lineEdit_2")
         self.gridLayout.addWidget(self.lineEdit_2, 1, 1, 1, 1)
@@ -252,7 +260,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_11.sizePolicy().hasHeightForWidth())
         self.label_11.setSizePolicy(sizePolicy)
-        self.label_11.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_11.setMinimumSize(QtCore.QSize(120, 40))
         self.label_11.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -263,6 +271,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_11.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_11.setObjectName("label_11")
         self.gridLayout.addWidget(self.label_11, 1, 2, 1, 1)
         self.lineEdit_6 = QtWidgets.QLineEdit(parent=self.frame_bottom)
@@ -271,6 +280,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_6.sizePolicy().hasHeightForWidth())
         self.lineEdit_6.setSizePolicy(sizePolicy)
+        self.lineEdit_6.setMinimumSize(QtCore.QSize(100, 40))
         self.lineEdit_6.setMaximumSize(QtCore.QSize(75, 25))
         self.lineEdit_6.setSizeIncrement(QtCore.QSize(0, 0))
         self.lineEdit_6.setObjectName("lineEdit_6")
@@ -281,7 +291,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_14.sizePolicy().hasHeightForWidth())
         self.label_14.setSizePolicy(sizePolicy)
-        self.label_14.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_14.setMinimumSize(QtCore.QSize(120, 40))
         self.label_14.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -292,6 +302,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_14.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_14.setObjectName("label_14")
         self.gridLayout.addWidget(self.label_14, 2, 0, 1, 1)
         self.lineEdit_3 = QtWidgets.QLineEdit(parent=self.frame_bottom)
@@ -300,7 +311,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_3.sizePolicy().hasHeightForWidth())
         self.lineEdit_3.setSizePolicy(sizePolicy)
-        self.lineEdit_3.setMaximumSize(QtCore.QSize(75, 25))
+        self.lineEdit_3.setMaximumSize(QtCore.QSize(100, 40))
         self.lineEdit_3.setSizeIncrement(QtCore.QSize(0, 0))
         self.lineEdit_3.setObjectName("lineEdit_3")
         self.gridLayout.addWidget(self.lineEdit_3, 2, 1, 1, 1)
@@ -310,7 +321,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
         self.label_10.setSizePolicy(sizePolicy)
-        self.label_10.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_10.setMinimumSize(QtCore.QSize(120, 40))
         self.label_10.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -321,6 +332,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_10.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_10.setObjectName("label_10")
         self.gridLayout.addWidget(self.label_10, 2, 2, 1, 1)
         self.lineEdit_7 = QtWidgets.QLineEdit(parent=self.frame_bottom)
@@ -329,6 +341,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
         self.lineEdit_7.setSizePolicy(sizePolicy)
+        self.lineEdit_7.setMinimumSize(QtCore.QSize(100, 40))
         self.lineEdit_7.setMaximumSize(QtCore.QSize(75, 25))
         self.lineEdit_7.setSizeIncrement(QtCore.QSize(0, 0))
         self.lineEdit_7.setObjectName("lineEdit_7")
@@ -339,7 +352,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
         self.label_13.setSizePolicy(sizePolicy)
-        self.label_13.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_13.setMinimumSize(QtCore.QSize(125, 40))
         self.label_13.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -350,6 +363,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_13.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_13.setObjectName("label_13")
         self.gridLayout.addWidget(self.label_13, 3, 0, 1, 1)
         self.lineEdit_4 = QtWidgets.QLineEdit(parent=self.frame_bottom)
@@ -358,7 +372,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_4.sizePolicy().hasHeightForWidth())
         self.lineEdit_4.setSizePolicy(sizePolicy)
-        self.lineEdit_4.setMaximumSize(QtCore.QSize(75, 25))
+        self.lineEdit_4.setMaximumSize(QtCore.QSize(100, 40))
         self.lineEdit_4.setSizeIncrement(QtCore.QSize(0, 0))
         self.lineEdit_4.setObjectName("lineEdit_4")
         self.gridLayout.addWidget(self.lineEdit_4, 3, 1, 1, 1)
@@ -368,7 +382,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
         self.label_8.setSizePolicy(sizePolicy)
-        self.label_8.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_8.setMinimumSize(QtCore.QSize(120, 40))
         self.label_8.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -379,6 +393,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_8.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_8.setObjectName("label_8")
         self.gridLayout.addWidget(self.label_8, 3, 2, 1, 1)
         self.lineEdit_8 = QtWidgets.QLineEdit(parent=self.frame_bottom)
@@ -387,6 +402,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.lineEdit_8.sizePolicy().hasHeightForWidth())
         self.lineEdit_8.setSizePolicy(sizePolicy)
+        self.lineEdit_8.setMinimumSize(QtCore.QSize(100, 40))
         self.lineEdit_8.setMaximumSize(QtCore.QSize(75, 25))
         self.lineEdit_8.setSizeIncrement(QtCore.QSize(0, 0))
         self.lineEdit_8.setObjectName("lineEdit_8")
@@ -397,7 +413,7 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_9.sizePolicy().hasHeightForWidth())
         self.label_9.setSizePolicy(sizePolicy)
-        self.label_9.setMinimumSize(QtCore.QSize(0, 25))
+        self.label_9.setMinimumSize(QtCore.QSize(125, 40))
         self.label_9.setStyleSheet("QLabel {\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
@@ -408,6 +424,7 @@ class Ui_Dialog(object):
 "    border: 2px solid rgb(51,51,51);\n"
 "    background-color: rgb(51,51,51);\n"
 "}")
+        self.label_9.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_9.setObjectName("label_9")
         self.gridLayout.addWidget(self.label_9, 4, 0, 1, 1)
         self.comboBox_2 = QtWidgets.QComboBox(parent=self.frame_bottom)
@@ -416,9 +433,10 @@ class Ui_Dialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.comboBox_2.sizePolicy().hasHeightForWidth())
         self.comboBox_2.setSizePolicy(sizePolicy)
-        self.comboBox_2.setMaximumSize(QtCore.QSize(75, 16777215))
+        self.comboBox_2.setMinimumSize(QtCore.QSize(100, 40))
+        self.comboBox_2.setMaximumSize(QtCore.QSize(100, 16777215))
         self.comboBox_2.setStyleSheet("QComboBox {\n"
-"    font: 8pt \"Adobe 黑体 Std R\";\n"
+"    font: 10pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -476,13 +494,17 @@ class Ui_Dialog(object):
         self.comboBox_2.addItem("")
         self.gridLayout.addWidget(self.comboBox_2, 4, 1, 1, 1)
         self.bn_west = QtWidgets.QPushButton(parent=self.frame_bottom)
-        self.bn_west.setMinimumSize(QtCore.QSize(69, 25))
+        self.bn_west.setMinimumSize(QtCore.QSize(100, 40))
         self.bn_west.setMaximumSize(QtCore.QSize(75, 25))
         font = QtGui.QFont()
-        font.setFamily("Segoe UI")
+        font.setFamily("Adobe 宋体 Std L")
         font.setPointSize(12)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(3)
         self.bn_west.setFont(font)
         self.bn_west.setStyleSheet("QPushButton {\n"
+"    font: 25 12pt \"Adobe 宋体 Std L\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -500,13 +522,17 @@ class Ui_Dialog(object):
         self.bn_west.setObjectName("bn_west")
         self.gridLayout.addWidget(self.bn_west, 5, 2, 1, 1)
         self.bn_east = QtWidgets.QPushButton(parent=self.frame_bottom)
-        self.bn_east.setMinimumSize(QtCore.QSize(69, 25))
+        self.bn_east.setMinimumSize(QtCore.QSize(100, 40))
         self.bn_east.setMaximumSize(QtCore.QSize(75, 25))
         font = QtGui.QFont()
-        font.setFamily("Segoe UI")
+        font.setFamily("Adobe 宋体 Std L")
         font.setPointSize(12)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(3)
         self.bn_east.setFont(font)
         self.bn_east.setStyleSheet("QPushButton {\n"
+"    font: 25 12pt \"Adobe 宋体 Std L\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -533,17 +559,17 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.lab_heading.setText(_translate("Dialog", "参数设置"))
-        self.label_16.setText(_translate("Dialog", "采样点数"))
-        self.label_12.setText(_translate("Dialog", "采样模式"))
+        self.label_16.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">采样点数</span></p></body></html>"))
+        self.label_12.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">采样模式</span></p></body></html>"))
         self.comboBox.setItemText(0, _translate("Dialog", "扫频"))
         self.comboBox.setItemText(1, _translate("Dialog", "单频"))
-        self.label_15.setText(_translate("Dialog", "起始频率"))
-        self.label_11.setText(_translate("Dialog", "终止频率"))
-        self.label_14.setText(_translate("Dialog", "单频频率"))
-        self.label_10.setText(_translate("Dialog", "交流峰值电压"))
-        self.label_13.setText(_translate("Dialog", "直流偏置电压"))
-        self.label_8.setText(_translate("Dialog", "校准电阻值"))
-        self.label_9.setText(_translate("Dialog", "采样数据间隔"))
+        self.label_15.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">起始频率</span></p></body></html>"))
+        self.label_11.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">终止频率</span></p></body></html>"))
+        self.label_14.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">单频频率</span></p></body></html>"))
+        self.label_10.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">交流峰值电压</span></p></body></html>"))
+        self.label_13.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">直流偏置电压</span></p></body></html>"))
+        self.label_8.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">校准电阻值</span></p></body></html>"))
+        self.label_9.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:12pt;\">采样数据间隔</span></p></body></html>"))
         self.comboBox_2.setItemText(0, _translate("Dialog", "线性比例"))
         self.comboBox_2.setItemText(1, _translate("Dialog", "指数比例"))
         self.bn_west.setText(_translate("Dialog", "应用"))

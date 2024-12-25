@@ -12,9 +12,9 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_initSetting(object):
     def setupUi(self, initSetting):
         initSetting.setObjectName("initSetting")
-        initSetting.resize(600, 400)
+        initSetting.resize(1049, 645)
         initSetting.setMinimumSize(QtCore.QSize(450, 235))
-        initSetting.setMaximumSize(QtCore.QSize(600, 450))
+        initSetting.setMaximumSize(QtCore.QSize(1049, 645))
         initSetting.setStyleSheet("QDialog {\n"
 "    background:rgb(51,51,51);\n"
 "}")
@@ -44,10 +44,14 @@ class Ui_initSetting(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.lab_heading = QtWidgets.QLabel(parent=self.frame_top)
         font = QtGui.QFont()
-        font.setFamily("Segoe UI")
-        font.setPointSize(14)
+        font.setFamily("Adobe 黑体 Std R")
+        font.setPointSize(16)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
         self.lab_heading.setFont(font)
-        self.lab_heading.setStyleSheet("color:rgb(255,255,255);")
+        self.lab_heading.setStyleSheet("color:rgb(255,255,255);\n"
+"font: 16pt \"Adobe 黑体 Std R\";")
         self.lab_heading.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.lab_heading.setObjectName("lab_heading")
         self.horizontalLayout.addWidget(self.lab_heading)
@@ -65,7 +69,7 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.comboBox.sizePolicy().hasHeightForWidth())
         self.comboBox.setSizePolicy(sizePolicy)
-        self.comboBox.setMinimumSize(QtCore.QSize(100, 40))
+        self.comboBox.setMinimumSize(QtCore.QSize(150, 60))
         self.comboBox.setStyleSheet("QComboBox {\n"
 "    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
@@ -128,9 +132,9 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_2.sizePolicy().hasHeightForWidth())
         self.pushButton_2.setSizePolicy(sizePolicy)
-        self.pushButton_2.setMinimumSize(QtCore.QSize(100, 40))
+        self.pushButton_2.setMinimumSize(QtCore.QSize(150, 60))
         self.pushButton_2.setStyleSheet("QPushButton {\n"
-"    font: 14pt \"Adobe 黑体 Std R\";\n"
+"    font: 16pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -158,9 +162,9 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_15.sizePolicy().hasHeightForWidth())
         self.label_15.setSizePolicy(sizePolicy)
-        self.label_15.setMinimumSize(QtCore.QSize(120, 40))
+        self.label_15.setMinimumSize(QtCore.QSize(150, 60))
         self.label_15.setStyleSheet("QLabel {\n"
-"    font: 14pt \"Adobe 黑体 Std R\";\n"
+"    font: 16pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -179,7 +183,7 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.comboBox_3.sizePolicy().hasHeightForWidth())
         self.comboBox_3.setSizePolicy(sizePolicy)
-        self.comboBox_3.setMinimumSize(QtCore.QSize(100, 40))
+        self.comboBox_3.setMinimumSize(QtCore.QSize(150, 60))
         self.comboBox_3.setStyleSheet("QComboBox {\n"
 "    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
@@ -242,9 +246,9 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
-        self.label.setMinimumSize(QtCore.QSize(120, 40))
+        self.label.setMinimumSize(QtCore.QSize(150, 60))
         self.label.setStyleSheet("QLabel {\n"
-"    font: 14pt \"Adobe 黑体 Std R\";\n"
+"    font: 16pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -263,9 +267,9 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
         self.label_4.setSizePolicy(sizePolicy)
-        self.label_4.setMinimumSize(QtCore.QSize(120, 40))
+        self.label_4.setMinimumSize(QtCore.QSize(150, 60))
         self.label_4.setStyleSheet("QLabel {\n"
-"    font: 14pt \"Adobe 黑体 Std R\";\n"
+"    font: 16pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"
 "    border-radius: 5px;    \n"
 "    color:rgb(255,255,255);\n"
@@ -284,7 +288,7 @@ class Ui_initSetting(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.comboBox_4.sizePolicy().hasHeightForWidth())
         self.comboBox_4.setSizePolicy(sizePolicy)
-        self.comboBox_4.setMinimumSize(QtCore.QSize(100, 40))
+        self.comboBox_4.setMinimumSize(QtCore.QSize(150, 60))
         self.comboBox_4.setStyleSheet("QComboBox {\n"
 "    font: 14pt \"Adobe 黑体 Std R\";\n"
 "    border: 2px solid rgb(51,51,51);\n"

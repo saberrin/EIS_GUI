@@ -16,7 +16,7 @@ class paraSetting(QDialog):
         self.d.setupUi(self)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint) # REMOVING WINDOWS TOP BAR AND MAKING IT FRAMELESS (AS WE HAVE AMDE A CUSTOME FRAME IN THE WINDOW ITSELF)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground) # MAKING THE WINDOW TRANSPARENT SO THAT TO GET A TRUE FLAT UI
-
+        # self.showFullScreen()
         #-----> MINIMIZE BUTTON OF DIALOGBOX
         self.d.bn_min.clicked.connect(lambda: self.showMinimized())
 
@@ -34,7 +34,17 @@ class paraSetting(QDialog):
         self.d.bn_west.clicked.connect(self.start_thread)
         self.update_ui_signal.connect(self.show_message_box)
         self.current_msg_box = None
-        
+
+    def focusInEvent(self, event):
+        super().focusInEvent(event)
+        self.d.lineEdit.setFocus()  
+        self.d.lineEdit_2.setFocus() 
+        self.d.lineEdit_3.setFocus() 
+        self.d.lineEdit_4.setFocus() 
+        self.d.lineEdit_6.setFocus() 
+        self.d.lineEdit_7.setFocus() 
+        self.d.lineEdit_8.setFocus() 
+
     def start_thread(self):
         result_message = ("参数配置中，请等待。。。" )
         self.update_ui_signal.emit('提示', result_message)

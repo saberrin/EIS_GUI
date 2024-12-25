@@ -16,7 +16,7 @@ class initSetting(QDialog):
         self.d.setupUi(self)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint) # REMOVING WINDOWS TOP BAR AND MAKING IT FRAMELESS (AS WE HAVE AMDE A CUSTOME FRAME IN THE WINDOW ITSELF)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground) # MAKING THE WINDOW TRANSPARENT SO THAT TO GET A TRUE FLAT UI
-        self.setModal(True)  
+        self.showFullScreen()  
         self.d.comboBox_3.addItem("请选择")
         self.d.comboBox.addItem("请选择")
         self.d.comboBox_4.addItem("请选择")

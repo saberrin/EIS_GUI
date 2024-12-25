@@ -75,6 +75,7 @@ class MenuWidget(QWidget):
 
     def para_setting(self):
         # 显示参数设置信息
+        # self.showFullScreen()
         self.settingWidget.exec()
 
     def update_main_window_ui(self):

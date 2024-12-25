@@ -52,7 +52,8 @@ class EISAnalyzer:
             consistency = 1 / (total_distance / (len(curves) - 1))  # 一致性定义为DTW距离的倒数
             distances[battery1] = consistency
         # return self.normalize_results(distances)
-        return np.mean(np.array(list(distances.values())))
+        # return np.mean(np.array(list(distances.values())))
+        return distances
 
     def calculate_dispersion(self, curves):
         """
@@ -68,7 +69,8 @@ class EISAnalyzer:
             dispersion = np.mean(all_distances)  # 离散性定义为DTW距离的标准差
             distances[battery1] = dispersion
         # return self.normalize_results(distances)
-        return np.mean(np.array(list(distances.values())))
+        # return np.mean(np.array(list(distances.values())))
+        return distances
 
     def detect_outliers(self, threshold=3.0):
         """
