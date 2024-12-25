@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
         UIFunction.constantFunction(self)
         UIFunction.maximize_restore(self)
         UIFunction.logoTitle(self)
-        
+        self.showFullScreen() 
         # Initialize menu and layout
         self.menu = MenuWidget(self)
         self.ui.horizontalLayout_38.addWidget(self.menu)

@@ -93,7 +93,8 @@ class I2CReader(QObject):
             if len(self.confirmed_addresses) + len(self.failed_addresses) == len(address_list):
                 print("Starting data reading for confirmed addresses...")
                 self.new_data_received_check.emit("硬件地址校验完成，开始数据读取...")
-                self.confirmed_addresses_1 = [x + 1 for x in self.confirmed_addresses]
+                self.confirmed_addresses_1 = [x + 1 for x in self.confirmed_addresses if x != 40]
+ 
                 for address in self.confirmed_addresses:
                     self.thread = threading.Thread(target=self.read_data, args=(address,),daemon=True)
                     self.thread.start()
@@ -103,8 +104,6 @@ class I2CReader(QObject):
         print("Stopping I2C reading...")
         self.new_data_received_check.emit("停止 I2C 数据读取")
         self.running = False
-        # if hasattr(self, 'thread') and self.thread.is_alive():
-        #     self.thread.join()  
 
     def read_data(self,address):
         while self.running:
@@ -115,6 +114,7 @@ class I2CReader(QObject):
                 self.data.append(line_decoded)
                 self.parse_and_insert_data(line_decoded)
                 self.parse_and_emit_signals(line_decoded)
+                self.parse_swf_data(line_decoded)
         
 
     def read_until_end(self,address):
@@ -214,28 +214,25 @@ class I2CReader(QObject):
 
                         
     def parse_and_emit_signals(self, line):
-        # print(f"Parsing line: {line}")
         if 'TEM' in line:
             temperature = line.split('_')[2]
             self.new_data_received_TEM.emit(float(temperature))
-        if 'SWF' in line:
-            try:
-                battery_number, frequency, real_imp, imag_imp = self.parse_swf_data(line)
-                print(f"Emitting SWF signal with: {battery_number}, {frequency}, {real_imp}, {imag_imp}")
-                self.new_data_received_SWF.emit(battery_number, frequency, real_imp, imag_imp)
-            except (ValueError, IndexError) as e:
-                print(f"Error parsing SWF data: {line}, Error: {e}")
 
         if 'EIS_data_packet_start' in line:
             # voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
             
             cell_id = int(line.split('_')[0], 16)
+            
+            
             if '_A' in line:
                 cell_id = cell_id
             elif '_B' in line:
                 cell_id = cell_id + 1
             else:
                 cell_id = None 
+            
+            if cell_id == 41:  #第7张卡第二通道无效
+                return
             
             segments = line.split(';')
             result = None
@@ -285,44 +282,47 @@ class I2CReader(QObject):
 
 
     def parse_swf_data(self, line):
-        try:
-            # Remove prefix and split the main data section
-            if line.startswith("Received line:"):
-                line = line[len("Received line: "):].strip()
-            
-            # Extract battery number from the 0x-prefixed address
-            battery_number = int(line.split('_')[0], 16)
-            if '_A' in line:
-                battery_number  = battery_number
-            elif '_B' in line:
-                battery_number  = battery_number + 1
-            else:
-                battery_number = None 
+        if 'SWF' in line:
+            try:
+                # Remove prefix and split the main data section
+                if line.startswith("Received line:"):
+                    line = line[len("Received line: "):].strip()
+                
+                # Extract battery number from the 0x-prefixed address
+                battery_number = int(line.split('_')[0], 16)
+                if '_A' in line:
+                    battery_number  = battery_number
+                elif '_B' in line:
+                    battery_number  = battery_number + 1
+                else:
+                    battery_number = None 
+                
+                if battery_number == 41:  #第7张卡第二通道无效
+                    return
+                battery_number = str(battery_number)
+                battery_number = self.config["cell_id_dict"].get(battery_number)
+                battery_number = int(battery_number)
+                battery_number = 13*(self.port-1) + battery_number
+                # Extract the frequency, real impedance, and imaginary impedance
+                if "SWF" in line:
+                    freq_start = line.find("Freq") + len("Freq")
+                    freq_end = line.find("rea")
+                    frequency = float(line[freq_start:freq_end])
 
-            battery_number = str(battery_number)
-            battery_number = self.config["cell_id_dict"].get(battery_number)
-            battery_number = int(battery_number)
-            battery_number = 13*(self.port-1) + battery_number
-            # Extract the frequency, real impedance, and imaginary impedance
-            if "SWF" in line:
-                freq_start = line.find("Freq") + len("Freq")
-                freq_end = line.find("rea")
-                frequency = float(line[freq_start:freq_end])
+                    rea_start = freq_end + len("rea")
+                    rea_end = line.find("image")
+                    real_imp = float(line[rea_start:rea_end])
 
-                rea_start = freq_end + len("rea")
-                rea_end = line.find("image")
-                real_imp = float(line[rea_start:rea_end])
+                    img_start = rea_end + len("image")
+                    img_end = line.find("_end")
+                    imag_imp = float(line[img_start:img_end])
 
-                img_start = rea_end + len("image")
-                img_end = line.find("_end")
-                imag_imp = float(line[img_start:img_end])
-
-                return battery_number, frequency, real_imp, imag_imp
-            else:
-                raise ValueError("Invalid SWF data format")
-        except (ValueError, IndexError) as e:
-            print(f"Error parsing SWF data from line: {line}, Error: {e}")
-            raise
+                    self.new_data_received_SWF.emit(battery_number, frequency, real_imp, imag_imp)
+                else:
+                    raise ValueError("Invalid SWF data format")
+            except (ValueError, IndexError) as e:
+                print(f"Error parsing SWF data from line: {line}, Error: {e}")
+                raise
 
     def parse_and_insert_data(self, line: str):
         """
@@ -343,12 +343,17 @@ class I2CReader(QObject):
 
                 # Cell ID (unique identifier for your device, like 0x28)
                 addr_id = int(line.split('_')[0], 16)
+                
+                
                 if '_A' in line:
                     addr_id  = addr_id
                 elif '_B' in line:
                     addr_id  = addr_id + 1
                 else:
                     addr_id = None 
+
+                if addr_id == 41:  #第7张卡第二通道无效
+                    return
 
                 cell_id = str(addr_id)
                 cell_id = self.config["cell_id_dict"].get(cell_id)

@@ -60,17 +60,16 @@ class UIFunction(MainWindow):
     #-----> DEFAULT ACTION FUNCTION
     def constantFunction(self):
         #-----> DOUBLE CLICK RESULT IN MAXIMISE OF WINDOW
-        def maxDoubleClick(stateMouse):
-            if stateMouse.type() == QtCore.QEvent.MouseButtonDblClick:
-                QtCore.QTimer.singleShot(250, lambda: UIFunction.maximize_restore(self))
+        # def maxDoubleClick(stateMouse):
+        #     if stateMouse.type() == QtCore.QEvent.MouseButtonDblClick:
+        #         QtCore.QTimer.singleShot(250, lambda: UIFunction.maximize_restore(self))
 
         #----> REMOVE NORMAL TITLE BAR 
        
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)  
-        self.showFullScreen()  
         self.setStyleSheet("background:transparent;")
-        self.ui.frame_appname.mouseDoubleClickEvent = maxDoubleClick
+        # self.ui.frame_appname.mouseDoubleClickEvent = maxDoubleClick
   
 
         
