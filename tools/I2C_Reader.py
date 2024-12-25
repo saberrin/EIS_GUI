@@ -16,6 +16,7 @@ class I2CReader(QObject):
     new_data_received_check = pyqtSignal(str)
     new_data_received_finish_list = pyqtSignal(list)
     new_data_received_batterycellInfo = pyqtSignal(int, float, float) #实部阻抗和电压数据
+    new_data_received_TEM = pyqtSignal(float)
 
     def __init__(self, bus_number,timeout_duration=0.01):
         super().__init__()
@@ -205,6 +206,9 @@ class I2CReader(QObject):
                         
     def parse_and_emit_signals(self, line):
         # print(f"Parsing line: {line}")
+        if 'TEM' in line:
+            temperature = line.split('_')[2]
+            self.new_data_received_TEM.emit(float(temperature))
         if 'SWF' in line:
             try:
                 battery_number, frequency, real_imp, imag_imp = self.parse_swf_data(line)
