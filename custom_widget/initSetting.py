@@ -16,25 +16,24 @@ class initSetting(QDialog):
         self.d.setupUi(self)
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint) # REMOVING WINDOWS TOP BAR AND MAKING IT FRAMELESS (AS WE HAVE AMDE A CUSTOME FRAME IN THE WINDOW ITSELF)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground) # MAKING THE WINDOW TRANSPARENT SO THAT TO GET A TRUE FLAT UI
-
-        self.d.comboBox_2.addItem("请选择")
+        self.setModal(True)  
         self.d.comboBox_3.addItem("请选择")
         self.d.comboBox.addItem("请选择")
         self.d.comboBox_4.addItem("请选择")
-        self.d.comboBox_2.addItems([str(i) for i in range(1, CONTAINER_NUMBER + 1)])
+
         self.d.comboBox_3.addItems([str(i) for i in range(1, CLUSTER_NUMBER + 1)])
         self.d.comboBox.addItems([str(i) for i in range(1, PACK_NUMBER + 1)])
         self.d.comboBox_4.addItems([str(i) for i in range(1, PORT_NUMBER + 1)])
 
         self.d.pushButton_2.clicked.connect(self.update_para)
     def update_para(self):
-        container = self.d.comboBox_2.currentText()
+        
         cluster = self.d.comboBox_3.currentText()
         pack = self.d.comboBox.currentText()
         port = self.d.comboBox_4.currentText()
-        if container != "请选择" and cluster != "请选择" and pack != "请选择" and port != "请选择":
+        if cluster != "请选择" and pack != "请选择" and port != "请选择":
             try:
-                container_int = int(container)
+                container_int = int(cluster) #container编号和cluster编号目前保持一致
                 cluster_int = int(cluster)
                 pack_int = int(pack)
                 port_int = int(port)

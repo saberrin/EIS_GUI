@@ -14,15 +14,17 @@ from collections import Counter
 import random
 from collections import defaultdict
 class StartAlgorithm(QObject):
-    def __init__(self,lists):
+    task_done = pyqtSignal(list)
+    def __init__(self):
         super().__init__()
         self.repository = Repository()
-        self.address = lists
         
-    def start(self):
+        
+    def start(self,lists):
         """
         Start the algorithm in a separate thread and generate random data.
         """
+        self.address = lists
         thread = threading.Thread(target=self.start_analyzer, daemon=True)
         thread.start()
         time.sleep(0.1)  # Ensure the thread has enough time to start
@@ -36,6 +38,7 @@ class StartAlgorithm(QObject):
 
         generated_info_data = self.generate_random_generated_info_data()
         self.repository.insert_generated_info(generated_info_data)
+        self.task_done.emit(self.address)
 
     def generate_random_battery_pack_data(self) -> List[Dict]:
 

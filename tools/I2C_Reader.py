@@ -16,7 +16,7 @@ class I2CReader(QObject):
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
     new_data_received_finish_list = pyqtSignal(list)
-    new_data_received_batterycellInfo = pyqtSignal(int, float, float) #实部阻抗和电压数据
+    new_data_received_batterycellInfo = pyqtSignal(int, int, float) #显示序号、cell_id和实部阻抗
 
     def __init__(self, bus_number,timeout_duration=0.01):
         super().__init__()
@@ -35,7 +35,8 @@ class I2CReader(QObject):
         self.confirmed_addresses = []
         self.confirmed_addresses_1 = [] #继电器切换后的电芯地址                                     
         self.failed_addresses = []
-        self.finish_list = []
+        self.finish_list_addr = []
+        self.finish_list_cell = []
         self.real_time_id = None
         # User input attributes for container, cluster, and pack
         self.container_number = None
@@ -222,7 +223,7 @@ class I2CReader(QObject):
                 print(f"Error parsing SWF data: {line}, Error: {e}")
 
         if 'EIS_data_packet_start' in line:
-            voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
+            # voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
             
             cell_id = int(line.split('_')[0], 16)
             if '_A' in line:
@@ -265,14 +266,15 @@ class I2CReader(QObject):
             #硬件地址转ID    
             cell_id = str(cell_id)
             cell_id = self.config["cell_id_dict"].get(cell_id)
-            cell_id = int(cell_id)
+            cell_id = int(cell_id)   #显示序号
+            cell_id_true = 13*(self.port-1) + cell_id #实际序号
             # If 1000Hz was found and its result is available
             if result is not None:
-                self.new_data_received_batterycellInfo.emit(cell_id, result, voltage)
+                self.new_data_received_batterycellInfo.emit(cell_id, cell_id_true,result)
             # If 1000Hz was not found, but a frequency close to 1000Hz in the 900Hz-1100Hz range was found
             elif closest_frequency is not None:
                 print(f"Warning: 1000Hz not found, using closest frequency {closest_frequency}Hz with value {closest_result}")
-                self.new_data_received_batterycellInfo.emit(cell_id, closest_result, voltage)
+                self.new_data_received_batterycellInfo.emit(cell_id, closest_result)
             else:
                 print("Error: Neither 1000Hz nor any frequency in the 500Hz to 1500Hz range found.")
 
@@ -397,9 +399,10 @@ class I2CReader(QObject):
         try:
             print(f"Inserting {len(measurements)} measurements for cell {cell_id}.")
             self.repo.insert_measurements(measurements)
-            self.finish_list.append(addr_id)
-            if Counter(self.finish_list) == Counter(self.confirmed_addresses) + Counter(self.confirmed_addresses_1):
-                self.new_data_received_finish_list.emit(self.finish_list)
+            self.finish_list_addr.append(addr_id)
+            self.finish_list_cell.append(cell_id)
+            if Counter(self.finish_list_addr) == Counter(self.confirmed_addresses) + Counter(self.confirmed_addresses_1):
+                self.new_data_received_finish_list.emit(self.finish_list_cell)
                 self.new_data_received_check.emit("数据读取完成,AI智能分析中...")
             print("Data inserted successfully into eis_measurement.")
             

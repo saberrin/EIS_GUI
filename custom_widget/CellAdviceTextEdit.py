@@ -6,7 +6,7 @@ class CellAdviceTextEdit(QTextEdit):
         self.repository = Repository()
         
     def update_textedit(self,cell_id):
-        print(f"cell_id:{cell_id}")
+        
         info = self.repository.get_latest_generated_info(cell_id)
         if info:
             dispersion_rate = info['dispersion_rate']
