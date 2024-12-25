@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>1049</width>
+    <height>645</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -18,8 +18,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>600</width>
-    <height>450</height>
+    <width>1049</width>
+    <height>645</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -156,8 +156,8 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>40</height>
+             <width>150</width>
+             <height>60</height>
             </size>
            </property>
            <property name="styleSheet">
@@ -228,13 +228,13 @@ QComboBox::drop-down {
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>40</height>
+             <width>150</width>
+             <height>60</height>
             </size>
            </property>
            <property name="styleSheet">
             <string notr="true">QPushButton {
-	font: 14pt &quot;Adobe 黑体 Std R&quot;;
+	font: 16pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
@@ -270,13 +270,13 @@ QPushButton:disabled {
            </property>
            <property name="minimumSize">
             <size>
-             <width>120</width>
-             <height>40</height>
+             <width>150</width>
+             <height>60</height>
             </size>
            </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
-	font: 14pt &quot;Adobe 黑体 Std R&quot;;
+	font: 16pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
@@ -305,8 +305,8 @@ QLabel {
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>40</height>
+             <width>150</width>
+             <height>60</height>
             </size>
            </property>
            <property name="styleSheet">
@@ -377,13 +377,13 @@ QComboBox::drop-down {
            </property>
            <property name="minimumSize">
             <size>
-             <width>120</width>
-             <height>40</height>
+             <width>150</width>
+             <height>60</height>
             </size>
            </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
-	font: 14pt &quot;Adobe 黑体 Std R&quot;;
+	font: 16pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
@@ -412,13 +412,13 @@ QLabel {
            </property>
            <property name="minimumSize">
             <size>
-             <width>120</width>
-             <height>40</height>
+             <width>150</width>
+             <height>60</height>
             </size>
            </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
-	font: 14pt &quot;Adobe 黑体 Std R&quot;;
+	font: 16pt &quot;Adobe 黑体 Std R&quot;;
 	border: 2px solid rgb(51,51,51);
 	border-radius: 5px;	
 	color:rgb(255,255,255);
@@ -447,8 +447,8 @@ QLabel {
            </property>
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>40</height>
+             <width>150</width>
+             <height>60</height>
             </size>
            </property>
            <property name="styleSheet">
