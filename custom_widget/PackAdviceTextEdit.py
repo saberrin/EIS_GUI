@@ -6,16 +6,17 @@ class PackAdviceTextEdit(QTextEdit):
         self.repository = Repository()
 
     def update_textedit(self,lists):
-        data = []
+
         max_dispersion_rate = float('-inf')  
         max_temperature = float('-inf')  
         cell_with_max_dispersion_rate = None  
         cell_with_max_temperature = None  
         max_temperature_value = None  
         for cell_id in lists:
+            print(f"cell_id:{cell_id}")
             info = self.repository.get_latest_generated_info(cell_id)
             if info:  
-                data.append(info)
+                print(f"info:{info}")
                 if info['dispersion_rate'] > max_dispersion_rate:
                     max_dispersion_rate = info['dispersion_rate']
                     cell_with_max_dispersion_rate = info['cell_id']
@@ -32,7 +33,7 @@ class PackAdviceTextEdit(QTextEdit):
             <title></title>
             <style>
                 body {{
-                    font-size: 20px; 
+                    font-size: 16px; 
                     color: white;
                 }}
             </style>

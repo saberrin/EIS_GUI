@@ -26,8 +26,6 @@ from tools.heatmap_plt import HeatMap3DWidget
 from tools.single_battery_renderer import SingleBattery3DWidget
 from custom_widget.infoListWidget import infoListView
 from database.repository import Repository
-from collections import defaultdict
-from algorithm.EISAnalyzer import EISAnalyzer
 from custom_widget.nyquist_plot_history import NyquistPlotHistory
 from custom_widget.bode_plot_history import BodePlotHistory
 from custom_widget.bode_plot import BodePlot
@@ -51,17 +49,14 @@ class MainWindow(QMainWindow):
         self.conn, self.cursor = init_database()
         UIFunction.constantFunction(self)
         UIFunction.maximize_restore(self)
+        UIFunction.logoTitle(self)
         
         # Initialize menu and layout
         self.menu = MenuWidget(self)
-        self.ui.horizontalLayout_21.addWidget(self.menu)
+        self.ui.horizontalLayout_38.addWidget(self.menu)
 
         self.infoList = infoListView()
         self.ui.horizontalLayout_32.addWidget(self.infoList)
-
-        # 初始化 Bode 图相关小部件
-        # self.BodePage = BodePlot()  # 创建 BodePlot 实例
-        # self.ui.horizontalLayout_33.addWidget(self.BodePage)
 
         self.NyquistPageHistory = NyquistPlotHistory()
         self.ui.verticalLayout_8.addWidget(self.NyquistPageHistory)
@@ -149,13 +144,13 @@ class MainWindow(QMainWindow):
                 self.ui.gridLayout.addWidget(label, row, col)
         
         for i in range(14):
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + 32))
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i + 32))
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_BodeHistory(i + 32))
-            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_textEdit_celladvice(i + 32))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.switchPage(1, i + (self.port_number-1)*13))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_NyquistHistory(i + (self.port_number-1)*13))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_BodeHistory(i + (self.port_number-1)*13))
+            self.ui.batteryList[i].clicked.connect(lambda i=i: self.update_textEdit_celladvice(i + (self.port_number-1)*13))
             
-    def update_battertcell(self,battery_number, real_imp, voltage):
-        self.ui.batteryList[battery_number-32].update_text(voltage, real_imp)
+    def update_battertcell(self,battery_number, cell_id, real_imp):
+        self.ui.batteryList[battery_number].update_text(cell_id, real_imp)
 
     def handle_battery_click(self, battery_index):
         """
@@ -235,16 +230,18 @@ class MainWindow(QMainWindow):
 
         # Initialize I2C Reader with identifiers and configuration
         self.reader = I2CReader(bus_number=bus_number)
+        self.reader.get_port(self.port_number)
         self.reader.set_user_selection(self.container_number, self.cluster_number, self.pack_number)
 
         self.reader.new_data_received_SWF.connect(self.update_Nyquist)
-        self.reader.new_data_received_finish_list.connect(self.update_infoList)
-        self.reader.new_data_received_finish_list.connect(self.update_textEdit_packadvice)
         self.reader.new_data_received_finish_list.connect(self.start_algorithm)
-        # self.reader.new_data_received_finish_list.connect(self.update_textEdit_celladvice)
         self.reader.new_data_received_batterycellInfo.connect(self.update_battertcell)
         self.reader.new_data_received_check.connect(self.update_textEdit)
-        self.reader.new_data_received_TEM.connect(self.update_temperature)
+
+        self.algo = StartAlgorithm()
+        self.algo.task_done.connect(self.update_textEdit_packadvice)
+        self.algo.task_done.connect(self.update_infoList)
+
         
         # Start I2C reading
         self.ui.pushButton_3.setEnabled(False)
@@ -258,21 +255,21 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.setEnabled(False)
 
     def start_algorithm(self,lists):
-        self.algo = StartAlgorithm(lists)
-        self.algo.start()
+        self.algo.start(lists)
+        
 
     def closeEvent(self, event):
         if self.conn:
             self.conn.close()
             print("Database connection closed.")
       
-    def identifier_setting(self, container_number, cluster_number, pack_number):
+    def identifier_setting(self, container_number, cluster_number, pack_number,port_number):
         # Set identifiers and update display
         self.container_number = container_number
         self.cluster_number = cluster_number
         self.pack_number = pack_number
-        self.ui.label_14.setText(f"集装箱 {container_number} - 电池簇 {cluster_number} - 电池包 {pack_number}")
-        print(f"Identifiers set: 集装箱 {container_number}, 电池簇 {cluster_number}, 电池包 {pack_number}")
+        self.port_number = port_number
+        self.ui.label_14.setText(f"集装箱 {container_number} - 电池柜 {cluster_number} - 电池包 {pack_number} - 端口号 {port_number}")
     
     def init_Nyquist(self):
         self.NyquistPage = NyquistPlot()  
@@ -282,58 +279,17 @@ class MainWindow(QMainWindow):
         self.NyquistPage.add_data(battery_number, real_impedance, negative_imaginary_impedance)
     
     def update_NyquistHistory(self, cell_id):
-        data =  self.repo.get_cell_history(cell_id,index=10)
-        result = defaultdict(lambda: ([], []))  
-        for real_time_id, measurements in data.items():
-            for measurement in measurements:
-                result[real_time_id][0].append(measurement.real_impedance)  
-                result[real_time_id][1].append(measurement.imag_impedance) 
-        for real_time_id, data in result.items():
-            self.NyquistPageHistory.add_data(real_time_id,data[0],data[1])
+        self.NyquistPageHistory.update_data(cell_id)
 
     def update_Bode(self, battery_number, freq, real_impedance, negative_imaginary_impedance):
         # 调用 Bode 图实例并添加数据
         self.BodePage.add_data(battery_number, freq, real_impedance, negative_imaginary_impedance)
 
-
     def update_BodeHistory(self, cell_id):
-        data = self.repo.get_cell_history(cell_id, index=10)
-        
-        # 用来存储处理后的频率、实部和虚部数据
-        result = defaultdict(lambda: ([], [], []))  # 用频率、实部、虚部的列表初始化
-        
-        # 处理每一条数据
-        for real_time_id, measurements in data.items():
-            for measurement in measurements:
-                # 将频率、实部阻抗和虚部阻抗分别添加到各自的列表
-                result[real_time_id][0].append(measurement.frequency)
-                result[real_time_id][1].append(measurement.real_impedance)
-                result[real_time_id][2].append(measurement.imag_impedance)
-        
-        # 将处理后的数据添加到历史 Bode 图中
-        for real_time_id, data in result.items():
-            self.BodePageHistory.add_data(real_time_id, data[0], data[1], data[2])
-
+        self.BodePageHistory.update_data(cell_id)
 
     def update_infoList(self,lists):
-        data = []
-        for cell_id in lists:
-            data.append(self.repo.get_cell_measurements(cell_id))
-        result = defaultdict(lambda: ([], []))  
-        for measurements in data:
-            for measurement in measurements:
-                cell_id = f"Battery{measurement.cell_id}"  
-                result[cell_id][0].append(measurement.real_impedance)  
-                result[cell_id][1].append(measurement.imag_impedance)  
-        result = dict(result)
-        analyzer = EISAnalyzer(result)
-        discrepancy = analyzer.calculate_dispersion(result)
-        print(f"Discrepancy: {discrepancy}")
-        consistency = analyzer.calculate_consistency(result)
-        print(f"Consistency: {consistency}")
-        outliers,max_dispersion = analyzer.detect_max_dispersion()
-        print(f"Outliers (Method 2): {outliers}")
-        self.infoList.populate_data(discrepancy,consistency,outliers,max_dispersion)
+        self.infoList.update_data(lists)
 
     def update_textEdit(self,line):
         font = QFont('Arial', 15)  

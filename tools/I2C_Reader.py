@@ -11,17 +11,19 @@ from database.repository import Repository
 from database.entity import EisMeasurement
 from algorithm.EISAnalyzer import EISAnalyzer
 from collections import Counter
+import json
 class I2CReader(QObject):
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
     new_data_received_finish_list = pyqtSignal(list)
-    new_data_received_batterycellInfo = pyqtSignal(int, float, float) #实部阻抗和电压数据
+    new_data_received_batterycellInfo = pyqtSignal(int, int, float) #显示序号、cell_id和实部阻抗
     new_data_received_TEM = pyqtSignal(float)
 
     def __init__(self, bus_number,timeout_duration=0.01):
         super().__init__()
         self.device = "/dev/i2c-" + str(bus_number)
         self.bus = bus_number
+        self.port = None
         self.address = None
         self.chunk_size = 1
         self.line_ending = b'_end'
@@ -34,12 +36,19 @@ class I2CReader(QObject):
         self.confirmed_addresses = []
         self.confirmed_addresses_1 = [] #继电器切换后的电芯地址                                     
         self.failed_addresses = []
-        self.finish_list = []
+        self.finish_list_addr = []
+        self.finish_list_cell = []
         self.real_time_id = None
         # User input attributes for container, cluster, and pack
         self.container_number = None
         self.cluster_number = None
         self.pack_number = None
+
+        with open("config.json", "r") as config_file:
+            self.config = json.load(config_file)
+
+    def get_port(self,port):
+        self.port = port
 
     def set_user_selection(self, container_number, cluster_number, pack_number):
         """Sets the container, cluster, and pack based on user input."""
@@ -218,7 +227,7 @@ class I2CReader(QObject):
                 print(f"Error parsing SWF data: {line}, Error: {e}")
 
         if 'EIS_data_packet_start' in line:
-            voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
+            # voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
             
             cell_id = int(line.split('_')[0], 16)
             if '_A' in line:
@@ -258,13 +267,18 @@ class I2CReader(QObject):
                                         break
                 if result is not None:
                     break
+            #硬件地址转ID    
+            cell_id = str(cell_id)
+            cell_id = self.config["cell_id_dict"].get(cell_id)
+            cell_id = int(cell_id)   #显示序号
+            cell_id_true = 13*(self.port-1) + cell_id #实际序号
             # If 1000Hz was found and its result is available
             if result is not None:
-                self.new_data_received_batterycellInfo.emit(cell_id, result, voltage)
+                self.new_data_received_batterycellInfo.emit(cell_id, cell_id_true,result)
             # If 1000Hz was not found, but a frequency close to 1000Hz in the 900Hz-1100Hz range was found
             elif closest_frequency is not None:
                 print(f"Warning: 1000Hz not found, using closest frequency {closest_frequency}Hz with value {closest_result}")
-                self.new_data_received_batterycellInfo.emit(cell_id, closest_result, voltage)
+                self.new_data_received_batterycellInfo.emit(cell_id, closest_result)
             else:
                 print("Error: Neither 1000Hz nor any frequency in the 500Hz to 1500Hz range found.")
 
@@ -285,6 +299,10 @@ class I2CReader(QObject):
             else:
                 battery_number = None 
 
+            battery_number = str(battery_number)
+            battery_number = self.config["cell_id_dict"].get(battery_number)
+            battery_number = int(battery_number)
+            battery_number = 13*(self.port-1) + battery_number
             # Extract the frequency, real impedance, and imaginary impedance
             if "SWF" in line:
                 freq_start = line.find("Freq") + len("Freq")
@@ -324,16 +342,20 @@ class I2CReader(QObject):
                 data_points = self.extract_data_points(line)
 
                 # Cell ID (unique identifier for your device, like 0x28)
-                cell_id = int(line.split('_')[0], 16)
+                addr_id = int(line.split('_')[0], 16)
                 if '_A' in line:
-                    cell_id  = cell_id
+                    addr_id  = addr_id
                 elif '_B' in line:
-                    cell_id  = cell_id + 1
+                    addr_id  = addr_id + 1
                 else:
-                    cell_id = None 
+                    addr_id = None 
 
+                cell_id = str(addr_id)
+                cell_id = self.config["cell_id_dict"].get(cell_id)
+                cell_id = int(cell_id)
+                cell_id = 13*(self.port-1) + cell_id
                 # Insert the parsed measurements into the database
-                self.insert_measurements(cell_id, data_points, voltage)
+                self.insert_measurements(cell_id, addr_id, data_points, voltage)
 
             except (ValueError, IndexError) as e:
                 print(f"Error parsing data: {line}, Error: {e}")
@@ -357,7 +379,7 @@ class I2CReader(QObject):
         
         return data_points
 
-    def insert_measurements(self, cell_id: int, data_points: List[tuple], voltage: float):
+    def insert_measurements(self, cell_id: int, addr_id, data_points: List[tuple], voltage: float):
         real_time_id = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         measurements = []
 
@@ -381,9 +403,10 @@ class I2CReader(QObject):
         try:
             print(f"Inserting {len(measurements)} measurements for cell {cell_id}.")
             self.repo.insert_measurements(measurements)
-            self.finish_list.append(cell_id)
-            if Counter(self.finish_list) == Counter(self.confirmed_addresses) + Counter(self.confirmed_addresses_1):
-                self.new_data_received_finish_list.emit(self.finish_list)
+            self.finish_list_addr.append(addr_id)
+            self.finish_list_cell.append(cell_id)
+            if Counter(self.finish_list_addr) == Counter(self.confirmed_addresses) + Counter(self.confirmed_addresses_1):
+                self.new_data_received_finish_list.emit(self.finish_list_cell)
                 self.new_data_received_check.emit("数据读取完成,AI智能分析中...")
             print("Data inserted successfully into eis_measurement.")
             

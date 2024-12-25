@@ -3,14 +3,14 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QApplication
 import sys
 from PyQt6.QtGui import QColor, QPen
 from math import sqrt
-import numpy as np
-
+from collections import defaultdict
+from database.repository import Repository
 
 class BodePlotHistory(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-
+        self.repo = Repository()
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
@@ -28,6 +28,24 @@ class BodePlotHistory(QWidget):
 
         # Dictionary to store data and plot objects for each battery
         self.battery_plots = {}
+
+    def update_data(self,cell_id):
+        data = self.repo.get_cell_history(cell_id, index=10)
+        
+        # 用来存储处理后的频率、实部和虚部数据
+        result = defaultdict(lambda: ([], [], []))  # 用频率、实部、虚部的列表初始化
+        
+        # 处理每一条数据
+        for real_time_id, measurements in data.items():
+            for measurement in measurements:
+                # 将频率、实部阻抗和虚部阻抗分别添加到各自的列表
+                result[real_time_id][0].append(measurement.frequency)
+                result[real_time_id][1].append(measurement.real_impedance)
+                result[real_time_id][2].append(measurement.imag_impedance)
+        
+        # 将处理后的数据添加到历史 Bode 图中
+        for real_time_id, data in result.items():
+            self.add_data(real_time_id, data[0], data[1], data[2])
 
     def add_data(self, battery_number, frequency, magnitude, phase):
         """

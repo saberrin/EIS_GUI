@@ -14,15 +14,17 @@ from collections import Counter
 import random
 from collections import defaultdict
 class StartAlgorithm(QObject):
-    def __init__(self,lists):
+    task_done = pyqtSignal(list)
+    def __init__(self):
         super().__init__()
         self.repository = Repository()
-        self.address = lists
         
-    def start(self):
+        
+    def start(self,lists):
         """
         Start the algorithm in a separate thread and generate random data.
         """
+        self.lists = lists
         thread = threading.Thread(target=self.start_analyzer, daemon=True)
         thread.start()
         time.sleep(0.1)  # Ensure the thread has enough time to start
@@ -36,6 +38,7 @@ class StartAlgorithm(QObject):
 
         generated_info_data = self.generate_random_generated_info_data()
         self.repository.insert_generated_info(generated_info_data)
+        self.task_done.emit(self.lists)
 
     def generate_random_battery_pack_data(self) -> List[Dict]:
 
@@ -58,25 +61,26 @@ class StartAlgorithm(QObject):
         """
         Generate random generated info data.
         """
-        # data = []
-        # for cell_id in self.address:
-        #     data.append(self.repository.get_cell_measurements(cell_id))
-        # result = defaultdict(lambda: ([], []))  
-        # for measurements in data:
-        #     for measurement in measurements:
-        #         cell_id = f"Battery{measurement.cell_id}"  
-        #         result[cell_id][0].append(measurement.real_impedance)  
-        #         result[cell_id][1].append(measurement.imag_impedance)  
-        # result = dict(result)
-        ##
-        ##这里加入算法
-        ##
+        data = []
+        for cell_id in self.lists:
+            data.append(self.repository.get_cell_measurements(cell_id))
+        result = defaultdict(lambda: ([], []))  
+        for measurements in data:
+            for measurement in measurements:
+                cell_id = f"Battery{measurement.cell_id}"  
+                result[cell_id][0].append(measurement.real_impedance)  
+                result[cell_id][1].append(measurement.imag_impedance)  
+        result = dict(result)
+        analyzer = EISAnalyzer(result)
+        dispersion_rate = analyzer.calculate_dispersion(result)
+        
+        print(f"dispersion_rate:{dispersion_rate}")
+        print(f"lists:{self.lists}")
         list = []
-        print(self.address)
-        for addr in self.address:  
+        for addr in self.lists:  
             list.append({
                 'measurement_id': random.randint(1, 100),
-                'dispersion_rate': round(random.uniform(0.0, 1.0), 2),
+                'dispersion_rate': dispersion_rate[f"Battery{addr}"],
                 'temperature': round(random.uniform(15.0, 40.0), 2),
                 'real_time_id': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Use current timestamp
                 'cell_id':  addr,

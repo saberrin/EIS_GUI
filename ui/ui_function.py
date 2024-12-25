@@ -15,7 +15,13 @@ class UIFunction(MainWindow):
     def labelTitle(self, appName):
         self.ui.lab_appname.setText(appName)
     ################################################################################################
+    def logoTitle(self):
+        pixmap = QPixmap("icons/logo.png")
 
+        self.ui.label.setPixmap(pixmap)
+        self.ui.label.setAlignment(Qt.AlignmentFlag.AlignCenter)  
+        self.ui.label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)  
+        self.ui.label.setScaledContents(True)
 
     #----> MAXIMISE/RESTORE FUNCTION
     #THIS FUNCTION MAXIMISES OUR MAINWINDOW WHEN THE MAXIMISE BUTTON IS PRESSED OR IF DOUBLE MOUSE LEFT PRESS IS DOEN OVER THE TOPFRMAE.
@@ -59,15 +65,13 @@ class UIFunction(MainWindow):
                 QtCore.QTimer.singleShot(250, lambda: UIFunction.maximize_restore(self))
 
         #----> REMOVE NORMAL TITLE BAR 
-        if True:
-            self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
-            self.setStyleSheet("background:transparent;")
-            self.ui.frame_appname.mouseDoubleClickEvent = maxDoubleClick
-        else:
-            self.ui.frame_close.hide()
-            self.ui.frame_max.hide()
-            self.ui.frame_min.hide()
-            self.ui.frame_drag.hide()
+       
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)  
+        self.showFullScreen()  
+        self.setStyleSheet("background:transparent;")
+        self.ui.frame_appname.mouseDoubleClickEvent = maxDoubleClick
+  
 
         
         self.ui.bn_min.clicked.connect(lambda: self.showMinimized())

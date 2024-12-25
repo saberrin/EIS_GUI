@@ -6,11 +6,15 @@ from PyQt6.QtGui import QColor
 from math import sqrt
 
 from custom_widget.nyquist_plot import NyquistPlot
+from collections import defaultdict
+from database.repository import Repository
+
 class NyquistPlotHistory(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self.repo = Repository()
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
@@ -29,6 +33,16 @@ class NyquistPlotHistory(QWidget):
 
         # Dictionary to store data and plot objects for each battery
         self.battery_plots = {}
+
+    def update_data(self,cell_id):
+        data =  self.repo.get_cell_history(cell_id,index=10)
+        result = defaultdict(lambda: ([], []))  
+        for real_time_id, measurements in data.items():
+            for measurement in measurements:
+                result[real_time_id][0].append(measurement.real_impedance)  
+                result[real_time_id][1].append(measurement.imag_impedance) 
+        for real_time_id, data in result.items():
+            self.add_data(real_time_id,data[0],data[1])
 
     def add_data(self, battery_number, real_impedance, negative_imaginary_impedance):
         """

@@ -2,12 +2,17 @@ from PyQt6.QtWidgets import  QVBoxLayout, QTableView, QWidget,QHeaderView,QHBoxL
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QColor
-
+from collections import defaultdict
+from algorithm.EISAnalyzer import EISAnalyzer
+import numpy as np
+from database.repository import Repository
 
 class infoListView(QWidget):
     def __init__(self):
         super().__init__()
-        self.fontsize = 16
+
+        self.repo = Repository()
+        self.fontsize = 12
         # 创建一个垂直布局
         self.layout = QHBoxLayout(self)
         # self.layout.setAlignment(Qt.AlignmentFlag.AlignCenter)  
@@ -42,10 +47,27 @@ class infoListView(QWidget):
             font.setBold(True)                  # 设置字体加粗
             item.setFont(font)             # 应用字体
             self.model.setItem(0, 2*col, item)
-        
+
+    def update_data(self,lists):
+        data = []
+        for cell_id in lists:
+            data.append(self.repo.get_cell_measurements(cell_id))
+        result = defaultdict(lambda: ([], []))  
+        for measurements in data:
+            for measurement in measurements:
+                cell_id = f"Battery{measurement.cell_id}"  
+                result[cell_id][0].append(measurement.real_impedance)  
+                result[cell_id][1].append(measurement.imag_impedance)  
+        result = dict(result)
+        analyzer = EISAnalyzer(result)
+        discrepancy = analyzer.calculate_dispersion(result)
+        discrepancy = np.mean(np.array(list(discrepancy.values())))
+        consistency = analyzer.calculate_consistency(result)
+        consistency = np.mean(np.array(list(consistency.values())))
+        outliers,max_dispersion = analyzer.detect_max_dispersion()
+        self.populate_data(discrepancy, consistency, outliers, max_dispersion)
 
     def populate_data(self,dispersion, consistency, outliers,max_dispersion):
-        # 一些示例数据
         dispersion = round(dispersion,2)
         consistency = round(consistency,2)
         lists = [str(dispersion)+"%", str(consistency)+"%", str(outliers)] 
