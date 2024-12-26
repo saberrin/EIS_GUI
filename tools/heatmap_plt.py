@@ -1,9 +1,16 @@
 import pyvista as pv
 import numpy as np
+import os
+import sys
+import sqlite3
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel
 
+# 获取项目根目录
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, BASE_DIR)
+from database.config import DB_PATH  # 假设 DB_PATH 定义了数据库路径
 
 class HeatMap3DWidget(QWidget):
     def __init__(self, stl_file, num_cells=13, parent=None):
@@ -12,16 +19,23 @@ class HeatMap3DWidget(QWidget):
         self.num_cells = num_cells
 
         # 初始化温度和3D模型数据
-        self.cell_temperatures = np.random.uniform(-20, 60, self.num_cells)
         self.mesh = pv.read(self.stl_file)
         self.cell_indices = self.split_cells(self.mesh.n_points, self.num_cells)
-        self.temperature_data = self.assign_temperatures_with_transition(self.cell_temperatures)
 
         # 初始化布局和 QLabel
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
-        
+
+        # # 从数据库获取温度值
+        # self.temperature_data = None
+        # self.update_temperature_from_db()
+
+        # # 如果 self.temperature_data 仍为空，设置默认数据
+        # if self.temperature_data is None:
+        #     default_temperature = 25.0
+        #     cell_temperatures = [default_temperature] * self.num_cells
+        #     self.temperature_data = self.assign_temperatures_with_transition(cell_temperatures)
 
     def split_cells(self, num_points, num_cells):
         """将模型的点分配到每个电池（cell）"""
@@ -62,8 +76,6 @@ class HeatMap3DWidget(QWidget):
         """
         渲染热力图并保存为图片。
         """
-
-        # 放大渲染尺寸以提高清晰度
         upscale_factor = 2
         render_width *= upscale_factor
         render_height *= upscale_factor
@@ -72,19 +84,34 @@ class HeatMap3DWidget(QWidget):
         plotter.set_background("#e8f5e9")
         plotter.enable_anti_aliasing()
 
-        # Assign temperature data to the mesh
+        # 将温度数据分配到 mesh
         self.mesh["Temperature"] = self.temperature_data
 
-        # Add the mesh
+        # 创建自定义颜色映射函数：蓝色 (低于 70°C)，红色 (高于 70°C)
+        def custom_colormap(temp):
+            if temp < 70:
+                # 温度小于 70°C，使用从深蓝到浅蓝的颜色渐变
+                return [0, 0, 1]  # 蓝色（深蓝到浅蓝）
+            else:
+                # 温度大于 70°C，使用从浅红到深红的颜色渐变
+                return [1, 0, 0]  # 红色（浅红到深红）
+
+        # 创建自定义颜色映射（这里按温度数据的范围进行逐点映射）
+        colors = np.array([custom_colormap(temp) for temp in self.temperature_data])
+
+        # 将网格添加到 Plotter，并使用 'Temperature' 数组进行着色
         plotter.add_mesh(
             self.mesh,
-            scalars="Temperature",
-            cmap="Blues",  # 使用更亮的蓝色颜色映射
+            scalars="Temperature",  # 使用 'Temperature' 数据来着色
+            cmap="coolwarm",  # 默认的颜色映射作为背景
             show_edges=False,
-            clim=[-20, 60],
+            clim=[-20, 100],  # 设置温度范围从 -20 到 100
         )
 
-        # Compute camera position
+        # 为了避免 'rgb' 参数报错，我们不在这里传递 `rgb=colors`
+        # 在这里我们通过 `scalars` 参数来进行颜色映射，`rgb` 被去掉
+
+        # 计算相机位置
         model_bounds = self.mesh.bounds
         center_x = (model_bounds[0] + model_bounds[1]) / 2
         center_y = (model_bounds[2] + model_bounds[3]) / 2
@@ -96,44 +123,67 @@ class HeatMap3DWidget(QWidget):
         ]
         plotter.camera_position = camera_position
 
-        # Render and save the image
+        # 渲染并保存图片
         plotter.screenshot(save_path, window_size=(render_width, render_height))
         plotter.close()
 
+
+
     def create_responsive_label(self, save_path, ui_width, ui_height):
         """根据布局大小渲染图片，并在 QLabel 中显示。"""
-        # 清理已有控件
         self.clear_existing_widgets()
 
-        # 渲染图片
-        render_width = int(ui_width // 4)  # 最大宽度为 UI 宽度的一半
-        render_height = int(ui_height // 4)  # 最大高度为 UI 高度的一半
+        render_width = int(ui_width // 4)
+        render_height = int(ui_height // 4)
         self.render_and_save(save_path, render_width, render_height)
 
-        # 创建 QLabel 显示渲染的图片
         label = QLabel()
         pixmap = QPixmap(save_path)
         label.setPixmap(pixmap)
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        label.setScaledContents(True)  # 确保图片适配 QLabel
+        label.setScaledContents(True)
         self.layout.addWidget(label)
 
-    def update_heatmap(self, new_temperatures=None):
-        """
-        更新热力图内容，可以传入新的温度数据，并将每个 cell 的温度随机化在新温度值上下 2 摄氏度范围内。
-        """
-        if new_temperatures is not None:
-            if len(new_temperatures) != self.num_cells:
-                raise ValueError(f"Expected {self.num_cells} temperatures, got {len(new_temperatures)}")
-            
-            # 为每个 cell 的温度生成随机值，在传入温度的上下 1°C 范围内
-            self.cell_temperatures = [
-                np.random.uniform(temp - 1, temp + 1) for temp in new_temperatures
-            ]
-            self.temperature_data = self.assign_temperatures_with_transition(self.cell_temperatures)
+    def update_temperature_from_db(self):
+        """从数据库获取最新温度值，并更新热力图"""
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-        # 渲染并显示最新的热力图
-        save_path = "heatmap_render.png"
-        ui_width = self.parent().width()
-        ui_height = self.parent().height()
-        self.create_responsive_label(save_path, ui_width, ui_height)
+        try:
+            # 查询最新 real_time_id 的 temperature
+            cursor.execute(
+                """
+                SELECT temperature FROM generated_info 
+                WHERE real_time_id = (SELECT MAX(real_time_id) FROM generated_info)
+                """
+            )
+            result = cursor.fetchone()
+            if result:
+                latest_temperature = result[0]
+                print(f"Latest temperature from database: {latest_temperature}")
+
+                # 第一个 cell 使用最新温度值
+                cell_temperatures = [latest_temperature]
+
+                # 其他 cells 的温度随机分布在上下 0.5°C 范围内
+                for _ in range(1, self.num_cells):
+                    random_temperature = np.random.uniform(latest_temperature - 0.5, latest_temperature + 0.5)
+                    cell_temperatures.append(random_temperature)
+
+                # 更新温度数据并渲染
+                self.temperature_data = self.assign_temperatures_with_transition(cell_temperatures)
+                save_path = "heatmap_render.png"
+                ui_width = self.parent().width()
+                ui_height = self.parent().height()
+                self.create_responsive_label(save_path, ui_width, ui_height)
+            else:
+                print("No temperature data found in the database.")
+
+                # 设置默认温度数据（例如全部为 25°C）
+                default_temperature = 0
+                cell_temperatures = [default_temperature] * self.num_cells
+                self.temperature_data = self.assign_temperatures_with_transition(cell_temperatures)
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+        finally:
+            conn.close()

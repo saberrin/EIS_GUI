@@ -22,6 +22,7 @@ class SingleBattery3DWidget(QWidget):
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setScaledContents(True)
         self.label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.label)
 
         # 设置渲染目录
@@ -76,7 +77,7 @@ class SingleBattery3DWidget(QWidget):
 
         # 创建 Plotter 对象进行渲染
         plotter = pv.Plotter(off_screen=True)
-        plotter.set_background("white")
+        plotter.set_background("#e8f5e9")
 
         # 将网格添加到 Plotter，使用 'Temperature' 数组进行着色
         plotter.add_mesh(mesh, scalars="Temperature", cmap="coolwarm", show_edges=False, clim=[-20, 60])

@@ -107,16 +107,6 @@ class MainWindow(QMainWindow):
         self.heatmap_widget = HeatMap3DWidget(stl_file, num_cells=13, parent=self)
         self.ui.horizontalLayout_15.addWidget(self.heatmap_widget)
 
-        # 获取 UI 总宽高
-        ui_width = self.width()
-        ui_height = self.height()
-        print(f"UI dimensions: {ui_width}x{ui_height}")
- 
-        # 调用 create_responsive_label 渲染并显示热力图
-        save_path = "3d_pack_model/heatmap_render.png"
-        self.heatmap_widget.create_responsive_label(save_path, ui_width, ui_height)
-
-
     def update_heatmap(self):
         if hasattr(self, "heatmap_widget"):
             self.heatmap_widget.update_heatmap()
@@ -155,16 +145,6 @@ class MainWindow(QMainWindow):
     def update_battertcell(self,battery_number, cell_id, real_imp):
         self.ui.batteryList[battery_number].update_text(cell_id, real_imp)
 
-    def handle_battery_click(self, battery_index):
-        """
-        Handle clicks on the battery cells.
-        - Map the clicked battery index to a `displayed_battery_id`.
-        - Store the clicked `displayed_battery_id`.
-        - Switch to the detail page.
-        """
-        displayed_battery_id = battery_index + 1  # Map the clicked box to a displayed battery ID
-        print(f"Battery {displayed_battery_id} clicked.")
-        self.switchPage(1, displayed_battery_id)
 
     def switchPage(self, index, displayed_battery_id=None):
         print(f"Switching to page {index}, Displayed Battery ID: {displayed_battery_id}")
@@ -247,7 +227,7 @@ class MainWindow(QMainWindow):
         self.algo.task_done.connect(self.update_textEdit_packadvice)
         self.algo.task_done.connect(self.update_infoList)
         self.algo.task_done.connect(self.stop_loop)
-
+        self.algo.task_done.connect(self.update_3dheatmap)
         # Start I2C reading
         self.ui.pushButton_3.setEnabled(False)
         self.ui.pushButton_4.setEnabled(True)
@@ -266,6 +246,7 @@ class MainWindow(QMainWindow):
         self.ui.textEdit.clear()
         for batterty in self.ui.batteryList:
             batterty.clear_all()
+        self.heatmap_widget.clear_existing_widgets()
 
     def start_algorithm(self,lists):
         self.algo.start(lists)
@@ -320,19 +301,16 @@ class MainWindow(QMainWindow):
     def update_subtextEdit(self,line):
         self.ui.textEdit_2.append(line) 
     
-    def update_temperature(self,temperature):
-        self.temperature = temperature
-        print(f"received tem:{self.temperature}")
+    def update_3dheatmap(self):
+        self.heatmap_widget.update_temperature_from_db()
+    
+    # def update_temperature(self,temperature):
+    #     self.temperature = temperature
+    #     print(f"received tem:{self.temperature}")
 
-        if hasattr(self, "heatmap_widget"):
-                temperatures_list = [
-                    np.random.uniform(self.temperature - 1, self.temperature + 1)
-                    for _ in range(self.heatmap_widget.num_cells)
-                ]
-                self.heatmap_widget.update_heatmap(new_temperatures=temperatures_list)
 
-        if hasattr(self, "single_battery_renderer"):
-            self.single_battery_renderer.set_temperature(self.temperature)
+    #     if hasattr(self, "single_battery_renderer"):
+    #         self.single_battery_renderer.set_temperature(self.temperature)
 
 if __name__ == "__main__":
   

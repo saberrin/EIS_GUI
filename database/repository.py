@@ -229,9 +229,10 @@ class Repository:
                         real_impedance=row[4],
                         imag_impedance=row[5],
                         voltage=row[6],
-                        container_number=row[7],
-                        cluster_number=row[8],
-                        pack_number=row[9]
+                        temperature=row[7],
+                        container_number=row[8],
+                        cluster_number=row[9],
+                        pack_number=row[10]
                     )
                     grouped_data[row[2]].append(measurement)
 
@@ -243,6 +244,37 @@ class Repository:
             print(f"Error fetching cell history: {e}")
             return {}
 
+
+        finally:
+            if connection:
+                connection.close()
+
+    def get_latest_temperature_by_real_time_id(self) -> Dict:
+        """
+        获取最新的 real_time_id 对应的温度数据。
+        """
+        try:
+            connection = sqlite3.connect(DB_PATH)
+            cursor = connection.cursor()
+            cursor.execute("""
+                SELECT temperature, real_time_id
+                FROM eis_measurement
+                ORDER BY real_time_id DESC
+                LIMIT 1;
+            """)
+            
+            row = cursor.fetchone()
+            
+            if row:
+                return {
+                    "temperature": row[0],
+                    "real_time_id": row[1]
+                }
+            else:
+                return {}
+        except Exception as e:
+            print(f"Error fetching latest temperature: {e}")
+            return {}
         finally:
             if connection:
                 connection.close()

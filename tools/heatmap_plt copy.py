@@ -19,7 +19,9 @@ class HeatMap3DWidget(QWidget):
 
         # 初始化布局和 QLabel
         self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
+        
 
     def split_cells(self, num_points, num_cells):
         """将模型的点分配到每个电池（cell）"""
@@ -67,7 +69,7 @@ class HeatMap3DWidget(QWidget):
         render_height *= upscale_factor
 
         plotter = pv.Plotter(off_screen=True)
-        plotter.set_background("white")
+        plotter.set_background("#e8f5e9")
         plotter.enable_anti_aliasing()
 
         # Assign temperature data to the mesh
@@ -90,7 +92,7 @@ class HeatMap3DWidget(QWidget):
         camera_position = [
             (center_x - 250, center_y + 700, center_z - 700),
             (center_x, center_y, center_z),
-            (-0.21, 0.69, -0.69),
+            (-0.21, 0.69, -0.685),
         ]
         plotter.camera_position = camera_position
 
@@ -104,8 +106,8 @@ class HeatMap3DWidget(QWidget):
         self.clear_existing_widgets()
 
         # 渲染图片
-        render_width = int(ui_width // 2)  # 最大宽度为 UI 宽度的一半
-        render_height = int(ui_height // 2)  # 最大高度为 UI 高度的一半
+        render_width = int(ui_width // 4)  # 最大宽度为 UI 宽度的一半
+        render_height = int(ui_height // 4)  # 最大高度为 UI 高度的一半
         self.render_and_save(save_path, render_width, render_height)
 
         # 创建 QLabel 显示渲染的图片
@@ -124,9 +126,9 @@ class HeatMap3DWidget(QWidget):
             if len(new_temperatures) != self.num_cells:
                 raise ValueError(f"Expected {self.num_cells} temperatures, got {len(new_temperatures)}")
             
-            # 为每个 cell 的温度生成随机值，在传入温度的上下 2°C 范围内
+            # 为每个 cell 的温度生成随机值，在传入温度的上下 1°C 范围内
             self.cell_temperatures = [
-                np.random.uniform(temp - 2, temp + 2) for temp in new_temperatures
+                np.random.uniform(temp - 1, temp + 1) for temp in new_temperatures
             ]
             self.temperature_data = self.assign_temperatures_with_transition(self.cell_temperatures)
 

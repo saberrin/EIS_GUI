@@ -1,20 +1,20 @@
-# tools/single_battery_renderer.py
-
 import os
 import pyvista as pv
 import numpy as np
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QLabel, QWidget, QVBoxLayout, QSizePolicy
+import sqlite3
 
 class SingleBattery3DWidget(QWidget):
-    def __init__(self, stl_file, battery_id=None, parent=None):
+    def __init__(self, stl_file, battery_id=None, database_path=None, parent=None):
         super().__init__(parent)
         self.stl_file = stl_file
         self.battery_id = battery_id
+        self.database_path = database_path
 
-        # 初始化温度值，默认值为0°C
-        self.temperature = 0
+        # 初始化温度值，默认值为10°C
+        self.temperature = 10
 
         # 创建内部布局和 QLabel 用于显示渲染图像
         self.layout = QVBoxLayout(self)
@@ -33,6 +33,40 @@ class SingleBattery3DWidget(QWidget):
         self.render_timer = QTimer(self)
         self.render_timer.setSingleShot(True)
         self.render_timer.timeout.connect(self.update_render)
+
+    def fetch_latest_temperature(self):
+        """从数据库中获取最新的 temperature 数据。"""
+        if not self.database_path:
+            return self.temperature  # 如果没有数据库路径，则返回默认温度
+
+        default_temperature = 10  # 默认温度值
+        try:
+            conn = sqlite3.connect(self.database_path)
+            cursor = conn.cursor()
+
+            # 根据 cell_id 获取最新的 temperature 值
+            query = """
+                SELECT temperature
+                FROM generated_info
+                WHERE cell_id = ? AND real_time_id = (
+                    SELECT MAX(real_time_id)
+                    FROM generated_info
+                    WHERE cell_id = ?
+                )
+            """
+            cursor.execute(query, (self.battery_id , self.battery_id ))
+            result = cursor.fetchone()
+
+            if result and result[0] is not None:
+                return result[0]
+            else:
+                return default_temperature
+        except sqlite3.Error as e:
+            print(f"数据库错误: {e}")
+            return default_temperature
+        finally:
+            if conn:
+                conn.close()
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -66,9 +100,9 @@ class SingleBattery3DWidget(QWidget):
         # 从 STL 文件加载 3D 模型
         mesh = pv.read(self.stl_file)
         
-        # 使用传入的真实温度
-        temperature = self.temperature
-        
+        # 获取最新的温度数据
+        temperature = self.fetch_latest_temperature()
+
         # 创建温度数组，确保其长度与网格点数相同
         temperature_values = np.full(mesh.n_points, temperature)
 

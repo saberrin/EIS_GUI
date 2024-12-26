@@ -57,40 +57,91 @@ class StartAlgorithm(QObject):
             })
         return data
 
+    # def generate_random_generated_info_data(self) -> List[Dict]:
+    #     """
+    #     Generate random generated info data.
+    #     """
+    #     data = []
+    #     for cell_id in self.lists:
+    #         data.append(self.repository.get_cell_measurements(cell_id))
+    #     result = defaultdict(lambda: ([], []))  
+    #     for measurements in data:
+    #         for measurement in measurements:
+    #             cell_id = f"Battery{measurement.cell_id}"  
+    #             result[cell_id][0].append(measurement.real_impedance)  
+    #             result[cell_id][1].append(measurement.imag_impedance)  
+    #     result = dict(result)
+    #     analyzer = EISAnalyzer(result)
+    #     dispersion_rate = analyzer.calculate_dispersion(result)
+        
+    #     print(f"dispersion_rate:{dispersion_rate}")
+    #     print(f"lists:{self.lists}")
+    #     list = []
+    #     for addr in self.lists:  
+    #         list.append({
+    #             'measurement_id': random.randint(1, 100),
+    #             'dispersion_rate': dispersion_rate[f"Battery{addr}"],
+    #             'temperature': round(random.uniform(15.0, 40.0), 2),
+    #             'real_time_id': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Use current timestamp
+    #             'cell_id':  addr,
+    #             'sei_rate': round(random.uniform(0.0, 1.0), 2),
+    #             'dendrites_rate': round(random.uniform(0.0, 1.0), 2),
+    #             'electrolyte_rate': round(random.uniform(0.0, 1.0), 2),
+    #             'polar_rate': round(random.uniform(0.0, 1.0), 2),
+    #             'conduct_rate': round(random.uniform(0.0, 1.0), 2)
+    #         })
+    #     return list
+
     def generate_random_generated_info_data(self) -> List[Dict]:
         """
-        Generate random generated info data.
+        Generate random generated info data, including temperature and other parameters.
         """
+        # 使用正确的方法获取最新的温度数据
+        latest_temp_data = self.repository.get_latest_temperature_by_real_time_id()  # 获取最新 real_time_id 对应的温度记录
+        base_temperature = latest_temp_data.get('temperature', 25.0)  # 默认25°C，如果没有获取到温度
+
         data = []
         for cell_id in self.lists:
+            # 为每个 cell_id 生成温度数据，温度在基准温度上下 0.5°C 范围内
+            temperature = round(random.uniform(base_temperature - 0.5, base_temperature + 0.5), 2)
             data.append(self.repository.get_cell_measurements(cell_id))
-        result = defaultdict(lambda: ([], []))  
+
+        result = defaultdict(lambda: ([], []))  # 用于存储电池的阻抗数据
         for measurements in data:
             for measurement in measurements:
                 cell_id = f"Battery{measurement.cell_id}"  
                 result[cell_id][0].append(measurement.real_impedance)  
                 result[cell_id][1].append(measurement.imag_impedance)  
+
         result = dict(result)
         analyzer = EISAnalyzer(result)
         dispersion_rate = analyzer.calculate_dispersion(result)
-        
+
         print(f"dispersion_rate:{dispersion_rate}")
         print(f"lists:{self.lists}")
+
         list = []
         for addr in self.lists:  
+            # 基于从数据库获取的温度，生成随机温度
+            temperature = round(random.uniform(base_temperature - 0.5, base_temperature + 0.5), 2)
+
+            # 插入数据库所需的数据
             list.append({
                 'measurement_id': random.randint(1, 100),
-                'dispersion_rate': dispersion_rate[f"Battery{addr}"],
-                'temperature': round(random.uniform(15.0, 40.0), 2),
-                'real_time_id': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # Use current timestamp
-                'cell_id':  addr,
+                'dispersion_rate': dispersion_rate.get(f"Battery{addr}", 0.0),  # 获取 dispersion_rate
+                'temperature': temperature,  # 将计算得到的温度值传入
+                'real_time_id': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # 当前时间戳
+                'cell_id': addr,  # 插入对应的 cell_id
                 'sei_rate': round(random.uniform(0.0, 1.0), 2),
                 'dendrites_rate': round(random.uniform(0.0, 1.0), 2),
                 'electrolyte_rate': round(random.uniform(0.0, 1.0), 2),
                 'polar_rate': round(random.uniform(0.0, 1.0), 2),
                 'conduct_rate': round(random.uniform(0.0, 1.0), 2)
             })
+        
         return list
+
+
         
 
 
