@@ -28,11 +28,11 @@ class Repository:
                 return
         
             cursor.executemany("""
-            INSERT INTO eis_measurement (cell_id, real_time_id, frequency, real_impedance, imag_impedance, voltage, 
+            INSERT INTO eis_measurement (cell_id, real_time_id, frequency, real_impedance, imag_impedance, voltage, temperature,
                                          container_number, cluster_number, pack_number)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, [
-            (m.cell_id, m.real_time_id, m.frequency, m.real_impedance, m.imag_impedance, m.voltage,
+            (m.cell_id, m.real_time_id, m.frequency, m.real_impedance, m.imag_impedance, m.voltage,m.temperature,
              m.container_number, m.cluster_number, m.pack_number)
             for m in measurements
         ])
@@ -188,9 +188,10 @@ class Repository:
                     real_impedance=row[4], 
                     imag_impedance=row[5], 
                     voltage=row[6],
-                    container_number=row[7],
-                    cluster_number=row[8],
-                    pack_number=row[9]
+                    temperature = row[7],
+                    container_number=row[8],
+                    cluster_number=row[9],
+                    pack_number=row[10]
                 ) for row in rows
             ]
         finally:

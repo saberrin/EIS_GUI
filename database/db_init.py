@@ -1,6 +1,6 @@
 import sqlite3
-# from database.config import DB_PATH
-from config import DB_PATH
+from database.config import DB_PATH
+# from config import DB_PATH
 import os
 
 def init_database():
