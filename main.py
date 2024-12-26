@@ -33,7 +33,7 @@ from custom_widget.PackAdviceTextEdit import PackAdviceTextEdit
 from custom_widget.CellAdviceTextEdit import CellAdviceTextEdit
 import json
 from algorithm.start_algorithm import StartAlgorithm
-from tools.transmit_data import DataTransmitter
+# from tools.transmit_data import DataTransmitter
 from PyQt6.QtCore import QTimer
 
 # OUR APPLICATION MAIN WINDOW :
@@ -80,13 +80,13 @@ class MainWindow(QMainWindow):
         self.cluster_number = None
         self.pack_number = None
 
-        # 创建 DataTransmitter 实例
-        self.data_transmitter = DataTransmitter()
+        # # 创建 DataTransmitter 实例
+        # self.data_transmitter = DataTransmitter()
 
-        # 创建定时器，每5分钟调用一次上传功能
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.data_transmitter.upload_data)  # 直接调用 upload_data 方法
-        self.timer.start(5 * 60 * 1000)  # 每五分钟（300,000毫秒）触发一次
+        # # 创建定时器，每5分钟调用一次上传功能
+        # self.timer = QTimer(self)
+        # self.timer.timeout.connect(self.data_transmitter.upload_data)  # 直接调用 upload_data 方法
+        # self.timer.start(5 * 60 * 1000)  # 每五分钟（300,000毫秒）触发一次
 
         # Load configuration and initialize I2C reader
         with open("config.json", "r") as config_file:

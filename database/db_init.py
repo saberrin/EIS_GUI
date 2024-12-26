@@ -20,33 +20,35 @@ def init_database():
         );
         """)
 
-        # Create the battery_cluster table
+        # Create the battery_cluster table with both cluster_id and cluster_number
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS battery_cluster (
             "cluster_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+            "cluster_number" INTEGER UNIQUE,  -- 添加 cluster_number 并设置为唯一
             "container_id" INTEGER,
             "description" TEXT,
             CONSTRAINT "fk_cabinet_container" FOREIGN KEY ("container_id") REFERENCES "container" ("container_id") ON DELETE NO ACTION ON UPDATE NO ACTION
         );
         """)
 
-        # Create the battery_pack table
+        # Create the battery_pack table with both cluster_id and cluster_number
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS battery_pack (
             "battery_pack_id" INTEGER PRIMARY KEY AUTOINCREMENT,
             "container_number" INTEGER,
-            "cluster_number" INTEGER,
+            "cluster_id" INTEGER,
+            "cluster_number" INTEGER,  -- 添加 cluster_number
             "pack_number" INTEGER,  
             "description" TEXT,
             "dispersion_rate" REAL,
             "pack_saftety_rate" REAL,
             "real_time_id" TEXT,
                        
-            CONSTRAINT "fk_pack_cluster" FOREIGN KEY ("cluster_id") REFERENCES "battery_cluster" ("cluster_id") ON DELETE SET NULL ON UPDATE CASCADE
+            CONSTRAINT "fk_pack_cluster" FOREIGN KEY ("cluster_number") REFERENCES "battery_cluster" ("cluster_number") ON DELETE SET NULL ON UPDATE CASCADE
         );
         """)
 
-        # Create the eis_measurement table
+        # Create the eis_measurement table with both cluster_id and cluster_number
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS eis_measurement (
             "measurement_id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,29 +59,19 @@ def init_database():
             "imag_impedance" REAL,
             "voltage" REAL,
             "container_number" INTEGER,
-            "cluster_number" INTEGER,
-            "pack_number" INTEGER
+            "cluster_id" INTEGER,        -- 添加 cluster_id
+            "cluster_number" INTEGER,    -- 添加 cluster_number
+            "pack_number" INTEGER,
+            "sent_time" TEXT,
+            CONSTRAINT "fk_eis_cluster" FOREIGN KEY ("cluster_number") REFERENCES "battery_cluster" ("cluster_number") ON DELETE SET NULL ON UPDATE CASCADE
         );
         """)
 
-        # 检查 sent_time 是否存在，若不存在则添加
-        cursor.execute("PRAGMA table_info(eis_measurement);")
-        columns = [column[1] for column in cursor.fetchall()]
-        if "sent_time" not in columns:
-            cursor.execute("""
-            ALTER TABLE eis_measurement
-            ADD COLUMN sent_time TEXT DEFAULT NULL;
-            """)
-            print("Added 'sent_time' column to eis_measurement table.")
-
-
-        # Create an index for optimized search on eis_measurement table
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_cell_id_creation_time ON eis_measurement(cell_id, real_time_id);")
-
-        # Create the generated_info table
+        # Create the generated_info table with measurement_id as foreign key
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS generated_info (
             "generated_info_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            "measurement_id" INTEGER,  -- 添加 measurement_id 字段
             "dispersion_rate" REAL,
             "temperature" REAL,
             "real_time_id" TEXT,
@@ -93,7 +85,9 @@ def init_database():
         );
         """)
 
-        # Create an index for optimized search on generated_info table
+        # Create indexes for optimized search
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_pack_cluster_number ON battery_pack(cluster_number);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_eis_cluster_number ON eis_measurement(cluster_number);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_info_measurement ON generated_info(measurement_id);")
 
         # Re-enable foreign key constraints
@@ -102,7 +96,7 @@ def init_database():
         # Commit the changes
         connection.commit()
         print("Database initialized successfully.")
-        
+
         # Return the connection and cursor for further use
         return connection, cursor
 
