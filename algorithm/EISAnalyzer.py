@@ -44,15 +44,16 @@ class EISAnalyzer:
         """
         distances = {}
         for battery1, curve1 in curves.items():
-            total_distance = 0
+            all_distances = []
             for battery2, curve2 in curves.items():
                 if battery1 != battery2:
                     dtw_distance = self.calculate_dtw_distance(curve1, curve2)
-                    total_distance += dtw_distance
-            consistency = 1 / (total_distance / (len(curves) - 1))  # 一致性定义为DTW距离的倒数
+                    all_distances.append(dtw_distance)
+            if np.mean(all_distances) != 0:
+                consistency = 1/np.mean(all_distances)  # 一致性定义为DTW距离的倒数
+            else:
+                consistency = None
             distances[battery1] = consistency
-        # return self.normalize_results(distances)
-        # return np.mean(np.array(list(distances.values())))
         return distances
 
     def calculate_dispersion(self, curves):
@@ -87,12 +88,12 @@ class EISAnalyzer:
     def detect_max_dispersion(self):
         distances = {}
         for battery1, curve1 in self.curves.items():
-            total_distance = 0
+            all_distances = []
             for battery2, curve2 in self.curves.items():
                 if battery1 != battery2:
                     dtw_distance = self.calculate_dtw_distance(curve1, curve2)
-                    total_distance += dtw_distance
-            dispersion = total_distance / (len(self.curves) - 1)  
+                    all_distances.append(dtw_distance)
+            dispersion = np.mean(all_distances)  
             distances[battery1] = dispersion
         
         max_battery = max(distances, key=distances.get)

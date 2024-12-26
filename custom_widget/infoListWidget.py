@@ -81,5 +81,7 @@ class infoListView(QWidget):
             item.setFont(font)  
             self.model.setItem(0, 2*col+1, item)
 
-        
+    def clear_all(self):
+        for col in range(1, 6, 2):  # Only clearing the columns where data is populated (1, 3, 5)
+            self.model.setItem(0, col, QStandardItem(''))  # Reset to empty item
 

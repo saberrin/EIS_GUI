@@ -6,21 +6,27 @@ class CellAdviceTextEdit(QTextEdit):
         self.repository = Repository()
         
     def update_textedit(self,cell_id):
-        
+        dispersion_rate = None
+        dispersion_rate_advice = None
+        temperature = None
+        temperature_advice = None
         info = self.repository.get_latest_generated_info(cell_id)
         if info:
             dispersion_rate = info['dispersion_rate']
-            dispersion_rate = round(dispersion_rate,2)
-            if dispersion_rate > 0.5:
-                dispersion_rate_advice = "离散度较大，建议及时排查"
-            else:
-                dispersion_rate_advice = "电芯离散度在合理区间"
+            if dispersion_rate:
+                dispersion_rate = round(dispersion_rate,2)
+                if dispersion_rate > 0.5:
+                    dispersion_rate_advice = "离散度较大，建议及时排查"
+                else:
+                    dispersion_rate_advice = "电芯离散度在合理区间"
             
             temperature = info['temperature']
-            if temperature > 40:
-                temperature_advice = "电芯内部温度偏高，建议及时排查"
-            else:
-                temperature_advice = "电芯内部温度正常"
+            if temperature:
+                if temperature > 40:
+                    temperature_advice = "电芯内部温度偏高，建议及时排查"
+                else:
+                    temperature_advice = "电芯内部温度正常"
+                    
         rich_text_content = f"""
         <html lang="zh">
         <head>

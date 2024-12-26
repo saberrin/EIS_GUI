@@ -13,14 +13,13 @@ class PackAdviceTextEdit(QTextEdit):
         cell_with_max_temperature = None  
         max_temperature_value = None  
         for cell_id in lists:
-            print(f"cell_id:{cell_id}")
+            
             info = self.repository.get_latest_generated_info(cell_id)
             if info:  
-                print(f"info:{info}")
-                if info['dispersion_rate'] > max_dispersion_rate:
+                if info['dispersion_rate'] and info['dispersion_rate'] > max_dispersion_rate:
                     max_dispersion_rate = info['dispersion_rate']
                     cell_with_max_dispersion_rate = info['cell_id']
-                if info['temperature'] > max_temperature:
+                if info['temperature'] and info['temperature'] > max_temperature:
                     max_temperature = info['temperature']
                     cell_with_max_temperature = info['cell_id']
                     max_temperature_value = info['temperature']
@@ -45,10 +44,14 @@ class PackAdviceTextEdit(QTextEdit):
         <p><strong><span style="color: lightcoral;">析锂分析已完成<span style="color: lightgreen;"><strong>\u2714</strong></span></span></strong>: <br>
         所有检测电芯<span style="color: lightcoral;"><strong>未发现</strong></span>析锂异常。</p>
         <p><strong><span style="color: lightcoral;">内部温度预测已完成<span style="color: lightgreen;"><strong>\u2714</strong></span></span></strong>: <br>
-        {cell_with_max_temperature}号电芯温度较高（{max_temperature_value}\u2103）,其余电芯温度正常。<br>所有检测电芯<span style="color: lightcoral;"><strong>未发现</strong></span> 
+        {cell_with_max_temperature}号电芯温度最高（{max_temperature_value}\u2103）,所有电芯温度正常。<br>所有检测电芯<span style="color: lightcoral;"><strong>未发现</strong></span> 
         热失控异常。</p>
         </body>
         </html>
         """
         self.setHtml(rich_text_content)
+
+    def clear_all(self):
+        self.clear()
+
 

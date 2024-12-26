@@ -74,7 +74,8 @@ class NyquistPlot(QWidget):
         """
         for battery_number in list(self.battery_plots.keys()):
             self.clear_battery_plot(battery_number)
-
+        # Clear the legend
+        self.legend.clear()
 
 
 

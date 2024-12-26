@@ -1,5 +1,6 @@
 import sqlite3
-from database.config import DB_PATH
+# from database.config import DB_PATH
+from config import DB_PATH
 import os
 
 def init_database():
@@ -58,6 +59,7 @@ def init_database():
             "real_impedance" REAL,
             "imag_impedance" REAL,
             "voltage" REAL,
+            "temperature" REAL,
             "container_number" INTEGER,
             "cluster_id" INTEGER,        -- 添加 cluster_id
             "cluster_number" INTEGER,    -- 添加 cluster_number

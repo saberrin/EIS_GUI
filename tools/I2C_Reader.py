@@ -17,7 +17,7 @@ class I2CReader(QObject):
     new_data_received_check = pyqtSignal(str)
     new_data_received_finish_list = pyqtSignal(list)
     new_data_received_batterycellInfo = pyqtSignal(int, int, float) #显示序号、cell_id和实部阻抗
-    new_data_received_TEM = pyqtSignal(float)
+    
 
     def __init__(self, bus_number,timeout_duration=0.01):
         super().__init__()
@@ -214,9 +214,9 @@ class I2CReader(QObject):
 
                         
     def parse_and_emit_signals(self, line):
-        if 'TEM' in line:
-            temperature = line.split('_')[2]
-            self.new_data_received_TEM.emit(float(temperature))
+        # if 'TEM' in line:
+        #     temperature = line.split('_')[2]
+        #     self.new_data_received_TEM.emit(float(temperature))
 
         if 'EIS_data_packet_start' in line:
             # voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
@@ -318,6 +318,7 @@ class I2CReader(QObject):
                     imag_imp = float(line[img_start:img_end])
 
                     self.new_data_received_SWF.emit(battery_number, frequency, real_imp, imag_imp)
+                    print(f"Emitting SWF signal with: {battery_number}, {frequency}, {real_imp}, {imag_imp}")
                 else:
                     raise ValueError("Invalid SWF data format")
             except (ValueError, IndexError) as e:
@@ -336,7 +337,8 @@ class I2CReader(QObject):
         if "EIS_data_packet_start" in line:
             try:
                 # Extract the voltage value
-                voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
+                
+                temperature = float(line.split("TEM_")[1].split("_EIS_data_packet_end")[0])
                 
                 # Extract data points
                 data_points = self.extract_data_points(line)
@@ -360,7 +362,7 @@ class I2CReader(QObject):
                 cell_id = int(cell_id)
                 cell_id = 13*(self.port-1) + cell_id
                 # Insert the parsed measurements into the database
-                self.insert_measurements(cell_id, addr_id, data_points, voltage)
+                self.insert_measurements(cell_id, addr_id, data_points, temperature)
 
             except (ValueError, IndexError) as e:
                 print(f"Error parsing data: {line}, Error: {e}")
@@ -383,8 +385,9 @@ class I2CReader(QObject):
                     continue
         
         return data_points
+    
 
-    def insert_measurements(self, cell_id: int, addr_id, data_points: List[tuple], voltage: float):
+    def insert_measurements(self, cell_id: int, addr_id, data_points: List[tuple], temperature: float):
         real_time_id = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         measurements = []
 
@@ -397,7 +400,8 @@ class I2CReader(QObject):
                 frequency=frequency,
                 real_impedance=real_impedance,
                 imag_impedance=imag_impedance,
-                voltage=voltage,
+                voltage=temperature,  #待后续修改数据库
+                temperature = temperature,
                 container_number=self.container_number,
                 cluster_number=self.cluster_number,
                 pack_number=self.pack_number
