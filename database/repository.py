@@ -249,7 +249,7 @@ class Repository:
             if connection:
                 connection.close()
 
-    def get_latest_temperature_by_real_time_id(self) -> Dict:
+    def get_latest_temperature(self,cell_id:int) -> float:
         """
         获取最新的 real_time_id 对应的温度数据。
         """
@@ -257,24 +257,21 @@ class Repository:
             connection = sqlite3.connect(DB_PATH)
             cursor = connection.cursor()
             cursor.execute("""
-                SELECT temperature, real_time_id
-                FROM eis_measurement
-                ORDER BY real_time_id DESC
+                SELECT temperature
+                FROM eis_measurement 
+                WHERE cell_id = ? 
+                ORDER BY real_time_id DESC 
                 LIMIT 1;
-            """)
-            
+            """, (cell_id,))
             row = cursor.fetchone()
             
             if row:
-                return {
-                    "temperature": row[0],
-                    "real_time_id": row[1]
-                }
+                return float(row[0])
             else:
-                return {}
+                return None
         except Exception as e:
             print(f"Error fetching latest temperature: {e}")
-            return {}
+            return None
         finally:
             if connection:
                 connection.close()

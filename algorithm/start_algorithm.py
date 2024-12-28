@@ -96,22 +96,21 @@ class StartAlgorithm(QObject):
         """
         Generate random generated info data, including temperature and other parameters.
         """
-        # 使用正确的方法获取最新的温度数据
-        latest_temp_data = self.repository.get_latest_temperature_by_real_time_id()  # 获取最新 real_time_id 对应的温度记录
-        base_temperature = latest_temp_data.get('temperature', 25.0)  # 默认25°C，如果没有获取到温度
-
+        
         data = []
+        latest_temp_dict = {}
         for cell_id in self.lists:
-            # 为每个 cell_id 生成温度数据，温度在基准温度上下 0.5°C 范围内
-            temperature = round(random.uniform(base_temperature - 0.5, base_temperature + 0.5), 2)
             data.append(self.repository.get_cell_measurements(cell_id))
+            latest_temp_dict[cell_id] = self.repository.get_latest_temperature(cell_id)
 
         result = defaultdict(lambda: ([], []))  # 用于存储电池的阻抗数据
+        
         for measurements in data:
             for measurement in measurements:
                 cell_id = f"Battery{measurement.cell_id}"  
                 result[cell_id][0].append(measurement.real_impedance)  
-                result[cell_id][1].append(measurement.imag_impedance)  
+                result[cell_id][1].append(measurement.imag_impedance) 
+                
 
         result = dict(result)
         analyzer = EISAnalyzer(result)
@@ -119,11 +118,22 @@ class StartAlgorithm(QObject):
 
         print(f"dispersion_rate:{dispersion_rate}")
         print(f"lists:{self.lists}")
+        print(f"latest_temp_dict:{latest_temp_dict}")
+        
 
         list = []
+        last_temp = 25 #默认值
+        for addr in self.lists:
+            temperature = latest_temp_dict.get(addr)
+            if temperature != None:
+                last_temp = temperature
+                break
+            
         for addr in self.lists:  
             # 基于从数据库获取的温度，生成随机温度
-            temperature = round(random.uniform(base_temperature - 0.5, base_temperature + 0.5), 2)
+            temperature = latest_temp_dict.get(addr)
+            if temperature == None:
+                temperature = round(random.uniform(last_temp - 0.5, last_temp + 0.5), 2)
 
             # 插入数据库所需的数据
             list.append({

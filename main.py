@@ -263,7 +263,7 @@ class MainWindow(QMainWindow):
         self.cluster_number = cluster_number
         self.pack_number = pack_number
         self.port_number = port_number
-        self.ui.label_14.setText(f"集装箱 {container_number} - 电池柜 {cluster_number} - 电池包 {pack_number} - 端口号 {port_number}")
+        self.ui.label_14.setText(f"电池柜 {cluster_number} - 电池包 {pack_number} - 端口号 {port_number}")
         self.ui.port_cell.update_text(port_number)
     
     def init_Nyquist(self):

@@ -337,9 +337,10 @@ class I2CReader(QObject):
         if "EIS_data_packet_start" in line:
             try:
                 # Extract the voltage value
-                
-                temperature = float(line.split("TEM_")[1].split("_EIS_data_packet_end")[0])
-                
+                if "TEM" in line:
+                    temperature = float(line.split("TEM_")[1].split("_EIS_data_packet_end")[0])
+                else:
+                    temperature = None
                 # Extract data points
                 data_points = self.extract_data_points(line)
 
