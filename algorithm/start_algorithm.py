@@ -125,14 +125,14 @@ class StartAlgorithm(QObject):
         last_temp = 25 #默认值
         for addr in self.lists:
             temperature = latest_temp_dict.get(addr)
-            if temperature != None and temperature > 0:
+            if temperature is not None and -20 <= temperature <= 80:
                 last_temp = temperature
                 break
             
         for addr in self.lists:  
             # 基于从数据库获取的温度，生成随机温度
             temperature = latest_temp_dict.get(addr)
-            if temperature == None or temperature < 0:
+            if temperature is None or temperature < -20 or temperature > 80:
                 temperature = round(random.uniform(last_temp - 0.5, last_temp + 0.5), 2)
 
             # 插入数据库所需的数据
