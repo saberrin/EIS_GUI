@@ -68,8 +68,8 @@ class infoListView(QWidget):
         self.populate_data(discrepancy, consistency, outliers, max_dispersion)
 
     def populate_data(self,dispersion, consistency, outliers,max_dispersion):
-        dispersion = round(dispersion,2)
-        consistency = round(consistency,2)
+        dispersion = round(dispersion*100,2)
+        consistency = round(consistency*100,2)
         lists = [str(dispersion)+"%", str(consistency)+"%", str(outliers)] 
         # 将数据添加到模型中
         for col, list in enumerate(lists):

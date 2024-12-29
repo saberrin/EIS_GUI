@@ -28,7 +28,7 @@ class NyquistPlotHistory(QWidget):
         # Add the plot widget to the layout
         self.layout.addWidget(self.plot_widget)
         
-        self.legend = pg.LegendItem(offset=(30, 30))  
+        self.legend = pg.LegendItem(offset=(5, 5))  
         self.legend.setParentItem(self.plot_widget.getViewBox())  
 
         # Dictionary to store data and plot objects for each battery
@@ -67,7 +67,7 @@ class NyquistPlotHistory(QWidget):
         if battery_number not in self.battery_plots:
             plot_data = self.plot_widget.plot([], [], pen=None,
                                             symbol='o',
-                                            symbolSize=10,
+                                            symbolSize=6,
                                             symbolBrush=color)
             self.legend.addItem(plot_data, f"Battery {battery_number}")
 

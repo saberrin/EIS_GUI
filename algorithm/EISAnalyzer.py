@@ -22,8 +22,11 @@ class EISAnalyzer:
     def normalize_results(self, results):
         values = np.array(list(results.values()))
         min_val, max_val = np.min(values), np.max(values)
-        normalized = {key: (val - min_val) / (max_val - min_val) for key, val in results.items()}
-        return normalized
+        if(min_val != max_val):
+            normalized = {key: (val - min_val) / (max_val - min_val) for key, val in results.items()}
+            return normalized
+        else:
+            return results
 
     def calculate_dtw_distance(self, curve1, curve2):
         """
@@ -55,6 +58,7 @@ class EISAnalyzer:
                 else:
                     consistency = None
                 distances[battery1] = consistency
+        distances = self.normalize_results(distances)
         return distances
 
     def calculate_dispersion(self, curves):
@@ -71,6 +75,7 @@ class EISAnalyzer:
             if len(all_distances) != 0:
                 dispersion = np.mean(all_distances)  # 离散性定义为DTW距离的标准差
                 distances[battery1] = dispersion
+        distances = self.normalize_results(distances)
         return distances
 
     def detect_outliers(self, threshold=3.0):

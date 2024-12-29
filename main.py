@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         UIFunction.constantFunction(self)
         UIFunction.maximize_restore(self)
         UIFunction.logoTitle(self)
-        # self.showFullScreen() 
+        self.showFullScreen() 
         # Initialize menu and layout
         self.menu = MenuWidget(self)
         self.ui.horizontalLayout_38.addWidget(self.menu)
@@ -287,7 +287,7 @@ class MainWindow(QMainWindow):
         self.infoList.update_data(lists)
 
     def update_textEdit(self,line):
-        font = QFont('Arial', 15)  
+        font = QFont('Arial', 12)  
         self.ui.textEdit.setFont(font)
         self.ui.textEdit.setStyleSheet("color: white")
         self.ui.textEdit.append(line)

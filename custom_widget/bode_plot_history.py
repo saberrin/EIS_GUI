@@ -23,7 +23,7 @@ class BodePlotHistory(QWidget):
         # Add the plot widget to the layout
         self.layout.addWidget(self.plot_widget)
 
-        self.legend = pg.LegendItem(offset=(30, 30))  # Legend to identify different batteries
+        self.legend = pg.LegendItem(offset=(5, 5))  # Legend to identify different batteries
         self.legend.setParentItem(self.plot_widget.getViewBox())  
 
         # Dictionary to store data and plot objects for each battery

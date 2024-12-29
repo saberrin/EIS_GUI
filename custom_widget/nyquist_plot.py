@@ -18,13 +18,13 @@ class NyquistPlot(QWidget):
         self.plot_widget.setLabel('bottom', '实部阻抗', units='m\u03A9')
         # self.plot_widget.showGrid(x=True, y=True)
         self.plot_widget.setBackground('#e8f5e9')
-
+        
         # Add the plot widget to the layout
         self.layout.addWidget(self.plot_widget)
         
-        self.legend = pg.LegendItem(offset=(30, 30))  
+        self.legend = pg.LegendItem(offset=(5, 5))  
         self.legend.setParentItem(self.plot_widget.getViewBox())  
-
+        
         # Dictionary to store data and plot objects for each battery
         self.battery_plots = {}
 
@@ -40,7 +40,7 @@ class NyquistPlot(QWidget):
     
             plot_data = self.plot_widget.plot([], [], pen=None,
                                             symbol='o',
-                                            symbolSize=10,
+                                            symbolSize=5,
                                             symbolBrush=color)
             self.legend.addItem(plot_data, f"Battery {battery_number}")
 
@@ -49,7 +49,6 @@ class NyquistPlot(QWidget):
                 "imag": [],
                 "plot": plot_data
             }
-
         # Add new data to the battery's data list
         self.battery_plots[battery_number]["real"].append(real_impedance)
         self.battery_plots[battery_number]["imag"].append(negative_imaginary_impedance)

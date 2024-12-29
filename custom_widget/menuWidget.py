@@ -19,7 +19,8 @@ class MenuWidget(QWidget):
         
         menu_bar.setStyleSheet("""
             QMenuBar { color: white; }
-            QMenu { min-width: 200px; }
+            QMenu { min-width: 200px; 
+                    color: white;}
             QMenu::item { padding: 10px; }  
         """)
 

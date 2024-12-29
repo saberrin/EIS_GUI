@@ -32,7 +32,7 @@ class PackAdviceTextEdit(QTextEdit):
             <title></title>
             <style>
                 body {{
-                    font-size: 16px; 
+                    font-size: 14px; 
                     color: white;
                 }}
             </style>
@@ -40,7 +40,7 @@ class PackAdviceTextEdit(QTextEdit):
         <body>
         <p><strong><span style="color: lightcoral;">AI专家建议智能分析已完成<span style="color: lightgreen;"><strong>\u2714</strong></span></span></strong></p>
         <p><strong><span style="color: lightcoral;">离散性分析已完成<span style="color: lightgreen;"><strong>\u2714</strong></span></span></strong>: <br>
-        {cell_with_max_dispersion_rate}号电芯离散性偏大,建议及时排查！<br>{cell_with_max_dispersion_rate}号电芯一致性偏低,建议及时排查！</p>
+        {cell_with_max_dispersion_rate}号电芯离散性为所有检测电芯中最大！<br>{cell_with_max_dispersion_rate}号电芯一致性为所有检测电芯中最低！</p>
         <p><strong><span style="color: lightcoral;">析锂分析已完成<span style="color: lightgreen;"><strong>\u2714</strong></span></span></strong>: <br>
         所有检测电芯<span style="color: lightcoral;"><strong>未发现</strong></span>析锂异常。</p>
         <p><strong><span style="color: lightcoral;">内部温度预测已完成<span style="color: lightgreen;"><strong>\u2714</strong></span></span></strong>: <br>
