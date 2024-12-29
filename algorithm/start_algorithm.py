@@ -113,7 +113,7 @@ class StartAlgorithm(QObject):
                 
 
         result = dict(result)
-        analyzer = EISAnalyzer(result)
+        analyzer = EISAnalyzer()
         dispersion_rate = analyzer.calculate_dispersion(result)
 
         print(f"dispersion_rate:{dispersion_rate}")

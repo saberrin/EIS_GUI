@@ -49,21 +49,19 @@ class infoListView(QWidget):
             self.model.setItem(0, 2*col, item)
 
     def update_data(self,lists):
-        data = []
+        
+        discrepancy_dict = {}
+
         for cell_id in lists:
-            data.append(self.repo.get_cell_measurements(cell_id))
-        result = defaultdict(lambda: ([], []))  
-        for measurements in data:
-            for measurement in measurements:
-                cell_id = f"Battery{measurement.cell_id}"  
-                result[cell_id][0].append(measurement.real_impedance)  
-                result[cell_id][1].append(measurement.imag_impedance)  
-        result = dict(result)
-        analyzer = EISAnalyzer(result)
-        discrepancy = analyzer.calculate_dispersion(result)
-        discrepancy = np.mean(np.array(list(discrepancy.values())))
-        consistency = analyzer.calculate_consistency(result)
-        consistency = np.mean(np.array(list(consistency.values())))
+            info = self.repo.get_latest_generated_info(cell_id)
+            if info and info['dispersion_rate'] is not None:  
+                cell_id = f"Battery{cell_id}"
+                discrepancy_dict[cell_id] = info['dispersion_rate']
+
+        analyzer = EISAnalyzer(discrepancy_dict)
+        discrepancy = np.mean(np.array(list(discrepancy_dict.values())))
+        consistency_dict = analyzer.calculate_consistency()
+        consistency = np.mean(np.array(list(consistency_dict.values())))
         outliers,max_dispersion = analyzer.detect_max_dispersion()
         self.populate_data(discrepancy, consistency, outliers, max_dispersion)
 

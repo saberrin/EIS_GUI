@@ -6,11 +6,10 @@ import json
 import os
 
 class EISAnalyzer:
-    def __init__(self, curves):
-        self.curves = curves
-        self.frequency_points = len(next(iter(curves.values()))[0])  # 获取数据的频率点数量
+    def __init__(self,distances={}):
+        
         self.json_file = "./algorithm/data.json"
-        self.distances = {}
+        self.distances = distances
         self.history_max = self.load_history_max()
         
     def load_history_max(self):
@@ -47,15 +46,7 @@ class EISAnalyzer:
         real_normalized = (np.array(real) - np.min(real)) / (np.max(real) - np.min(real))
         imag_normalized = (np.array(imag) - np.min(imag)) / (np.max(imag) - np.min(imag))
         return real_normalized, imag_normalized
-    
-    # def normalize_results(self, results):
-    #     values = np.array(list(results.values()))
-    #     min_val, max_val = np.min(values), np.max(values)
-    #     if(min_val != max_val):
-    #         normalized = {key: (val - min_val) / (max_val - min_val) for key, val in results.items()}
-    #         return normalized
-    #     else:
-    #         return results
+
 
     def calculate_dtw_distance(self, curve1, curve2):
         """
@@ -70,7 +61,7 @@ class EISAnalyzer:
         dtw_distance, _ = fastdtw(data1, data2, dist=euclidean)
         return dtw_distance
 
-    def calculate_consistency(self, curves,epsilon=1e-6, scale_factor=5):
+    def calculate_consistency(self, epsilon=1e-6, scale_factor=5):
         """
         计算每个电池的一致性（归一化后）。
         """
