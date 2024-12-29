@@ -51,19 +51,19 @@ class infoListView(QWidget):
     def update_data(self,lists):
         
         discrepancy_dict = {}
-
+        max_dispersion_rate = float('-inf')  
+        cell_with_max_dispersion_rate = None  
         for cell_id in lists:
             info = self.repo.get_latest_generated_info(cell_id)
-            if info and info['dispersion_rate'] is not None:  
-                cell_id = f"Battery{cell_id}"
+            if info and info['dispersion_rate']:
                 discrepancy_dict[cell_id] = info['dispersion_rate']
-
-        analyzer = EISAnalyzer(discrepancy_dict)
+                if info['dispersion_rate'] > max_dispersion_rate:
+                    max_dispersion_rate = info['dispersion_rate']
+                    cell_with_max_dispersion_rate = info['cell_id']
+                    
         discrepancy = np.mean(np.array(list(discrepancy_dict.values())))
-        consistency_dict = analyzer.calculate_consistency()
-        consistency = np.mean(np.array(list(consistency_dict.values())))
-        outliers,max_dispersion = analyzer.detect_max_dispersion()
-        self.populate_data(discrepancy, consistency, outliers, max_dispersion)
+        consistency = 1/(discrepancy+1)
+        self.populate_data(discrepancy, consistency, cell_with_max_dispersion_rate, max_dispersion_rate)
 
     def populate_data(self,dispersion, consistency, outliers,max_dispersion):
         dispersion = round(dispersion*100,2)
