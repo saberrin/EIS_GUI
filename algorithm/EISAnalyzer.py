@@ -2,12 +2,41 @@ import numpy as np
 from scipy.spatial.distance import euclidean
 from scipy.stats import zscore
 from fastdtw import fastdtw
-
+import json
+import os
 
 class EISAnalyzer:
     def __init__(self, curves):
         self.curves = curves
         self.frequency_points = len(next(iter(curves.values()))[0])  # 获取数据的频率点数量
+        self.json_file = "./algorithm/data.json"
+        self.distances = {}
+        self.history_max = self.load_history_max()
+        
+    def load_history_max(self):
+        if os.path.exists(self.json_file):
+            with open(self.json_file, 'r') as f:
+                data = json.load(f)
+                return data.get('max_value', -float('inf'))  
+        else:
+            return -float('inf')  
+        
+    def save_history_max(self):
+        with open(self.json_file, 'w') as f:
+            json.dump({'max_value': self.history_max}, f)
+
+    def normalize_results(self, results):
+        values = np.array(list(results.values()))
+        current_max = np.max(values)
+        
+        if current_max > self.history_max:
+            self.history_max = current_max
+            self.save_history_max()  
+
+        min_val, max_val = 0, self.history_max 
+        
+        normalized = {key: (val - min_val) / (max_val - min_val) for key, val in results.items()}
+        return normalized
 
     def normalize_curve(self, curve):
         """
@@ -19,46 +48,38 @@ class EISAnalyzer:
         imag_normalized = (np.array(imag) - np.min(imag)) / (np.max(imag) - np.min(imag))
         return real_normalized, imag_normalized
     
-    def normalize_results(self, results):
-        values = np.array(list(results.values()))
-        min_val, max_val = np.min(values), np.max(values)
-        if(min_val != max_val):
-            normalized = {key: (val - min_val) / (max_val - min_val) for key, val in results.items()}
-            return normalized
-        else:
-            return results
+    # def normalize_results(self, results):
+    #     values = np.array(list(results.values()))
+    #     min_val, max_val = np.min(values), np.max(values)
+    #     if(min_val != max_val):
+    #         normalized = {key: (val - min_val) / (max_val - min_val) for key, val in results.items()}
+    #         return normalized
+    #     else:
+    #         return results
 
     def calculate_dtw_distance(self, curve1, curve2):
         """
         计算两个曲线的DTW距离
         """
-        # real1, imag1 = self.normalize_curve(curve1)
-        # real2, imag2 = self.normalize_curve(curve2)
-        real1, imag1 = curve1
-        real2, imag2 = curve2
+        real1, imag1 = self.normalize_curve(curve1)
+        real2, imag2 = self.normalize_curve(curve2)
+        # real1, imag1 = curve1
+        # real2, imag2 = curve2
         data1 = np.column_stack((real1, imag1))  # 归一化后合并
         data2 = np.column_stack((real2, imag2))
         dtw_distance, _ = fastdtw(data1, data2, dist=euclidean)
         return dtw_distance
 
-    def calculate_consistency(self, curves):
+    def calculate_consistency(self, curves,epsilon=1e-6, scale_factor=5):
         """
         计算每个电池的一致性（归一化后）。
         """
-        distances = {}
-        for battery1, curve1 in curves.items():
-            all_distances = []
-            for battery2, curve2 in curves.items():
-                if battery1 != battery2:
-                    dtw_distance = self.calculate_dtw_distance(curve1, curve2)
-                    all_distances.append(dtw_distance)
-            if len(all_distances) != 0:
-                if np.mean(all_distances) != 0:
-                    consistency = 1/np.mean(all_distances)  # 一致性定义为DTW距离的倒数
-                else:
-                    consistency = None
-                distances[battery1] = consistency
-        distances = self.normalize_results(distances)
+        distances = self.distances
+        for battery1, value in distances.items():
+            if value !=0 :
+                distances[battery1] = 1/(value+1)
+            else:
+                distances[battery1] = 1
         return distances
 
     def calculate_dispersion(self, curves):
@@ -75,31 +96,12 @@ class EISAnalyzer:
             if len(all_distances) != 0:
                 dispersion = np.mean(all_distances)  # 离散性定义为DTW距离的标准差
                 distances[battery1] = dispersion
-        distances = self.normalize_results(distances)
-        return distances
+        self.distances = self.normalize_results(distances)
+        return self.distances
 
-    def detect_outliers(self, threshold=3.0):
-        """
-        基于z-score进行异常检测（归一化后）。
-        """
-        all_real = np.array([self.normalize_curve(curve)[0] for curve in self.curves.values()])
-        all_imag = np.array([self.normalize_curve(curve)[1] for curve in self.curves.values()])
-        real_zscore = zscore(all_real, axis=0)
-        imag_zscore = zscore(all_imag, axis=0)
-
-        outlier_indices = np.unique(np.where((np.abs(real_zscore) > threshold) | (np.abs(imag_zscore) > threshold))[0])
-        return [list(self.curves.keys())[i] for i in outlier_indices]
 
     def detect_max_dispersion(self):
-        distances = {}
-        for battery1, curve1 in self.curves.items():
-            all_distances = []
-            for battery2, curve2 in self.curves.items():
-                if battery1 != battery2:
-                    dtw_distance = self.calculate_dtw_distance(curve1, curve2)
-                    all_distances.append(dtw_distance)
-            dispersion = np.mean(all_distances)  
-            distances[battery1] = dispersion
+        distances = self.distances
         
         max_battery = max(distances, key=distances.get)
         max_dispersion = distances[max_battery]
