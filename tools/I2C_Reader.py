@@ -19,7 +19,7 @@ class I2CReader(QObject):
     new_data_received_batterycellInfo = pyqtSignal(int, int, float) #显示序号、cell_id和实部阻抗
     
 
-    def __init__(self, bus_number,timeout_duration=0.01):
+    def __init__(self, bus_number,timeout_duration=0.1):
         super().__init__()
         self.device = "/dev/i2c-" + str(bus_number)
         self.bus = bus_number

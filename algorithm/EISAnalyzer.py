@@ -49,11 +49,12 @@ class EISAnalyzer:
                 if battery1 != battery2:
                     dtw_distance = self.calculate_dtw_distance(curve1, curve2)
                     all_distances.append(dtw_distance)
-            if np.mean(all_distances) != 0:
-                consistency = 1/np.mean(all_distances)  # 一致性定义为DTW距离的倒数
-            else:
-                consistency = None
-            distances[battery1] = consistency
+            if len(all_distances) != 0:
+                if np.mean(all_distances) != 0:
+                    consistency = 1/np.mean(all_distances)  # 一致性定义为DTW距离的倒数
+                else:
+                    consistency = None
+                distances[battery1] = consistency
         return distances
 
     def calculate_dispersion(self, curves):
@@ -67,10 +68,9 @@ class EISAnalyzer:
                 if battery1 != battery2:
                     dtw_distance = self.calculate_dtw_distance(curve1, curve2)
                     all_distances.append(dtw_distance)
-            dispersion = np.mean(all_distances)  # 离散性定义为DTW距离的标准差
-            distances[battery1] = dispersion
-        # return self.normalize_results(distances)
-        # return np.mean(np.array(list(distances.values())))
+            if len(all_distances) != 0:
+                dispersion = np.mean(all_distances)  # 离散性定义为DTW距离的标准差
+                distances[battery1] = dispersion
         return distances
 
     def detect_outliers(self, threshold=3.0):
