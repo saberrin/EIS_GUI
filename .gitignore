@@ -8,5 +8,4 @@
 .DS_Store
 *.db
 *.json
-*.png
 3d_battery_model/*.png
