@@ -7,6 +7,7 @@ from PyQt6.QtGui import  QFont
 import json
 import threading
 from PyQt6.QtGui import QFont, QColor
+from tools.VirtualKeyboard import VirtualKeyboard
 
 class paraSetting(QDialog):
     update_ui_signal = pyqtSignal(str, str)  
@@ -32,18 +33,20 @@ class paraSetting(QDialog):
         self.confirmed_addresses = []
         self.failed_addresses = []
         self.d.bn_west.clicked.connect(self.start_thread)
+        self.d.bn_east.clicked.connect(self.clear_data)
         self.update_ui_signal.connect(self.show_message_box)
         self.current_msg_box = None
+        self.virtual_keyboard  = None
 
     def focusInEvent(self, event):
         super().focusInEvent(event)
-        self.d.lineEdit.setFocus()  
-        self.d.lineEdit_2.setFocus() 
-        self.d.lineEdit_3.setFocus() 
-        self.d.lineEdit_4.setFocus() 
-        self.d.lineEdit_6.setFocus() 
-        self.d.lineEdit_7.setFocus() 
-        self.d.lineEdit_8.setFocus() 
+        self.d.lineEdit.focusInEvent = self.show_virtual_keyboard
+        self.d.lineEdit_2.focusInEvent = self.show_virtual_keyboard
+        self.d.lineEdit_3.focusInEvent = self.show_virtual_keyboard
+        self.d.lineEdit_4.focusInEvent = self.show_virtual_keyboard
+        self.d.lineEdit_6.focusInEvent = self.show_virtual_keyboard
+        self.d.lineEdit_7.focusInEvent = self.show_virtual_keyboard
+        self.d.lineEdit_8.focusInEvent = self.show_virtual_keyboard
 
     def start_thread(self):
         result_message = ("参数配置中，请等待。。。" )
@@ -69,11 +72,9 @@ class paraSetting(QDialog):
                     if command_SweepPoints:
                         command_SweepPoints = 'SET_SweepPoints_To_'+ command_SweepPoints + "\n"
                         self.send_data(command_SweepPoints,address)   
-
                     command_SweepModeEn = self.d.comboBox.currentText().strip()
                     if command_SweepModeEn == '单频':
-                        command_SweepModeEn = 'SET_SweepModeEn_To_0' + "\n"
-                        
+                        command_SweepModeEn = 'SET_SweepModeEn_To_0' + "\n"                       
                     else:
                         command_SweepModeEn = 'SET_SweepModeEn_To_1' + "\n"
                     self.send_data(command_SweepModeEn,address)  
@@ -151,10 +152,32 @@ class paraSetting(QDialog):
         # Save the current message box instance
         self.current_msg_box = msg_box
 
-        
-                
+    def show_virtual_keyboard(self, event):
+        # super(QLineEdit, self.d.lineEdit).focusInEvent(event)  # Call the original focusInEvent
 
-        
+        sender = self.focusWidget()
+        if isinstance(sender, QLineEdit):
+            print(self.virtual_keyboard)
+            if self.virtual_keyboard is None or not self.virtual_keyboard.isVisible():
+                print("Creating new virtual keyboard")
+                self.virtual_keyboard = VirtualKeyboard(sender, self)  # Pass the QLineEdit to VirtualKeyboard
+                self.virtual_keyboard.show()  # Show the virtual keyboard
+            else:
+                # If virtual keyboard is already visible, raise it to the front
+                self.virtual_keyboard.raise_()
+
+    def clear_data(self):
+        for line_edit in [self.d.lineEdit, self.d.lineEdit_2, self.d.lineEdit_3, 
+                          self.d.lineEdit_4, self.d.lineEdit_6, self.d.lineEdit_7, 
+                          self.d.lineEdit_8]:
+            line_edit.clear()
+   
+    def closeEvent(self, event):
+        if self.virtual_keyboard is not None:
+            self.virtual_keyboard.close()
+        event.accept()           
+
+    
     
 
 

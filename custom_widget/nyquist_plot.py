@@ -1,8 +1,10 @@
 
 import pyqtgraph as pg
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QApplication
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QApplication,QGestureEvent, QPinchGesture
 import sys
+from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QColor
+import matplotlib.pyplot as plt
 
 class NyquistPlot(QWidget):
 
@@ -27,6 +29,36 @@ class NyquistPlot(QWidget):
         
         # Dictionary to store data and plot objects for each battery
         self.battery_plots = {}
+        self.cmap = plt.get_cmap('tab20') 
+
+        # Enable gesture recognition
+        # self.setAttribute(Qt.WidgetAttribute.WA_AcceptTouchEvents, True)
+        # self.grabGesture(Qt.GestureType.PinchGesture)
+
+        # self.scale_factor = 1  # Initial scale factor
+
+    # def gestureEvent(self, event: QGestureEvent) -> bool:
+    #     if event.gesture(Qt.GestureType.PinchGesture):
+    #         pinch = event.gesture(Qt.GestureType.PinchGesture)
+
+    #         # Update scale factor based on pinch movement
+    #         scale_delta = pinch.scaleFactor()
+
+    #         # Apply zoom effect
+    #         if scale_delta != 1:
+    #             self.scale_factor *= scale_delta
+    #             self.scale_factor = max(0.1, min(self.scale_factor, 10))  # Limit zoom range
+    #             self.apply_scale()
+
+    #         return True
+    #     return False
+
+    # def apply_scale(self):
+    #     # Apply scaling to all plots (you can apply zoom effect in your data or plot ranges here)
+    #     for battery_number, data in self.battery_plots.items():
+    #         real_scaled = [x * self.scale_factor for x in data["real"]]
+    #         imag_scaled = [y * self.scale_factor for y in data["imag"]]
+    #         data["plot"].setData(real_scaled, imag_scaled)
 
     def add_data(self, battery_number, real_impedance, negative_imaginary_impedance):
         """
@@ -34,8 +66,10 @@ class NyquistPlot(QWidget):
         """
         # Check if a curve for this battery exists
         if battery_number not in self.battery_plots:
-            hue = (battery_number * 37) % 360  
-            color = QColor.fromHsv(hue, 255, 230)  
+            color = self.cmap(battery_number % 13)  # Get color from the colormap
+            
+            # Convert the color to QColor
+            color = QColor(int(color[0] * 255), int(color[1] * 255), int(color[2] * 255))  
 
     
             plot_data = self.plot_widget.plot([], [], pen=None,

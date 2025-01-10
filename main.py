@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         
         self.repo = Repository()
+
         # Initialize database
         self.conn, self.cursor = init_database()
         UIFunction.constantFunction(self)
@@ -185,8 +186,6 @@ class MainWindow(QMainWindow):
         # 更新其他 UI 组件（如 Nyquist 历史记录）
         self.update_NyquistHistory(displayed_battery_id)
 
-
-
         
     def clear_existing_widgets_in_layout(self, layout):
         """Utility method to clear all widgets from a given layout."""
@@ -304,13 +303,6 @@ class MainWindow(QMainWindow):
     def update_3dheatmap(self):
         self.heatmap_widget.update_temperature_from_db()
     
-    # def update_temperature(self,temperature):
-    #     self.temperature = temperature
-    #     print(f"received tem:{self.temperature}")
-
-
-    #     if hasattr(self, "single_battery_renderer"):
-    #         self.single_battery_renderer.set_temperature(self.temperature)
 
 if __name__ == "__main__":
   

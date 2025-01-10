@@ -275,3 +275,20 @@ class Repository:
         finally:
             if connection:
                 connection.close()
+
+    def delete_all_data(self):
+        try:
+            connection = sqlite3.connect(DB_PATH)
+            cursor = connection.cursor()
+
+            cursor.execute("DELETE FROM eis_measurement")
+            cursor.execute("DELETE FROM generated_info")
+            cursor.execute("DELETE FROM battery_pack")
+            connection.commit()
+            connection.close()
+
+            print("所有数据已成功删除")
+        except Exception as e:
+            print(f"数据删除失败: {str(e)}")
+            connection.rollback()  
+            connection.close()
