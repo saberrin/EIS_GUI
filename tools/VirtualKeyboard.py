@@ -71,7 +71,14 @@ class VirtualKeyboard(QWidget):
     def mouseMoveEvent(self, event):
         if self.drag_position:
             delta = event.globalPosition().toPoint() - self.drag_position
-            self.move(self.pos() + delta)
+            # Adjust the delta to control the speed of dragging
+            delta = delta / 2  # This limits the movement, making it smoother
+            new_pos = self.pos() + delta
+            # Limit the position to keep it within the screen bounds
+            screen_geometry = QApplication.primaryScreen().availableGeometry()
+            new_pos.setX(max(0, min(new_pos.x(), screen_geometry.width() - self.width())))
+            new_pos.setY(max(0, min(new_pos.y(), screen_geometry.height() - self.height())))
+            self.move(new_pos)
             self.drag_position = event.globalPosition().toPoint()
 
     def mouseReleaseEvent(self, event):
