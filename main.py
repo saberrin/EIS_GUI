@@ -22,6 +22,7 @@ from custom_widget.PortCellLabel import PortCellLabel
 from database.db_init import init_database
 from custom_widget.initSetting import initSetting
 from tools.I2C_Reader import I2CReader
+from tools.CAN_Reader import CANReader
 from custom_widget.nyquist_plot import NyquistPlot
 from tools.heatmap_plt import HeatMap3DWidget
 from tools.single_battery_renderer import SingleBattery3DWidget
@@ -209,11 +210,11 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_3.setEnabled(True)
             return
         
-        bus_number = self.config.get("bus_number", 1)
+        # bus_number = self.config.get("bus_number", 1)
         address_list = [int(address, 16) for address in self.config.get("address_list", [])]
 
         # Initialize I2C Reader with identifiers and configuration
-        self.reader = I2CReader(bus_number=bus_number)
+        self.reader = CANReader()
         self.reader.get_port(self.port_number)
         self.reader.set_user_selection(self.container_number, self.cluster_number, self.pack_number)
 

@@ -12,17 +12,22 @@ from database.entity import EisMeasurement
 from algorithm.EISAnalyzer import EISAnalyzer
 from collections import Counter
 import json
-class I2CReader(QObject):
+import can
+import os
+class CANReader(QObject):
     new_data_received_SWF = pyqtSignal(int, float, float, float)
     new_data_received_check = pyqtSignal(str)
     new_data_received_finish_list = pyqtSignal(list)
     new_data_received_batterycellInfo = pyqtSignal(int, int, float) #显示序号、cell_id和实部阻抗
     
 
-    def __init__(self, bus_number,timeout_duration=0.1):
+    def __init__(self, channel = "can0",bitrate = "500000", timeout_duration=0.1, message_id ="0x10"):
         super().__init__()
-        self.device = "/dev/i2c-" + str(bus_number)
-        self.bus = bus_number
+        os.system(f'sudo ip link set can0 type can bitrate {bitrate}')
+        os.system('sudo ifconfig can0 up')
+        self.bus = can.interface.Bus(channel=channel, bustype='socketcan', bitrate=bitrate)
+        
+        self.message_id = message_id
         self.port = None
         self.address = None
         self.chunk_size = 1
@@ -70,8 +75,8 @@ class I2CReader(QObject):
             self.connection = None
 
     def start_reading(self, address_list):
-        print("Starting I2C reading...")
-        self.new_data_received_check.emit("I2C总线连接中...")
+        print("Starting CAN reading...")
+        self.new_data_received_check.emit("CAN总线连接中...")
         thread = threading.Thread(target=self.process_address, args=(address_list,),daemon=True)
         thread.start()
         time.sleep(0.1)  
@@ -80,7 +85,7 @@ class I2CReader(QObject):
     def process_address(self, address_list):
         for address in address_list:
             data = "start\n"
-            self.write_data(data,address)
+            self.write_data(data)
             expected_data = f"{hex(address)}_Received I2C_Command_{data}_end"
 
             if self.verify_data(data, address, expected_data): 
@@ -105,9 +110,9 @@ class I2CReader(QObject):
         self.new_data_received_check.emit("停止 I2C 数据读取")
         self.running = False
 
-    def read_data(self,address):
+    def read_data(self):
         while self.running:
-            line = self.read_until_end(address)
+            line = self.read_until_end()
             if line:
                 line_decoded = line.decode('utf-8', errors='replace').strip()
                 print(f"Received line: {line_decoded}")
@@ -117,84 +122,91 @@ class I2CReader(QObject):
                 self.parse_swf_data(line_decoded)
         
 
-    def read_until_end(self,address):
-        buffer = bytearray()
-        I2C_SLAVE = 0x0703 
+    def read_until_end(self):
         while self.running:
             try:
-                with open(self.device, 'rb', buffering=0) as f:
-                    fcntl.ioctl(f, I2C_SLAVE, address)
+                with self.bus as bus:
+                    bus.set_filters([])  
+                    received_data = ""
+                    print("Start receiving...")
                     while True:
-                        chunk = f.read(self.chunk_size)
-                        if not chunk:
+                        msg = bus.recv(timeout=self.timeout_duration) 
+                        if msg is None:
+                            print("Timeout waiting for CAN message")
                             break
-                        buffer.extend(chunk)
-                        if self.line_ending in buffer:
-                            line_end_index = buffer.index(self.line_ending) + len(self.line_ending)
-                            line = buffer[:line_end_index]
-                            del buffer[:line_end_index]
-                            return line
+                        print(f"Raw frame: ID=0x{msg.arbitration_id:X}, Data={msg.data}")
+                        segment = bytes(msg.data).decode('ascii')
+                        print(f"Received: {segment}")
+                        received_data += segment
+                        if self.line_ending in received_data:
+                            line_end_index = received_data.index(self.line_ending) + len(self.line_ending)
+                            received_data = received_data[:line_end_index]
+                            return received_data
             except IOError as e:
                 time.sleep(0.01)
 
-    def read_overtimedetect(self,address):
-        buffer = bytearray()
-        I2C_SLAVE = 0x0703 
-        start_time = time.time()
+    def read_from_expected_id(self, expected_id):
+        received_data = ""
+        print(f"Listening for CAN messages from ID: 0x{expected_id:X}")
         while self.running:
             try:
-                with open(self.device, 'rb', buffering=0) as f:
-                    fcntl.ioctl(f, I2C_SLAVE, address)
-                    while True:
-                        chunk = f.read(self.chunk_size)
-                        if not chunk:
-                            break
-                        buffer.extend(chunk)
-                        if self.line_ending in buffer:
-                            line_end_index = buffer.index(self.line_ending) + len(self.line_ending)
-                            line = buffer[:line_end_index]
-                            del buffer[:line_end_index]
-                            return line
-            except IOError as e:
-                if time.time() - start_time > self.timeout_duration:
-                    print(f"Failed to open I2C bus after {self.timeout_duration} seconds.")
-                    break
-                time.sleep(0.01)
+                with self.bus as bus:
+                    bus.set_filters([{"can_id": expected_id, "can_mask": 0x7FF, "extended": False}])
 
-    def write_data(self, data_to_send,address):
+                    while True:
+                        msg = bus.recv(timeout=self.timeout_duration)  
+                        if msg is None:
+                            return None
+                        if msg.arbitration_id == expected_id:
+                            segment = bytes(msg.data).decode('ascii')
+                            print(f"Received: {segment}")
+                            received_data += segment
+                            if self.line_ending in received_data:
+                                line_end_index = received_data.index(self.line_ending) + len(self.line_ending)
+                                line = received_data[:line_end_index]
+                                return line
+                        return None
+            except Exception as e:
+                print(f"CAN read error: {e}")
+                time.sleep(0.1)
+
+
+    def write_data(self, data_to_send):
         if isinstance(data_to_send, str):
             if not data_to_send.endswith('\n'):
                 data_to_send += "\n"
-            with SMBus(self.bus) as bus:
-                try:
-                    self.clear_buffer(address)
-                    for char in data_to_send:
-                        bus.write_byte(address, ord(char))
-                        time.sleep(0.01)
-                except Exception as e:
-                    print(f"Error sending data: {e}")
+            try:
+                data_bytes = list(data_to_send.encode('ascii'))
+                chunk_size = 8  
+                for i in range(0, len(data_bytes), chunk_size):
+                    chunk = data_bytes[i:i + chunk_size]
+                    msg = can.Message(arbitration_id=self.message_id, data=chunk, is_extended_id=False)
+                    self.bus.send(msg)
+            except Exception as e:
+                print(f"Error sending data: {e}")
         else:
             print("Input must be a string")
-            
-    def clear_buffer(self, address):
-        """
-        清空 I2C 从机buffer
-        """
-        try:
-            I2C_SLAVE = 0x0703
-            with open(self.device, 'rb', buffering=0) as f:
-                fcntl.ioctl(f, I2C_SLAVE, address)
-                while True:
-                    chunk = f.read(self.chunk_size)
-                    if not chunk:
-                        break
-        except IOError:
-            pass  
 
-    def verify_data(self, data: str, address, expected_data:str, retries: int = 3):
+            
+    # def clear_buffer(self, address):
+    #     """
+    #     清空 I2C 从机buffer
+    #     """
+    #     try:
+    #         I2C_SLAVE = 0x0703
+    #         with open(self.device, 'rb', buffering=0) as f:
+    #             fcntl.ioctl(f, I2C_SLAVE, address)
+    #             while True:
+    #                 chunk = f.read(self.chunk_size)
+    #                 if not chunk:
+    #                     break
+    #     except IOError:
+    #         pass  
+
+    def verify_data(self, data: str, expected_id, expected_data:str, retries: int = 3):
         retries_left = retries
         while retries_left > 0:
-            line = self.read_overtimedetect(address)
+            line = self.read_from_expected_id(expected_id)
             if line:
                 line_decoded = line.decode('utf-8', errors='replace').strip()
                 print(f"Received: {line_decoded}")
@@ -203,7 +215,7 @@ class I2CReader(QObject):
                     return True  # Data is valid and verified
                 else:
                     print(f"Unexpected data: {line_decoded}. Retrying...")
-                    self.write_data(data,address)
+                    self.write_data(data)
                     retries_left -= 1
                     time.sleep(0.01)
             else:
@@ -211,12 +223,8 @@ class I2CReader(QObject):
                 time.sleep(0.01)
         print(f"Failed to verify data after {retries} attempts.")
         return False
-
-                        
+  
     def parse_and_emit_signals(self, line):
-        # if 'TEM' in line:
-        #     temperature = line.split('_')[2]
-        #     self.new_data_received_TEM.emit(float(temperature))
         try:
             if 'EIS_data_packet_start' in line:
                 # voltage = float(line.split("VOLTAGE_")[1].split("_EIS_data_packet_end")[0])
@@ -224,15 +232,15 @@ class I2CReader(QObject):
                 cell_id = int(line.split('_')[0], 16)
                 
                 
-                if '_A' in line:
-                    cell_id = cell_id
-                elif '_B' in line:
-                    cell_id = cell_id + 1
-                else:
-                    cell_id = None 
+                # if '_A' in line:
+                #     cell_id = cell_id
+                # elif '_B' in line:
+                #     cell_id = cell_id + 1
+                # else:
+                #     cell_id = None 
                 
-                if cell_id == 41:  #第7张卡第二通道无效
-                    return
+                # if cell_id == 41:  #第7张卡第二通道无效
+                #     return
                 
                 segments = line.split(';')
                 result = None
@@ -290,15 +298,16 @@ class I2CReader(QObject):
                 
                 # Extract battery number from the 0x-prefixed address
                 battery_number = int(line.split('_')[0], 16)
-                if '_A' in line:
-                    battery_number  = battery_number
-                elif '_B' in line:
-                    battery_number  = battery_number + 1
-                else:
-                    battery_number = None 
+                # if '_A' in line:
+                #     battery_number  = battery_number
+                # elif '_B' in line:
+                #     battery_number  = battery_number + 1
+                # else:
+                #     battery_number = None 
                 
-                if battery_number == 41:  #第7张卡第二通道无效
-                    return
+                # if battery_number == 41:  #第7张卡第二通道无效
+                #     return
+
                 battery_number = str(battery_number)
                 battery_number = self.config["cell_id_dict"].get(battery_number)
                 battery_number = int(battery_number)
@@ -347,15 +356,15 @@ class I2CReader(QObject):
                 addr_id = int(line.split('_')[0], 16)
                 
                 
-                if '_A' in line:
-                    addr_id  = addr_id
-                elif '_B' in line:
-                    addr_id  = addr_id + 1
-                else:
-                    addr_id = None 
+                # if '_A' in line:
+                #     addr_id  = addr_id
+                # elif '_B' in line:
+                #     addr_id  = addr_id + 1
+                # else:
+                #     addr_id = None 
 
-                if addr_id == 41:  #第7张卡第二通道无效
-                    return
+                # if addr_id == 41:  #第7张卡第二通道无效
+                #     return
 
                 cell_id = str(addr_id)
                 cell_id = self.config["cell_id_dict"].get(cell_id)
